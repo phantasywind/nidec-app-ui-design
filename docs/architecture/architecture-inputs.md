@@ -19,6 +19,7 @@ This document is an input contract. It does not select a technology stack, defin
 - CPQ and EPM are the initial reference consumers and will adopt approved versions independently.
 - Future Nidec applications may adopt through the same governed compatibility process. Compatibility with an unknown application is not assumed in advance.
 - The repository currently contains governance documentation only. No technical stack, source structure, component implementation, build, test, or publication configuration has been established.
+- User-confirmed current-state context: EPM currently reuses CPQ UI capabilities, and observed problems with that reuse are a business driver for establishing this independent, governed Design System. The exact reuse mechanism and problem evidence remain pending an EPM handoff.
 
 ## Approved architecture invariants
 
@@ -38,6 +39,20 @@ These constraints come from `AGENTS.md` and ADR-0001 and must be preserved by AD
 No unverified consumer or brand assumptions are accepted as architecture inputs at this stage.
 
 In particular, this baseline does not assume that the initial reference consumers—or any future consumer—share a frontend framework, runtime version, package manager, bundler, CSS model, browser target, accessibility target, localization model, or deployment topology. Similar-looking application behavior is not evidence of a shared business contract.
+
+## Approved qualification and adoption sequence
+
+The following sequencing decision was approved on 2026-09-03:
+
+1. Establish the independent Design System architecture, governance, package boundary, documentation, tests, packing, and release controls before modifying a consumer application.
+2. Use CPQ as the first qualification consumer through a separately approved, bounded, and reversible adoption slice. CPQ validates practical usability but does not define the shared package by copying its current implementation.
+3. Keep CPQ technical verification, independent CPQ acceptance, package publication, deployment, and Production approval as separate gates.
+4. After the CPQ slice is accepted, use EPM as the second adoption consumer. EPM is currently early-stage and may replace or rebuild its frontend rather than preserve its current CPQ reuse approach.
+5. An EPM Consumer Compatibility Profile is deferred until EPM adoption planning and does not block ADR-0002, the independent source skeleton, or local package qualification.
+6. EPM adoption remains application-owned and must not import CPQ business workflows, RBAC, API contracts, state machines, or domain-specific compositions through the shared package.
+7. The CPQ-first sequence is a bounded qualification strategy, not a claim that CPQ is the universal architecture standard. Future applications still complete the governed compatibility process.
+
+This decision does not authorize CPQ modification, EPM modification, package publication, GitHub Release creation, or component migration. Each remains a separately approved step.
 
 ## Required consumer evidence
 
@@ -62,8 +77,8 @@ Each adopting workstream must provide a Consumer Compatibility Profile containin
 
 | Application | Role | Evidence owner | Profile status |
 | --- | --- | --- | --- |
-| CPQ | Initial reference consumer | CPQ adopting workstream | Pending collection |
-| EPM | Initial reference consumer | EPM adopting workstream | Pending collection |
+| CPQ | Initial reference consumer and current-state evidence source | CPQ adopting workstream | Collected and cross-checked with the CPQ UI workstream at `e481cd0051265e2e5517f7f6de09da1a9e16a37e`; gaps remain; see `consumer-profiles/cpq.md` |
+| EPM | Second adoption consumer; currently reuses CPQ capabilities and may rebuild its early-stage frontend | EPM adopting workstream | Deferred until post-CPQ adoption planning; not an ADR-0002 blocker |
 
 Every future application must add and complete the same profile before compatibility is claimed or integration is authorized. Reading any consumer repository for this evidence requires a separately approved, read-only discovery slice. This Design System task must not modify a consumer repository.
 
@@ -131,7 +146,7 @@ These are recommendations, not approved architecture decisions:
 
 ADR-0002 may be drafted for approval only when:
 
-1. The approved initial reference consumers have supplied their source-backed Consumer Compatibility Profiles, or an explicitly approved first-consumer scope documents why one profile is deferred.
+1. The CPQ Consumer Compatibility Profile is fixed to a source-backed commit and identifies the constraints, coupling, and gaps relevant to the first qualification consumer. The approved CPQ-first scope explicitly defers the EPM profile.
 2. The authorized browser/device and accessibility targets are identified, or explicitly excluded from the first architecture decision with recorded risk ownership.
 3. The authoritative source for brand/token values is identified, or token values are explicitly excluded from the first slice.
 4. The proposed initial public package surface is described without consumer business semantics.
