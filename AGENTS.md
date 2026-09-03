@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This repository owns the shared, versioned Nidec Engineering Design System used by Nidec CPQ and EPM applications.
+This repository owns the shared, versioned Nidec Engineering Design System for Nidec applications. CPQ and EPM are the initial reference consumers, not the permanent consumer boundary.
 
 Work in this repository must establish reusable UI foundations without importing application-specific business state machines, role rules, API contracts, or domain behavior.
 
@@ -19,23 +19,24 @@ Do not invent brand standards, component requirements, application semantics, re
 
 ## Responsibility matrix
 
-| Area | Design System repository | CPQ repository | EPM repository |
-| --- | --- | --- | --- |
-| Repository governance and architecture | Owns | Consumes | Consumes |
-| Design tokens and reusable components | Owns | Adopts | Adopts |
-| Shared documentation, tests, build, and release mechanism | Owns | Consumes evidence | Consumes evidence |
-| Package version selection | Publishes immutable versions | Owns CPQ pin | Owns EPM pin |
-| Application integration and adaptation | Does not own | Owns CPQ integration | Owns EPM integration |
-| Business workflows, RBAC, API contracts, and domain state | Must not duplicate | Owns CPQ semantics | Owns EPM semantics |
-| Acceptance and production approval | Provides package evidence only | Separate CPQ gate | Separate EPM gate |
+| Area | Design System repository | Each adopting application workstream |
+| --- | --- | --- |
+| Repository governance and architecture | Owns | Consumes the approved contract |
+| Design tokens and reusable components | Owns | Adopts qualified capabilities |
+| Shared documentation, tests, build, and release mechanism | Owns | Consumes version-aligned evidence |
+| Package version selection | Publishes immutable versions | Owns its exact version pin |
+| Application integration and adaptation | Does not own | Owns its application integration |
+| Business workflows, RBAC, API contracts, and domain state | Must not duplicate | Owns its application semantics |
+| Acceptance and Production approval | Provides package evidence only | Uses separate application gates |
 
-If a proposed shared design depends on CPQ or EPM business rules, record it as a consumer requirement or pending decision. Do not encode the rule in the public package without explicit approval.
+If a proposed shared design depends on any adopting application's business rules, record it as a consumer requirement or pending decision. Do not encode the rule in the public package without explicit approval.
 
 ## Approved baseline
 
 - GitHub repository: `phantasywind/nidec-app-ui-design`.
 - Default branch: `main`.
 - npm package: `@phantasywind/nidec-app-ui-design`.
+- The Design System is intended for multiple Nidec applications. CPQ and EPM are the initial reference consumers used to establish the first compatibility contract.
 - GitHub Packages is the normal distribution channel.
 - Every published version must also have a GitHub Release containing the actual `npm pack` `.tgz`, `SHA256SUMS.txt`, and release record.
 - Consumers must install an exact version. `latest`, `^`, `~`, version ranges, Git URLs, and direct references to `main` are prohibited.
@@ -52,8 +53,8 @@ Unless Locke Yuan explicitly authorizes the specific action:
 - Do not push commits or tags.
 - Do not publish a package or create a GitHub Release.
 - Do not modify repository permissions, Rulesets, environments, variables, or secrets.
-- Do not modify or integrate the CPQ or EPM repositories.
-- Do not copy CPQ or EPM components into this repository in bulk.
+- Do not modify or integrate any adopting application repository, including CPQ and EPM.
+- Do not copy components from any application repository into this repository in bulk.
 - Do not expose, record, or commit tokens, passwords, cookies, connection strings, or other credentials.
 
 Local, reversible work must still follow an approved small step. Before each step, state its purpose, operations, expected result, verification method, and rollback method. Stop at the next gate and wait for confirmation.

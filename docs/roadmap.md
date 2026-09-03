@@ -7,12 +7,12 @@ This roadmap separates governance, implementation, release qualification, public
 | Stage | Objective | Exit evidence | Current status |
 | --- | --- | --- | --- |
 | Stage 0 — Repository decisions | Establish repository, package identity, distribution channel, ownership, and local checkout | Approved decisions and verified clean checkout | Complete |
-| Stage 1 — Governance baseline | Record responsibility, authorization, architecture decision, and gated roadmap | `AGENTS.md`, ADR-0001, roadmap, and README navigation reviewed | In progress |
-| Stage 2 — Architecture definition | Define the public contract, technical stack, package boundaries, compatibility policy, and verification approach | Approved architecture record; pending business rules identified | Not started |
+| Stage 1 — Governance baseline | Record responsibility, authorization, architecture decision, and gated roadmap | `AGENTS.md`, ADR-0001, roadmap, and README navigation reviewed | Complete |
+| Stage 2 — Architecture definition | Define the public contract, technical stack, package boundaries, compatibility policy, and verification approach | Approved architecture record; pending business rules identified | In progress — input baseline |
 | Stage 3 — Source skeleton | Establish only the approved source, test, documentation, and package structure | Local build and validation evidence for the skeleton | Not started |
 | Stage 4 — Release qualification | Prove deterministic packing, consumer restoration, artifact hashing, and release checklist behavior without publishing | Qualified local `.tgz`, checksum, validation record, and rollback result | Not started |
 | Stage 5 — First publication | Publish one explicitly approved immutable version and its matching evidence | Matching version, tag, GitHub Package, Release, `.tgz`, checksum, and release record | Not authorized |
-| Stage 6 — Consumer adoption | Let CPQ and EPM independently adopt an exact approved version | Separate consumer implementation, verification, acceptance, and deployment evidence | Out of current scope |
+| Stage 6 — Consumer adoption | Let each adopting application independently qualify and adopt an exact approved version | Separate compatibility, implementation, verification, acceptance, and deployment evidence per application | Out of current scope |
 
 ## Gate rules
 
@@ -24,6 +24,6 @@ This roadmap separates governance, implementation, release qualification, public
 
 ## Current checkpoint
 
-Stage 1 is limited to repository governance documents. It does not authorize tooling selection, source scaffolding, component migration, GitHub Actions, package publication, Release creation, repository settings changes, or CPQ/EPM modifications.
+Stage 1 is complete. Stage 2A records the architecture inputs, evidence requirements, decision matrix, and ADR-0002 entry criteria in `docs/architecture/architecture-inputs.md`.
 
-The next gate after Stage 1 is a review of this governance baseline. Stage 2 may begin only after that review is accepted with a separately stated architecture-definition slice.
+Stage 2A does not select tooling or authorize source scaffolding, component migration, GitHub Actions, package publication, Release creation, repository settings changes, or adopting-application modifications. Consumer-repository discovery and ADR-0002 are separate approval gates.
