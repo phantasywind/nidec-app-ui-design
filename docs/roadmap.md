@@ -8,7 +8,7 @@ This roadmap separates governance, implementation, release qualification, public
 | --- | --- | --- | --- |
 | Stage 0 — Repository decisions | Establish repository, package identity, distribution channel, ownership, and local checkout | Approved decisions and verified clean checkout | Complete |
 | Stage 1 — Governance baseline | Record responsibility, authorization, architecture decision, and gated roadmap | `AGENTS.md`, ADR-0001, roadmap, and README navigation reviewed | Complete |
-| Stage 2 — Architecture definition | Define the public contract, technical stack, package boundaries, compatibility policy, and verification approach | Approved architecture record; pending business rules identified | In progress — input baseline |
+| Stage 2 — Architecture definition | Define the public contract, technical stack, package boundaries, compatibility policy, and verification approach | Approved architecture record; pending business rules identified | Complete — ADR-0002 accepted with controlled deferrals |
 | Stage 3 — Source skeleton | Establish only the approved source, test, documentation, and package structure | Local build and validation evidence for the skeleton | Not started |
 | Stage 4 — Release qualification | Prove deterministic packing, consumer restoration, artifact hashing, and release checklist behavior without publishing or modifying CPQ | Qualified local `.tgz`, checksum, validation record, consumer-harness evidence, and rollback result | Not started |
 | Stage 5 — First publication | Publish one explicitly approved immutable version and its matching evidence | Matching version, tag, GitHub Package, Release, `.tgz`, checksum, and release record | Not authorized |
@@ -30,4 +30,8 @@ Stage 1 is complete. Stage 2A records the architecture inputs, evidence requirem
 
 The approved qualification sequence is independent framework and governance first, CPQ bounded reference adoption second, and EPM adoption or frontend rebuild after CPQ acceptance. EPM evidence is deferred until its adoption planning and does not block ADR-0002.
 
-Stage 2A does not select tooling or authorize source scaffolding, component migration, GitHub Actions, package publication, Release creation, repository settings changes, or adopting-application modifications. ADR-0002, source scaffolding, CPQ adoption, and EPM adoption remain separate approval gates.
+Stage 2 is complete. ADR-0002 at `docs/decisions/0002-shared-package-architecture.md` accepts the layered single-package architecture, DTCG token interchange, Node 24 LTS build policy, ESM-first output, React peer dependencies, scoped/layered CSS, WCAG 2.2 Level AA target, and pre-1.0 qualification posture.
+
+Controlled deferrals remain for the exact browser/version/OS matrix, Nidec-wide brand authority, first component inventory, and exact first qualification version. Their blocking effects are defined in ADR-0002 and must not be bypassed with CPQ defaults or guessed values.
+
+The next gate is a Stage 3 source-skeleton proposal limited to package infrastructure, public-boundary contracts, test-fixture-only tokens, verification, and rollback. ADR acceptance does not authorize dependency installation, component implementation, migration, GitHub Actions, package publication, Release creation, repository settings changes, or adopting-application modifications.

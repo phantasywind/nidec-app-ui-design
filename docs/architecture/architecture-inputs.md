@@ -1,7 +1,7 @@
 # Architecture Input Baseline
 
 - Stage: 2A — Architecture input baseline
-- Status: In progress
+- Status: Complete — transferred into accepted ADR-0002 with controlled deferrals
 - Decision owner: Locke Yuan
 - Scope: Inputs and decision criteria required before ADR-0002
 
@@ -144,7 +144,7 @@ These are recommendations, not approved architecture decisions:
 
 ## ADR-0002 entry criteria
 
-ADR-0002 may be drafted for approval only when:
+ADR-0002 entry criteria were evaluated as follows:
 
 1. The CPQ Consumer Compatibility Profile is fixed to a source-backed commit and identifies the constraints, coupling, and gaps relevant to the first qualification consumer. The approved CPQ-first scope explicitly defers the EPM profile.
 2. The authorized browser/device and accessibility targets are identified, or explicitly excluded from the first architecture decision with recorded risk ownership.
@@ -153,4 +153,4 @@ ADR-0002 may be drafted for approval only when:
 5. Candidate architecture options are compared against the same decision criteria, including reference-consumer compatibility, future-application onboarding, maintainability, verification, and migration cost.
 6. All unresolved business semantics remain marked `Business Rule Pending` with an adopting-workstream owner.
 
-Meeting these entry criteria permits an architecture decision proposal. It does not authorize source scaffolding, package publication, GitHub configuration changes, or adopting-application integration.
+ADR-0002 was accepted on 2026-09-03 with controlled deferrals for the exact browser/OS matrix, Nidec-wide brand authority, and first component inventory. The accepted ADR defines the precise work those deferrals block. Architecture acceptance does not authorize source scaffolding, package publication, GitHub configuration changes, or adopting-application integration.

@@ -182,13 +182,15 @@ This is an architecture input, not an approved migration list.
 - Establish a scoped token/reset strategy before any consumer integration.
 - Keep CPQ-specific components in CPQ until a separate review proves a business-neutral contract.
 
-## Remaining evidence required before ADR-0002
+## Controlled follow-on gates after ADR-0002
 
 1. Authorized browser/device and accessibility targets for the shared package.
 2. The authoritative Nidec brand/token and logo-asset source for cross-application use.
 3. An approved first public surface: foundations only, framework bindings, components, or a layered combination.
 4. A bounded CPQ qualification approach that demonstrates shared-package use without copying CPQ business semantics or requiring a broad migration.
 
-The approved sequence uses CPQ as the first qualification consumer. An EPM handoff identifying its current CPQ reuse path and observed problems is deferred until EPM adoption planning; it is no longer an ADR-0002 entry requirement.
+ADR-0002 was accepted with controlled deferrals. Items 1–3 above remain mandatory before their corresponding implementation or qualification scope; item 4 is required before CPQ adoption planning is accepted.
 
-Until these inputs are resolved, this profile supports option analysis but does not authorize ADR-0002 approval, source scaffolding, migration, or publication.
+The approved sequence uses CPQ as the first qualification consumer. An EPM handoff identifying its current CPQ reuse path and observed problems is deferred until EPM adoption planning.
+
+This profile supports the accepted architecture and future option analysis. It does not authorize source scaffolding, migration, CPQ modification, or publication.
