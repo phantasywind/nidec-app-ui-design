@@ -64,8 +64,11 @@ assert(
       types: './dist/index.d.ts',
       import: './dist/index.js',
     },
+    './tokens.css': './dist/tokens.css',
+    './styles.css': './dist/styles.css',
+    './tokens.json': './dist/tokens.json',
   }),
-  'Only the approved empty root export is allowed in Stage 3C.',
+  'Only the approved Stage 3D public subpaths are allowed.',
 );
 assert(packageJson.dependencies === undefined, 'Stage 3C must not add runtime dependencies.');
 assert(packageJson.peerDependencies?.react === '>=19.2.0 <20', 'Unexpected React peer range.');
@@ -107,7 +110,7 @@ for (const sourcePath of sourceFiles.filter((path) => ['.ts', '.tsx'].includes(e
 
 const distFiles = (await listFiles(distPath)).map((path) => relative(distPath, path).replaceAll('\\', '/')).sort();
 if (distFiles.length > 0) {
-  const allowedDistFiles = ['index.d.ts', 'index.js'];
+  const allowedDistFiles = ['index.d.ts', 'index.js', 'styles.css', 'tokens.css', 'tokens.json'];
   assert(JSON.stringify(distFiles) === JSON.stringify(allowedDistFiles), `Unexpected dist files: ${distFiles.join(', ')}`);
 
   const builtJavaScript = await readFile(join(distPath, 'index.js'), 'utf8');

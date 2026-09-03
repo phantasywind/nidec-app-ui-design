@@ -1,0 +1,9 @@
+/* SCAFFOLD FIXTURE ONLY. NOT APPROVED BRAND DATA. PUBLICATION BLOCKED. */
+@layer nidec-ui {
+  [data-nidec-ui] {
+    --nidec-ui-fixture-color-marker: color(srgb 1 0 1 / 1);
+    --nidec-ui-fixture-dimension-spacing: 7px;
+    --nidec-ui-fixture-duration-motion: 137ms;
+    --nidec-ui-fixture-number-opacity: 0.37;
+  }
+}

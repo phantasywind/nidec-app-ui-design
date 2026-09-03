@@ -14,12 +14,17 @@
     "isolatedModules": true,
     "verbatimModuleSyntax": true,
     "jsx": "react-jsx",
-    "skipLibCheck": false,
+    "skipLibCheck": true,
     "noEmit": true,
-    "types": []
+    "types": [
+      "node"
+    ]
   },
   "include": [
     "src/**/*.ts",
-    "src/**/*.tsx"
+    "src/**/*.tsx",
+    "tests/**/*.ts",
+    "vite.config.ts",
+    "vitest.config.ts"
   ]
 }
