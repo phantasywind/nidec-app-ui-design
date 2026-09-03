@@ -9,7 +9,7 @@ This roadmap separates governance, implementation, release qualification, public
 | Stage 0 — Repository decisions | Establish repository, package identity, distribution channel, ownership, and local checkout | Approved decisions and verified clean checkout | Complete |
 | Stage 1 — Governance baseline | Record responsibility, authorization, architecture decision, and gated roadmap | `AGENTS.md`, ADR-0001, roadmap, and README navigation reviewed | Complete |
 | Stage 2 — Architecture definition | Define the public contract, technical stack, package boundaries, compatibility policy, and verification approach | Approved architecture record; pending business rules identified | Complete — ADR-0002 accepted with controlled deferrals |
-| Stage 3 — Source skeleton | Establish only the approved source, test, documentation, and package structure | Local build and validation evidence for the skeleton | Not started |
+| Stage 3 — Source skeleton | Establish only the approved source, test, documentation, and package structure | Local build and validation evidence for the skeleton | In progress — 3B verified; 3C approval pending |
 | Stage 4 — Release qualification | Prove deterministic packing, consumer restoration, artifact hashing, and release checklist behavior without publishing or modifying CPQ | Qualified local `.tgz`, checksum, validation record, consumer-harness evidence, and rollback result | Not started |
 | Stage 5 — First publication | Publish one explicitly approved immutable version and its matching evidence | Matching version, tag, GitHub Package, Release, `.tgz`, checksum, and release record | Not authorized |
 | Stage 6 — CPQ reference adoption | Use a bounded, reversible CPQ slice to adopt an exact approved version and validate practical effect | Separate CPQ integration, technical verification, independent acceptance, and rollback evidence | Out of current scope |
@@ -34,4 +34,8 @@ Stage 2 is complete. ADR-0002 at `docs/decisions/0002-shared-package-architectur
 
 Controlled deferrals remain for the exact browser/version/OS matrix, Nidec-wide brand authority, first component inventory, and exact first qualification version. Their blocking effects are defined in ADR-0002 and must not be bypassed with CPQ defaults or guessed values.
 
-The next gate is a Stage 3 source-skeleton proposal limited to package infrastructure, public-boundary contracts, test-fixture-only tokens, verification, and rollback. ADR acceptance does not authorize dependency installation, component implementation, migration, GitHub Actions, package publication, Release creation, repository settings changes, or adopting-application modifications.
+Stage 3A is complete as a proposal at `docs/implementation/stage-3-source-skeleton-proposal.md`. It fixes the proposed maintainer toolchain, separates that toolchain from the CPQ-compatible consumer contract, defines the empty public boundary, namespace, fixture-only token pipeline, local verification, non-goals, and rollback.
+
+Stage 3B is implemented and technically verified. The evidence record at `docs/implementation/stage-3b-metadata-toolchain-record.md` confirms the private package metadata, exact Node/npm and development dependency pins, npm 11 lockfile, clean exact-toolchain `npm ci`, installed-version agreement, zero reported audit vulnerabilities, and absence of Stage 3C+ implementation paths. The host's global Node/npm installation was not changed.
+
+The next gate is explicit approval for Stage 3C — the empty public boundary. Stage 3B does not authorize component or production-token implementation, migration, GitHub Actions, package publication, Release creation, repository settings changes, or adopting-application modifications.
