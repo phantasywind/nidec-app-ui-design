@@ -1,9 +1,9 @@
 # First usable-library scope — proposal
 
 - Date: 2026-09-04
-- Status: Prepared for approval; no component implementation authorized.
+- Status: Button-only functional prototype explicitly approved by Locke on 2026-09-04; TextInput/Field and production styling remain unapproved.
 - Decision owner: Locke Yuan.
-- Authorization: Stage 4 bounded closure accepted; preparation of this proposal authorized.
+- Authorization: Locke replied “同意” to the Button-only implementation question after proposal preparation. Approval is limited to that slice and preserves publication blocking.
 - Applies to: Shared Design System; CPQ is the first reference consumer, EPM and future applications retain their own adoption gates.
 
 ## Business objective
@@ -77,4 +77,4 @@ No message has been sent to another task. If useful, forward this bounded reques
 
 Recommend approving **only the Button functional prototype with non-brand fixture styling**, keeping publication blocked, and obtaining the brand/CPQ reference inputs in parallel through Locke. Approval does not settle those inputs, authorize the later components, or permit CPQ/EPM writes.
 
-This turn prepares the proposal only. No code, new dependency, component export, production token, version or application change has been made. Next action requires Locke's approval of the bounded implementation slice. All authoritative-input gaps should be reviewed together rather than replaced with invented defaults.
+The proposal-preparation turn made no code changes. Locke subsequently approved the Button-only slice; its implementation and evidence are recorded separately in `button-prototype-record.md`. TextInput/Field and all authoritative-input gaps remain subject to their own decisions, never invented defaults.

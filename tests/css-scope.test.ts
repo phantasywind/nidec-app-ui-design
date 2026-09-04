@@ -15,7 +15,7 @@ describe('generated CSS isolation', () => {
     expect(css).not.toContain('#009b4a');
   });
 
-  it('keeps component styles empty until a component inventory is approved', async () => {
+  it('keeps custom component styles empty for the native Button prototype', async () => {
     const css = await readFile(join(repositoryRoot, 'dist', 'styles.css'), 'utf8');
 
     expect(css).toContain('@layer nidec-ui');

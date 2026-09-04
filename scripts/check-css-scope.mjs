@@ -34,7 +34,7 @@ for (const root of ['styles', 'dist']) {
     declaredVariables.every((variable) => variable.startsWith('--nidec-ui-fixture-')),
     `${root}/tokens.css contains an unapproved variable namespace.`,
   );
-  assert(!componentCss.includes('[data-nidec-ui]'), `${root}/styles.css must remain an empty layer in Stage 3D.`);
+  assert(!componentCss.includes('[data-nidec-ui]'), `${root}/styles.css must remain empty for the native Button prototype.`);
 }
 
 console.log('Scoped fixture CSS contract verified.');

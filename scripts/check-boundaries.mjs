@@ -1,5 +1,6 @@
 import { readFile, readdir } from 'node:fs/promises';
 import { extname, join, relative, resolve, sep } from 'node:path';
+import { pathToFileURL } from 'node:url';
 
 const repositoryRoot = resolve(import.meta.dirname, '..');
 const packagePath = join(repositoryRoot, 'package.json');
@@ -76,7 +77,7 @@ assert(
   }),
   'Only the approved Stage 3D public subpaths are allowed.',
 );
-assert(packageJson.dependencies === undefined, 'Stage 3C must not add runtime dependencies.');
+assert(packageJson.dependencies === undefined, 'Button must not add bundled runtime dependencies.');
 assert(packageJson.peerDependencies?.react === '>=19.2.0 <20', 'Unexpected React peer range.');
 assert(packageJson.peerDependencies?.['react-dom'] === '>=19.2.0 <20', 'Unexpected React DOM peer range.');
 assert(packageJson.peerDependenciesMeta?.react?.optional === true, 'React peer must remain optional for token-only consumers.');
@@ -87,7 +88,7 @@ for (const [name, version] of Object.entries(packageJson.devDependencies ?? {}))
 }
 
 const publicEntry = await readFile(publicEntryPath, 'utf8');
-assert(publicEntry.trim() === 'export {};', 'Stage 3C public entry must remain empty.');
+assert(publicEntry.includes('export function Button(') && publicEntry.includes('export type ButtonProps ='), 'Approved Button contract required.');
 
 const namespaceSource = await readFile(namespacePath, 'utf8');
 for (const requiredValue of [
@@ -105,7 +106,7 @@ const publicSourceFiles = sourceFiles.filter((path) => !path.includes(`${sep}int
 const publicSourcePaths = publicSourceFiles.map((path) => relative(repositoryRoot, path).replaceAll('\\', '/'));
 assert(
   JSON.stringify(publicSourcePaths) === JSON.stringify(['src/index.ts']),
-  'Stage 3C may expose only src/index.ts outside the internal directory.',
+  'The Button slice may expose only src/index.ts outside the internal directory.',
 );
 
 const forbiddenBusinessTerms = /\b(cpq|epm|quote|pricing|bom|configuration|approval|rbac)\b/i;
@@ -128,10 +129,13 @@ if (distFiles.length > 0) {
   assert(JSON.stringify(distFiles) === JSON.stringify(allowedDistFiles), `Unexpected dist files: ${distFiles.join(', ')}`);
 
   const builtJavaScript = await readFile(join(distPath, 'index.js'), 'utf8');
-  assert(!/from\s+['"]react(?:-dom)?(?:\/jsx-runtime)?['"]/.test(builtJavaScript), 'React must not be bundled or imported by the empty entry.');
+  assert(/from\s+['"]react['"]/.test(builtJavaScript), 'Button must import React as an external peer.');
+  assert(!/react\.production|react\.development|__CLIENT_INTERNALS/.test(builtJavaScript), 'React implementation must not be bundled.');
+  const runtimeExports = await import(pathToFileURL(join(distPath, 'index.js')).href);
+  assert(JSON.stringify(Object.keys(runtimeExports)) === JSON.stringify(['Button']), 'Only Button may be a runtime root export.');
 
   const declaration = await readFile(join(distPath, 'index.d.ts'), 'utf8');
-  assert(declaration.trim() === 'export {};', 'Stage 3C declaration must remain empty.');
+  assert(declaration.includes('ButtonProps') && declaration.includes('function Button('), 'Button declaration is required.');
 }
 
 console.log(`Boundary contract verified${distFiles.length > 0 ? ` for ${distFiles.length} build files` : ' before build'}.`);
