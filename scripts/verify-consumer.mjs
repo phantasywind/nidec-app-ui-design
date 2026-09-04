@@ -146,6 +146,8 @@ async function verifyConsumer(name, artifactUrl) {
   await verifyNoRuntimeGitHubDependency(consumerRoot);
 
   if (name === 'token-only-consumer') {
+    assert(!(await fileExists(join(consumerRoot, 'node_modules', '@fluentui', 'react-components', 'package.json'))),
+      'Token-only consumer unexpectedly installed Fluent.');
     assert(
       !(await fileExists(join(consumerRoot, 'node_modules', 'react', 'package.json'))),
       'Token-only consumer unexpectedly installed React.',

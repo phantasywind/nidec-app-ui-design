@@ -59,6 +59,8 @@ The created browser tab and preview process were closed. `.tmp/button-browser` a
 
 ## Outstanding gates and next step
 
+Follow-up: after commit `ceb04a1`, the additional clean-source, Node 22 and automated browser accessibility results were recorded in `button-validation-record.md`. The paragraph below describes the outstanding work at this prototype record's original checkpoint, not a claim that those subsequent checks were absent.
+
 Review/commit the prototype, then define and execute the remaining component qualification slice before adding further components: approved browser/viewport environment, automated accessibility/interaction coverage, and clean committed artifact verification including any renewed Node 22 checks. This turn did not rerun Node 22 or the CSP probe for the new Button bytes. Keep these absent results explicit.
 
 Brand authority and production token values remain `Business Rule Pending`. No branded visual acceptance, publication, CPQ/EPM integration or Production authorization follows from the functional checks.

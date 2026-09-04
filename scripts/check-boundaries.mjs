@@ -77,7 +77,10 @@ assert(
   }),
   'Only the approved Stage 3D public subpaths are allowed.',
 );
-assert(packageJson.dependencies === undefined, 'Button must not add bundled runtime dependencies.');
+assert(packageJson.dependencies === undefined, 'Runtime foundations must remain external optional peers.');
+assert(packageJson.peerDependencies?.['@fluentui/react-components'] === '9.74.7', 'Exact Fluent peer required.');
+assert(packageJson.peerDependenciesMeta?.['@fluentui/react-components']?.optional === true, 'Fluent must remain optional for token-only consumers.');
+assert(packageJson.devDependencies?.['@fluentui/react-components'] === '9.74.7', 'Exact Fluent development dependency required.');
 assert(packageJson.peerDependencies?.react === '>=19.2.0 <20', 'Unexpected React peer range.');
 assert(packageJson.peerDependencies?.['react-dom'] === '>=19.2.0 <20', 'Unexpected React DOM peer range.');
 assert(packageJson.peerDependenciesMeta?.react?.optional === true, 'React peer must remain optional for token-only consumers.');
@@ -130,9 +133,11 @@ if (distFiles.length > 0) {
 
   const builtJavaScript = await readFile(join(distPath, 'index.js'), 'utf8');
   assert(/from\s+['"]react['"]/.test(builtJavaScript), 'Button must import React as an external peer.');
+  assert(/from\s+['"]@fluentui\/react-components['"]/.test(builtJavaScript), 'Fluent must remain an external peer.');
   assert(!/react\.production|react\.development|__CLIENT_INTERNALS/.test(builtJavaScript), 'React implementation must not be bundled.');
   const runtimeExports = await import(pathToFileURL(join(distPath, 'index.js')).href);
-  assert(JSON.stringify(Object.keys(runtimeExports)) === JSON.stringify(['Button']), 'Only Button may be a runtime root export.');
+  const approvedExports = ['Button', 'NidecProvider', 'Input', 'Field', 'Dialog', 'DialogTrigger', 'DialogSurface', 'DialogBody', 'DialogTitle', 'DialogContent', 'DialogActions'].sort();
+  assert(JSON.stringify(Object.keys(runtimeExports).sort()) === JSON.stringify(approvedExports), 'Only ADR-0003 runtime exports are allowed.');
 
   const declaration = await readFile(join(distPath, 'index.d.ts'), 'utf8');
   assert(declaration.includes('ButtonProps') && declaration.includes('function Button('), 'Button declaration is required.');

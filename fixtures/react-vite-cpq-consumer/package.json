@@ -9,6 +9,7 @@
     "verify": "npm run typecheck && npm run build"
   },
   "dependencies": {
+    "@fluentui/react-components": "9.74.7",
     "react": "19.2.7",
     "react-dom": "19.2.7"
   },

@@ -52,10 +52,14 @@
     "verify:stage3f": "npm run verify:stage3e && npm run rollback:verify"
   },
   "peerDependencies": {
+    "@fluentui/react-components": "9.74.7",
     "react": ">=19.2.0 <20",
     "react-dom": ">=19.2.0 <20"
   },
   "peerDependenciesMeta": {
+    "@fluentui/react-components": {
+      "optional": true
+    },
     "react": {
       "optional": true
     },
@@ -64,6 +68,7 @@
     }
   },
   "devDependencies": {
+    "@fluentui/react-components": "9.74.7",
     "@types/node": "24.13.3",
     "@types/react": "19.2.18",
     "@types/react-dom": "19.2.7",

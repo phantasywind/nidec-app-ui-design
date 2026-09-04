@@ -14,7 +14,7 @@ export default defineConfig({
     emptyOutDir: false,
     sourcemap: false,
     rollupOptions: {
-      external: ['react', 'react-dom', 'react/jsx-runtime'],
+      external: (id) => /^(react|react-dom|@fluentui\/react-components)(\/|$)/.test(id),
       output: {
         entryFileNames: 'index.js',
       },

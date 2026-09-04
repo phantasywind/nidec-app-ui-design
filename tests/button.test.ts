@@ -3,10 +3,14 @@ import { createElement, createRef } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { Button } from '../src/index';
 import type { ButtonProps } from '../src/index';
+import { Button as FluentButton } from '@fluentui/react-components';
 
 describe('Button native contract', () => {
   it('defaults to a non-submitting native button and escapes text', () => {
-    expect(renderToStaticMarkup(createElement(Button, {children:'Save <draft>'}))).toBe('<button type="button" class="nidec-ui-button">Save &lt;draft&gt;</button>');
+    const html = renderToStaticMarkup(createElement(Button, {children:'Save <draft>'}));
+    expect(html).toContain('type="button"');
+    expect(html).toContain('nidec-ui-button');
+    expect(html).toContain('Save &lt;draft&gt;');
   });
   it.each(['submit', 'reset'] as const)('preserves explicit %s behavior', type => {
     expect(renderToStaticMarkup(createElement(Button, {children:'Action', type}))).toContain(`type="${type}"`);
@@ -21,10 +25,27 @@ describe('Button native contract', () => {
     const onClick = () => undefined;
     const ref = createRef<HTMLButtonElement>();
     const element = Button({children:'Save', className:'consumer-class', onClick, ref});
-    expect(element.type).toBe('button');
+    expect(element.type).toBe(FluentButton);
     expect(element.props.onClick).toBe(onClick);
-    expect(element.props.ref).toBe(ref);
+    const node = { tagName:'BUTTON' } as HTMLButtonElement;
+    expect(typeof element.props.ref).toBe('function');
+    if (typeof element.props.ref === 'function') {
+      Reflect.apply(element.props.ref, null, [node]);
+      expect(ref.current).toBe(node);
+      element.props.ref(null);
+      expect(ref.current).toBeNull();
+    }
     expect(element.props.className).toBe('nidec-ui-button consumer-class');
+  });
+  it('preserves callback ref identity and cleanup return values', () => {
+    const cleanup = () => undefined;
+    const ref = () => cleanup;
+    expect(Button({children:'Action', ref}).props.ref).toBe(ref);
+  });
+  it('normalizes undefined disabled without submitting or changing public props', () => {
+    const element = Button({children:'Action', disabled:undefined});
+    expect(element.props.disabled).toBe(false);
+    expect(element.props.type).toBe('button');
   });
 });
 const valid: ButtonProps = {children:'Text', type:'button'};
