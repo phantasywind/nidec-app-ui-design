@@ -1,6 +1,6 @@
 # Stage 4 Local Qualification Proposal
 
-- Status: Step 4E2 bounded browser observation passed; Stage 4 exit-scope review pending with disclosed isolation/network limits
+- Status: Bounded private-scaffold mechanism scope accepted and closed by Locke on 2026-09-04; limitations retained in stage-4-exit-review.md; no publication authorization
 - Date: 2026-09-04
 - Decision owner: Locke Yuan
 - Verified Stage 3 commit: `3b7f5cb670e7250a58732b201cc0144facbabd83`
