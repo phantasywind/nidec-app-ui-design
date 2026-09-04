@@ -28,6 +28,10 @@ The authorized type-adaptation continuation excludes `customStyleHooks_unstable`
 
 ## Qualification gate
 
+Consolidated assessment: `docs/implementation/fluent-technical-route-review.md` recommends proceeding with the current foundation and accepted limitations. The assessment is complete; owner confirmation of the overall technical-route gate is still required. Publication and application acceptance are separate.
+
+Disposition update (2026-09-04): ADR-0004 records Locke's acceptance of the identified Tabster sentinel warning and conditional acceptance of the upstream declaration-check limitation. These findings no longer independently block the current route assessment. All other checks and gates below remain applicable; the original failed results are preserved.
+
 Verify published version and integrity before replacement; do not silently substitute versions. Then run existing toolchain/type/package boundaries, clean deterministic packs, real Node 22 consumers, interaction/accessibility/responsive/isolation and CSP checks. Record limitations and bundle changes, without inventing a size threshold. A failing compatibility or security check stops qualification; do not disable the check to pass.
 
 Historical Button/scaffold evidence is preserved but does not qualify new bytes. Baseline backups under `.qualification/runs/fluent-transition/baseline` retain the initial dirty documentation and key source/lock bytes. Rollback is targeted to this slice, never a whole-worktree reset.

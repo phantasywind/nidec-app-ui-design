@@ -1,5 +1,7 @@
 # Same-version upstream Fluent comparison
 
+Subsequent owner decision: ADR-0004 (`docs/decisions/0004-fluent-known-limitations.md`) accepts the identified sentinel finding and conditionally accepts the declaration-only limitation as non-blocking for this prototype's technical-route assessment. The original observations and then-current recommendations below remain unchanged as historical evidence.
+
 - Date: 2026-09-04
 - Authorization: Locke approved continuation of the upstream-only minimal reproduction.
 - Result: the same initial-state `aria-hidden-focus` finding reproduces without Nidec code. No upstream patch or scanner exemption has been applied; the technical-route gate remains pending.
