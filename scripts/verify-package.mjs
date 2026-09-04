@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 import { readFile, rm, mkdir, writeFile } from 'node:fs/promises';
 import { join, resolve, sep } from 'node:path';
 import { spawnSync } from 'node:child_process';
+import { inspectArchive } from './qualification-contract.mjs';
 
 const repositoryRoot = resolve(import.meta.dirname, '..');
 const packPath = resolve(repositoryRoot, '.pack');
@@ -60,6 +61,7 @@ assert(
 
 const artifactPath = join(packPath, artifact.filename);
 const artifactBytes = await readFile(artifactPath);
+const archiveEvidence = inspectArchive(artifactBytes);
 const sha256 = createHash('sha256').update(artifactBytes).digest('hex');
 const evidence = {
   package: artifact.name,
@@ -72,6 +74,7 @@ const evidence = {
   shasum: artifact.shasum,
   sha256,
   files: actualFiles,
+  archiveEvidence,
 };
 
 await writeFile(join(packPath, 'pack-result.json'), `${JSON.stringify(evidence, null, 2)}\n`, 'utf8');

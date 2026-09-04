@@ -1,8 +1,8 @@
 node_modules/
+.qualification/
 dist/
 coverage/
 .pack/
 .tmp/
 *.tgz
 SHA256SUMS.txt
-

@@ -1,6 +1,7 @@
 import { cp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { delimiter, dirname, join, relative, resolve, sep } from 'node:path';
 import { spawnSync } from 'node:child_process';
+import { verifyBinding, verifyPhysicalReact } from './qualification-contract.mjs';
 
 const packageName = '@phantasywind/nidec-app-ui-design';
 const packageVersion = '0.0.0-development';
@@ -126,6 +127,7 @@ async function verifyConsumer(name, artifactUrl) {
   await writeFile(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`, 'utf8');
 
   console.log(`Preparing isolated ${name} fixture.`);
+  verifyBinding(await readFile(artifactPath), packEvidence.archiveEvidence);
   runNpm(['install', '--ignore-scripts', '--no-fund'], consumerRoot);
 
   const lock = JSON.parse(await readFile(join(consumerRoot, 'package-lock.json'), 'utf8'));
@@ -135,7 +137,9 @@ async function verifyConsumer(name, artifactUrl) {
   const modulesPath = resolve(consumerRoot, 'node_modules');
   assert(modulesPath === `${consumerRoot}${sep}node_modules`, `Unexpected node_modules path: ${modulesPath}`);
   await rm(modulesPath, { force: true, recursive: true });
+  verifyBinding(await readFile(artifactPath), packEvidence.archiveEvidence);
   runNpm(['ci', '--ignore-scripts', '--no-fund'], consumerRoot);
+  verifyBinding(await readFile(artifactPath), packEvidence.archiveEvidence);
   runNpm(['run', 'verify'], consumerRoot);
 
   await verifyInstalledPackage(consumerRoot);
@@ -153,6 +157,7 @@ async function verifyConsumer(name, artifactUrl) {
   }
 
   if (name === 'react-vite-cpq-consumer') {
+    await verifyPhysicalReact(consumerRoot, join(consumerRoot, 'node_modules', '@phantasywind', 'nidec-app-ui-design'));
     const tree = JSON.parse(runNpm(['ls', 'react', 'react-dom', '--all', '--json'], consumerRoot, true));
     const versions = collectDependencyVersions(tree, ['react', 'react-dom']);
     assert(JSON.stringify([...versions.get('react')]) === JSON.stringify(['19.2.7']), 'React must resolve exactly once at 19.2.7.');
@@ -166,6 +171,8 @@ assert(temporaryRoot === `${repositoryRoot}${sep}.tmp${sep}consumers`, `Unexpect
 const artifacts = (await readdir(packRoot)).filter((name) => name.endsWith('.tgz'));
 assert(artifacts.length === 1, 'Exactly one packed .tgz is required before consumer verification.');
 const artifactPath = join(packRoot, artifacts[0]);
+const packEvidence = JSON.parse(await readFile(join(packRoot, 'pack-result.json'), 'utf8'));
+verifyBinding(await readFile(artifactPath), packEvidence.archiveEvidence);
 const artifactUrl = `file:${artifactPath.replaceAll('\\', '/')}`;
 const completedConsumers = [];
 const evidence = {

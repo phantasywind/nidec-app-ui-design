@@ -8,8 +8,7 @@ const repositoryRoot = resolve(import.meta.dirname, '..');
 const proofRoot = resolve(repositoryRoot, '.tmp', 'stage3-rollback-proof');
 const currentRoot = join(proofRoot, 'current');
 const rollbackRoot = join(proofRoot, 'rollback');
-const restoredRoot = join(proofRoot, 'restored');
-const excludedTopLevelPaths = new Set(['.git', '.pack', '.tmp', 'dist', 'node_modules']);
+const excludedTopLevelPaths = new Set(['.git', '.pack', '.tmp', '.qualification', 'dist', 'node_modules']);
 const stage3IntroducedPaths = [
   '.gitignore',
   '.node-version',
@@ -131,8 +130,9 @@ try {
     assert(normalizedHash(baseline) === normalizedHash(rolledBack), `Rollback content differs from baseline: ${path}`);
   }
 
-  await cp(currentRoot, restoredRoot, { recursive: true });
-  const restoredFileCount = await compareTrees(currentRoot, restoredRoot);
+  // Restore into the actual rolled-back tree, not a fresh comparison copy.
+  await cp(currentRoot, rollbackRoot, { recursive: true });
+  const restoredFileCount = await compareTrees(currentRoot, rollbackRoot);
   console.log(`Stage 3 rollback matched baseline ${stage3BaseCommit.slice(0, 7)} across ${baselineInventory.length} files.`);
   console.log(`Stage 3 restoration matched ${restoredFileCount} current source files.`);
 } finally {
