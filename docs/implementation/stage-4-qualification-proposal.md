@@ -1,6 +1,6 @@
 # Stage 4 Local Qualification Proposal
 
-- Status: Step 4D preservation and failure rehearsal passed; Stage 4 exit gap remains open
+- Status: Step 4E1 network probe prepared and tested; Step 4E2 browser execution pending; Stage 4 exit gap remains open
 - Date: 2026-09-04
 - Decision owner: Locke Yuan
 - Verified Stage 3 commit: `3b7f5cb670e7250a58732b201cc0144facbabd83`
