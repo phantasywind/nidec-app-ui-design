@@ -1,6 +1,6 @@
 # Stage 4 Local Qualification Proposal
 
-- Status: Step 4B authorized and implemented; Step 4C approval pending
+- Status: Step 4C bounded execution completed with declared limits; Step 4D approval pending
 - Date: 2026-09-04
 - Decision owner: Locke Yuan
 - Verified Stage 3 commit: `3b7f5cb670e7250a58732b201cc0144facbabd83`
