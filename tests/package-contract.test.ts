@@ -15,8 +15,14 @@ describe('package contract', () => {
         types: './dist/index.d.ts',
         import: './dist/index.js',
       },
-      './tokens.css': './dist/tokens.css',
-      './styles.css': './dist/styles.css',
+      './tokens.css': {
+        types: './dist/tokens.css.d.ts',
+        default: './dist/tokens.css',
+      },
+      './styles.css': {
+        types: './dist/styles.css.d.ts',
+        default: './dist/styles.css',
+      },
       './tokens.json': './dist/tokens.json',
     });
     expect(packageJson.dependencies).toBeUndefined();

@@ -23,8 +23,14 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     },
-    "./tokens.css": "./dist/tokens.css",
-    "./styles.css": "./dist/styles.css",
+    "./tokens.css": {
+      "types": "./dist/tokens.css.d.ts",
+      "default": "./dist/tokens.css"
+    },
+    "./styles.css": {
+      "types": "./dist/styles.css.d.ts",
+      "default": "./dist/styles.css"
+    },
     "./tokens.json": "./dist/tokens.json"
   },
   "scripts": {
@@ -36,9 +42,14 @@
     "boundaries:check": "node scripts/check-boundaries.mjs",
     "test": "npm run tokens:build && vitest run",
     "build": "npm run clean && npm run tokens:build && vite build && tsc -p tsconfig.build.json && npm run css:check",
+    "pack:verify": "npm run build && node scripts/verify-package.mjs",
+    "consumer:verify": "node scripts/verify-consumer.mjs",
+    "rollback:verify": "node scripts/verify-stage3-rollback.mjs",
     "publication:check": "node scripts/check-publication.mjs",
     "prepublishOnly": "npm run publication:check",
-    "verify": "npm run lint && npm run typecheck && npm test && npm run boundaries:check && npm run build && npm run boundaries:check"
+    "verify": "npm run lint && npm run typecheck && npm run build && npm test && npm run boundaries:check",
+    "verify:stage3e": "npm run verify && npm run pack:verify && npm run consumer:verify",
+    "verify:stage3f": "npm run verify:stage3e && npm run rollback:verify"
   },
   "peerDependencies": {
     "react": ">=19.2.0 <20",

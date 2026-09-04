@@ -64,8 +64,14 @@ assert(
       types: './dist/index.d.ts',
       import: './dist/index.js',
     },
-    './tokens.css': './dist/tokens.css',
-    './styles.css': './dist/styles.css',
+    './tokens.css': {
+      types: './dist/tokens.css.d.ts',
+      default: './dist/tokens.css',
+    },
+    './styles.css': {
+      types: './dist/styles.css.d.ts',
+      default: './dist/styles.css',
+    },
     './tokens.json': './dist/tokens.json',
   }),
   'Only the approved Stage 3D public subpaths are allowed.',
@@ -110,7 +116,15 @@ for (const sourcePath of sourceFiles.filter((path) => ['.ts', '.tsx'].includes(e
 
 const distFiles = (await listFiles(distPath)).map((path) => relative(distPath, path).replaceAll('\\', '/')).sort();
 if (distFiles.length > 0) {
-  const allowedDistFiles = ['index.d.ts', 'index.js', 'styles.css', 'tokens.css', 'tokens.json'];
+  const allowedDistFiles = [
+    'index.d.ts',
+    'index.js',
+    'styles.css',
+    'styles.css.d.ts',
+    'tokens.css',
+    'tokens.css.d.ts',
+    'tokens.json',
+  ];
   assert(JSON.stringify(distFiles) === JSON.stringify(allowedDistFiles), `Unexpected dist files: ${distFiles.join(', ')}`);
 
   const builtJavaScript = await readFile(join(distPath, 'index.js'), 'utf8');

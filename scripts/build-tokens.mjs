@@ -103,13 +103,16 @@ const cssDeclarations = tokens
 const tokenCss = `/* ${fixtureMarker} */\n@layer nidec-ui {\n  [data-nidec-ui] {\n${cssDeclarations}\n  }\n}\n`;
 const componentCss = `/* ${fixtureMarker} */\n@layer nidec-ui {\n}\n`;
 const tokenJson = `${JSON.stringify(metadata, null, 2)}\n`;
+const stylesheetDeclaration = 'declare const stylesheet: string;\nexport default stylesheet;\n';
 
 await mkdir(stylesPath, { recursive: true });
 await mkdir(distPath, { recursive: true });
 
 for (const [fileName, content] of [
   ['tokens.css', tokenCss],
+  ['tokens.css.d.ts', stylesheetDeclaration],
   ['styles.css', componentCss],
+  ['styles.css.d.ts', stylesheetDeclaration],
   ['tokens.json', tokenJson],
 ]) {
   await writeFile(join(stylesPath, fileName), content, 'utf8');
