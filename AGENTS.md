@@ -61,6 +61,8 @@ Local, reversible work must still follow an approved small step. Before each ste
 
 ### Current application handoff workflow (Locke, 2026-09-05)
 
+- Visual continuity (Locke, 2026-09-06): use CPQ's governed Design System gallery and its established patterns as the reference baseline for gradual Fluent adoption, not as a disposable prototype. Gradually cover reusable elements with Fluent-backed capabilities; where shared capabilities are missing, study the existing element and blend Fluent mechanisms into its established appearance and interaction. Preserve recognizable hierarchy, density, spacing, geometry, states and interaction unless a material change is explicitly approved. Do not force Fluent defaults into a visibly different redesign or bulk-copy CPQ business code into the shared package. This direction does not expand the current approved implementation batch.
+
 - Locke accepted the shared Nidec light-theme demonstration. Dark Mode is explicitly outside the current objective: do not add dark-theme implementation, backlog items or acceptance criteria unless Locke explicitly requests them. Retained historical dark-theme comparisons are not pending work.
 
 - Improve shared components in coherent batches in this repository, then validate the complete batch and report to Locke. Do not use a per-component CPQ installation/approval loop.

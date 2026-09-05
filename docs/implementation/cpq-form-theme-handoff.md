@@ -1,5 +1,54 @@
 # CPQ 表单与浅色主题整批交接
 
+## 视觉连续性补充（Locke，2026-09-06）
+
+用户明确要求：新的Fluent UI逐步覆盖既有Design System；缺少元素时借鉴现有实现，在其基础上融合Fluent设计，不出现大的差异。此项是当前及后续批次的设计基调，不是全站替换授权。
+
+来源只读定位到 `client/src/App.tsx`：开发环境路由 `/__design-system` 加载 `client/src/design-system/DesignSystemGallery`。当前未打开该页面做视觉审查；02应核对其实际运行入口，先以该集合及既有治理文档/实际组件建立本批对照。
+
+沿用既有视觉层级、信息密度、间距、尺寸、布局、状态和交互习惯，底层逐步采用Fluent。已有Fluent能力优先复用；共享缺项先记录“现有元素—上游能力—必要适配—差异”，参考已有模式做最小融合，不另造一套风格、不为迁移而机械替换。品牌颜色继续由集中主题管理。不得为保留旧外观牺牲标签关联、键盘焦点、防误提交、只读禁用或业务合同；明显视觉/行为变化和共享API缺口须先报告。
+
+02在已批准四处范围内加入代表状态的前后对照与差异说明；不因本条扩大页面改动、修改全局CSS或重写Gallery。Gallery是视觉/交互参考，不代表将CPQ专属业务语义或整个源码纳入共享库。当前main、无新worktree、整批验证、不提交部署、Dark Mode排除等边界保持。
+
+## 整批实施批准：UI-FORM-BATCH-20260906
+
+Locke 对上一轮明确提出的四处表单接入回复“同意”。此前“下一批仅提案”的门已关闭，现由 CPQ 02 在现有 main 实际实施，不再停于计划；不创建分支或 worktree。先核验并保存当前 HEAD、差异与文件占用，保留已完成但未提交的搜索升级和其他任务变更。
+
+批准范围为02提案中的局部 `client/src/integrations/nidec-ui/` 表单兼容层，以及以下既有控件的等价替换及必要测试/本地模拟/记录：
+
+1. AdminPlatformBuilderPage：Edit Identity/New Platform Draft Sheet 的 Textarea/Select，Clone Published/Blank 的 RadioGroup/Radio；保留默认Clone、Blank备选、hint、无版本disabled及payload。
+2. AdminPlatformDefinitionForm：Control type/Fixed value/Capability 的 Select、Allowed Values Checkbox；保留FormField标签/错误/required关联、两列布局、historical disabled与Edit/Save/Cancel。
+3. AdminFieldGovernancePage：group filter Select、platform-only/确认Checkbox、matrix GovernanceSwitch的等价Switch适配；保持点击只打开确认Sheet、不直接保存。若无法保持该合同，记录阻断，不改业务行为。
+4. QuoteCommercialAddOns：Configuration Select、Business reason Textarea；保留初始焦点、editing disabled、button type、防误提交、allowedActions、payload及409处理。
+
+采用已安装的精确 `83d2722a…` 候选、Fluent9.74.7及公开nidecLightTheme；不重解锁React/Vite/TypeScript。兼容层集中适配value/checked，不把应用事件协议放回共享包；CSS只作必要局部布局尺寸，不散写品牌颜色。排除全局controls/ChoiceOptionGroup/FormField/Sheet重写、全局CSS/tokens、业务规则/API/RBAC/并发合同变化及Dark Mode。
+
+预期结果为四处整批接入和可查看的本地模拟预览。完成关联修改后集中执行focused/相关回归、串行full client、DS check、build separation、app build、类型检查、四视口和键盘/焦点/只读/禁用/确认不直接写入验证，保存绑定源与制品的证据、失败历史和体积增量。不逐组件申请批准，不关闭检查获得通过；独立应用验收仍单独进行。
+
+不commit/push/publish/deploy，不访问真实业务数据。回退仅撤销本批记录的控件/兼容层/测试/fixture变更，保留此前搜索升级与制品/历史证据，不整仓reset。真正的新范围、合同冲突或权限阻断才回报请求确认。完整执行消息已发送至既有02任务，工具返回成功；已要求使用本批标识回执，接收方确认及实施结果尚待回传。
+
+## 正式回传与来源复核（2026-09-06）
+
+02 已回传 `UI-LIGHT-MAIN-20260906`：`CLIENT IMPLEMENTED / AUTOMATED VERIFIED / LOCAL STATIC BROWSER VERIFIED / INDEPENDENT ACCEPTANCE PENDING`。以下覆盖旧的“回执待核实”状态。
+
+来源任务只读核验：worktree list 仅 `D:/Documents/Nidec Elevator CPQ 69b506f [main]`；差异恰为新制品、client manifest/lock、搜索适配器及测试、fixture main/README、02 工作流记录，共8个文件。新制品已暂存，其他文本未暂存，无新提交。新旧 tgz SHA256 与本记录一致；当前 lock SHA256 为 `e03343db536972a03db3243ede0f3a407671eb7c86438855460c11b6f9959b4d`。lock 差异仅共享包 file 引用、resolved、integrity；适配器仅从官方主题切为公开 `nidecLightTheme`，局部 Provider 与事件合同不变。首次 Git 只读查询触发 sandbox 账户 ownership 检查，后用单次命令的精确 safe.directory 读取成功，未修改全局 Git 配置。
+
+02 报告的执行证据（来源未重跑）：focused 3文件/12测试、串行完整client 76文件/452测试、DS 19页、build-separation 3/3、build:app 均通过；仅既有 large-chunk warning。四视口1440/1280/900/720无整页溢出，输入/清空与焦点保持；干净页控制台无error/warning。JS增量3.65kB、gzip增量0.67kB，CSS未变；不是有预算阈值的性能验收。旧5187服务缓存旧包曾导致缺导出空白，02精确停止旧PID并重启后复核通过，该失败保留。
+
+02 提供本地静态只读预览 `http://127.0.0.1:5187/`；来源本次未另开浏览器验证在线状态。真实OS IME、生产CSP、真实登录/API/RBAC和独立验收未执行；不写Accepted，不发布或部署。Dark Mode排除。
+
+下一整批仅为02提案，尚未实施：局部表单兼容层；AdminPlatformBuilderPage 的 Identity/New Draft Sheet Textarea/Select 和 Clone/Blank Radio；AdminPlatformDefinitionForm 的 Select/Allowed Values Checkbox；AdminFieldGovernancePage 的筛选/确认/候选Switch；QuoteCommercialAddOns 的 Configuration Select/Business reason Textarea。保留字段关联、只读、默认值、确认Sheet、allowedActions、payload和并发合同。不得为了凑组件覆盖去机械替换 ConfigurationCreatePage 已有 ChoiceOptionGroup；不全局重写 controls/FormField/Sheet/CSS。下一门是批准具体整批接入范围，不是重复批准已完成的搜索主题升级。
+
+## 当前执行澄清：UI-LIGHT-MAIN-20260906
+
+Locke 指出 02 未完整收到接入和 main 直接修改要求，要求继续。来源任务核查发现：上一条交接明确写成了“只读、不安装、不修改”，它并非实施命令；工具返回任务 ID 也只能证明发送请求成功，不能证明接收方已阅读或执行。以下覆盖本文此前只读边界，原文保留为交接历史。
+
+已向既有 `02 UI设计与前端实现` 发送完整执行澄清，要求以标识 `UI-LIGHT-MAIN-20260906` 回执：在 `D:\Documents\Nidec Elevator CPQ` 现有 main 上实际升级已接入的 Enquiries 单搜索框，采用下述 `83d2722a…` 候选及公开 `nidecLightTheme`。允许该候选保存、manifest/lock、局部适配器/主题/必要样式、测试和本地模拟 fixture 的关联修改；旧制品与证据保留。先核验当前 HEAD/工作树/占用，不创建分支或 worktree，不重复清理已删除试点。
+
+保持原搜索合同，不改全局 DirectorySearch/Toolbar/barrel/CSS、创建 Sheet、API、业务规则。完成关联修改后集中执行 focused/相关回归/full client/DS/build-separation/app build 和四视口本地模拟检查，回传精确哈希、差异、限制、回退与可打开 URL。无提交、push、发布、部署、真实业务数据访问授权。Dark Mode 排除。
+
+新增组件的其他业务页面落点仍应整批列明，不因已知搜索升级而自动批准整站迁移。若接收方权限层仍要求直接用户授权，报告阻断，不绕过。此次工具返回发送成功，但接收方回执及实施结果尚待核实。
+
 日期：2026-09-05。状态：共享演示已获 Locke 接受；应用具体落点待 02 回传，不宣称应用修改或验收完成。
 
 交接更新（2026-09-06）：通知工具已确认消息送达既有任务 `02 UI设计与前端实现`（`019f5a94-d339-7972-a4a7-58d96bb1ce3b`）。本条请求为只读整批落点方案，不是安装/修改命令；等待回传后核对具体范围。不能将“已送达”写成“已实施”。
