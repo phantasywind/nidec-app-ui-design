@@ -26,15 +26,20 @@ export function colorFindings(text, css=false){
 export async function checkColors(root){
   const paths=[];
   async function visit(dir){for(const item of await readdir(dir,{withFileTypes:true})){
-    const path=join(dir,item.name);if(item.isDirectory())await visit(path);else if(/\.(?:tsx?|css)$/.test(path))paths.push(path);
+    const path=join(dir,item.name);if(item.isDirectory())await visit(path);else if(/\.(?:tsx?|mjs|css)$/.test(path))paths.push(path);
   }}
   await visit(join(root,'src'));
   await visit(join(root,'fixtures/react-form-batch-consumer/src'));
   for(const path of paths){
     const name=relative(root,path).replaceAll('\\','/');
     const source=await readFile(path,'utf8');
+    if(name==='src/internal/light-palette.mjs'){
+      assert(source.includes('ADR-0006'),'Raw source requires recorded authority');
+      assert.equal([...source.matchAll(/#[\da-f]{6}\b/gi)].length,16,'Review raw role changes explicitly');
+      continue;
+    }
     if(name==='fixtures/react-form-batch-consumer/src/palette.css'){
-      assert(source.includes('DEMO ONLY'),'Palette must not claim approved brand values');
+      assert(source.includes('GENERATED DEMO SHELL'),'Palette must come from central source');
       assert.equal([...source.matchAll(/#[\da-f]{6}\b/gi)].length,4,'Review central palette role changes explicitly');
       continue;
     }

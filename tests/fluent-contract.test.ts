@@ -11,7 +11,7 @@ const compositions = ['Input', 'Field', 'Dialog', 'DialogTrigger', 'DialogSurfac
 
 describe('Fluent public boundary', () => {
   it('exports exactly the approved API and preserves upstream composition identity', () => {
-    expect(Object.keys(shared).sort()).toEqual(['Button', 'NidecProvider', ...compositions].sort());
+    expect(Object.keys(shared).sort()).toEqual(['Button', 'NidecProvider', 'nidecLightTheme', ...compositions].sort());
     for (const name of compositions) expect(shared[name]).toBe(upstream[name]);
   });
   it('forwards an explicit theme and establishes a host', () => {

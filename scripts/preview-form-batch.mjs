@@ -5,13 +5,16 @@ import { createHash, randomBytes } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 
-const evidence=resolve(import.meta.dirname,'..','.qualification/runs/fluent-form-batch-1');
+const light=process.argv[2]==='light-theme';
+assert(!process.argv[2]||light,'Only the recorded form or light-theme run may be previewed');
+const evidence=resolve(import.meta.dirname,'..',light?'.qualification/runs/nidec-light-theme-1':'.qualification/runs/fluent-form-batch-1');
 const summary=JSON.parse(await readFile(join(evidence,'engineering-summary.json'),'utf8'));
 const demo=summary.current.find(item=>item.name==='react-form-batch-consumer');
-assert.equal(summary.artifact.sha256,'7038a7e9f164b87e0036f2632e8384d27edc7b086267dbf2bc05c0facfec5590');
+if(!light)assert.equal(summary.artifact.sha256,'7038a7e9f164b87e0036f2632e8384d27edc7b086267dbf2bc05c0facfec5590');
+else assert.equal(createHash('sha256').update(await readFile(join(evidence,'build-a/candidate.tgz'))).digest('hex'),summary.artifact.sha256);
 const content=new Map();
 for(const item of demo.outputs){
-  const bytes=await readFile(join(evidence,'consumer-retest/dist',item.path));
+  const bytes=await readFile(join(evidence,light?'consumer-node22/react-form-batch-consumer/dist':'consumer-retest/dist',item.path));
   assert.equal(createHash('sha256').update(bytes).digest('hex'),item.sha256);
   content.set('/'+item.path.replaceAll('\\','/'),bytes);
 }
@@ -30,4 +33,4 @@ const server=createServer((req,res)=>{
 });
 await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));
 origin=`http://127.0.0.1:${server.address().port}`;
-console.log(`Form batch 01 preview: ${origin} — local demonstration only, not CPQ.`);
+console.log(`${light?'Nidec light theme':'Form batch 01'} preview: ${origin} — local demonstration only, not CPQ.`);

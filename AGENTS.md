@@ -61,6 +61,8 @@ Local, reversible work must still follow an approved small step. Before each ste
 
 ### Current application handoff workflow (Locke, 2026-09-05)
 
+- Locke accepted the shared Nidec light-theme demonstration. Dark Mode is explicitly outside the current objective: do not add dark-theme implementation, backlog items or acceptance criteria unless Locke explicitly requests them. Retained historical dark-theme comparisons are not pending work.
+
 - Improve shared components in coherent batches in this repository, then validate the complete batch and report to Locke. Do not use a per-component CPQ installation/approval loop.
 - Only after Locke approves a completed batch may this task notify the CPQ UI workstream to adopt that new batch. Package implementation/testing is not application adoption approval.
 - CPQ work is to run on its existing `main` checkout by default. Do not create a CPQ Git worktree without Locke's explicit approval for that worktree; do not silently create a replacement worktree.

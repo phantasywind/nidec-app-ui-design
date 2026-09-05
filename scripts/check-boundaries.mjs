@@ -136,7 +136,7 @@ if (distFiles.length > 0) {
   assert(/from\s+['"]@fluentui\/react-components['"]/.test(builtJavaScript), 'Fluent must remain an external peer.');
   assert(!/react\.production|react\.development|__CLIENT_INTERNALS/.test(builtJavaScript), 'React implementation must not be bundled.');
   const runtimeExports = await import(pathToFileURL(join(distPath, 'index.js')).href);
-  const approvedExports = ['Button', 'NidecProvider', 'Input', 'Field', 'Dialog', 'DialogTrigger', 'DialogSurface', 'DialogBody', 'DialogTitle', 'DialogContent', 'DialogActions', 'Textarea', 'Select', 'Checkbox', 'RadioGroup', 'Radio', 'Switch'].sort();
+  const approvedExports = ['Button', 'NidecProvider', 'nidecLightTheme', 'Input', 'Field', 'Dialog', 'DialogTrigger', 'DialogSurface', 'DialogBody', 'DialogTitle', 'DialogContent', 'DialogActions', 'Textarea', 'Select', 'Checkbox', 'RadioGroup', 'Radio', 'Switch'].sort();
   assert(JSON.stringify(Object.keys(runtimeExports).sort()) === JSON.stringify(approvedExports), 'Only ADR-0003/ADR-0005 runtime exports are allowed.');
 
   const declaration = await readFile(join(distPath, 'index.d.ts'), 'utf8');

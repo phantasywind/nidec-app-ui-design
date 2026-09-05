@@ -3,15 +3,22 @@ import { createServer } from 'node:http';
 import { randomBytes, createHash } from 'node:crypto';
 import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
+import { appendFileSync } from 'node:fs';
 
 const root=resolve(import.meta.dirname,'..');
-const formBatch=process.argv[2]==='form-batch';
+const lightTheme=process.argv[2]==='light-theme';
+const formBatch=lightTheme || process.argv[2]==='form-batch';
 const upstream=process.argv[2]==='upstream';
 const diagnostic=upstream || process.argv[2]==='diagnostic';
 const retest=diagnostic || process.argv[2]==='retest';
-const evidence=formBatch?join(root,'.qualification/runs/fluent-form-batch-1/browser'):upstream?join(root,'.qualification/runs/fluent-upstream-comparison/browser'):diagnostic?join(root,'.qualification/runs/fluent-focus-diagnostic'):join(root,`.qualification/runs/fluent-adaptation/${retest?'browser-retest':'browser'}`);
+const evidence=lightTheme?join(root,'.qualification/runs/nidec-light-theme-1/browser'):formBatch?join(root,'.qualification/runs/fluent-form-batch-1/browser'):upstream?join(root,'.qualification/runs/fluent-upstream-comparison/browser'):diagnostic?join(root,'.qualification/runs/fluent-focus-diagnostic'):join(root,`.qualification/runs/fluent-adaptation/${retest?'browser-retest':'browser'}`);
 await mkdir(evidence); // Never replace a prior run.
-const output=join(root,formBatch?'.qualification/runs/fluent-form-batch-1/consumer-retest/dist':upstream?'.qualification/runs/fluent-upstream-comparison/dist':retest?'.qualification/runs/fluent-adaptation/consumer-retest/dist':'.qualification/runs/fluent-adaptation/consumer-node22/react-vite-cpq-consumer/dist');
+const output=join(root,lightTheme?'.qualification/runs/nidec-light-theme-1/warm-consumer/dist':formBatch?'.qualification/runs/fluent-form-batch-1/consumer-retest/dist':upstream?'.qualification/runs/fluent-upstream-comparison/dist':retest?'.qualification/runs/fluent-adaptation/consumer-retest/dist':'.qualification/runs/fluent-adaptation/consumer-node22/react-vite-cpq-consumer/dist');
+if(lightTheme){
+  const warm=JSON.parse(await readFile(join(root,'.qualification/runs/nidec-light-theme-1/warm-consumer/result.json'),'utf8'));
+  const candidate=await readFile(join(root,'.qualification/runs/nidec-light-theme-1/build-a/candidate.tgz'));
+  assert.equal(warm.artifact,createHash('sha256').update(candidate).digest('hex'));
+}
 const content=new Map([['/',await readFile(join(output,'index.html'))]]);
 for(const name of await readdir(join(output,'assets'))) {
   assert(/^[\w.-]+\.(js|css)$/.test(name));
@@ -38,6 +45,7 @@ const server=createServer(async(req,res)=>{
     const respond=(status,body='',type='text/plain')=>{
       requests.push({path:url.pathname,query:url.search,method:req.method,status,policy,
         bodyBytes:Buffer.byteLength(body),sha256:createHash('sha256').update(body).digest('hex')});
+      appendFileSync(join(evidence,'requests.ndjson'),JSON.stringify(requests.at(-1))+'\n');
       res.writeHead(status,{'Content-Type':type,'Content-Security-Policy':policy,'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'}).end(body);
     };
     if(req.method==='POST' && ['/__probe/audit','/__probe/csp'].includes(url.pathname)){

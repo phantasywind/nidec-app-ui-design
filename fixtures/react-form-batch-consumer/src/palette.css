@@ -1,10 +1,7 @@
-/* Central DEMO ONLY palette. Existing appearance preserved; not brand approval.
- * These four roles belong to the shell outside FluentProvider.
- * Component colors come from themes.ts, never from this shell palette.
- */
+/* GENERATED DEMO SHELL. Source: src/internal/light-palette.mjs. Do not edit. */
 :root {
-  --nidec-demo-canvas: #f2f3f5;
-  --nidec-demo-text: #242424;
-  --nidec-demo-text-secondary: #595959;
-  --nidec-demo-border: #b9bdc4;
+  --nidec-demo-canvas: #f5f7f6;
+  --nidec-demo-text: #17211c;
+  --nidec-demo-text-secondary: #3f4b45;
+  --nidec-demo-border: #b9c2bd;
 }

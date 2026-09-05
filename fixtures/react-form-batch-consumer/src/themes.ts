@@ -1,7 +1,7 @@
-import { webLightTheme, webDarkTheme } from '@fluentui/react-components';
+import { webDarkTheme } from '@fluentui/react-components';
 import type { Theme } from '@fluentui/react-components';
+import { nidecLightTheme } from '@phantasywind/nidec-app-ui-design';
 
-// Single theme entry for the whole demo. Brand mapping is intentionally pending
-// the documented color-source decision; do not mix two consumer palettes here.
-export const demoLightTheme: Theme = webLightTheme;
+// Shared light theme is explicit. Dark remains an official upstream test input.
+export const demoLightTheme: Theme = nidecLightTheme;
 export const demoDarkTheme: Theme = webDarkTheme;

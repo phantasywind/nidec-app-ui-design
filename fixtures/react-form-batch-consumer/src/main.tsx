@@ -20,7 +20,7 @@ function FormBatch() {
   return <main className="batch-demo">
     <header><p className="batch-eyebrow">SHARED UI / FORM COMPONENTS / BATCH 01</p>
       <h1>Everyday form controls</h1>
-      <p>Official Fluent themes · not an approved Nidec brand design. Local demo only; no business API or saving.</p>
+      <p>Nidec light theme candidate · approved palette basis, state mapping under review. Dark theme is an official Fluent reference. No business API or saving.</p>
     </header>
     <div className="batch-columns">
       <NidecProvider theme={demoLightTheme} id="batch-light" className="batch-panel">

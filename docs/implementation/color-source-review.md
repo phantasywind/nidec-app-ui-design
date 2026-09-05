@@ -21,6 +21,8 @@ Design System另外提供 ink700/500、surface-subtle、border-strong；这些�
 
 ## 建议与待确认
 
+后续决定：Locke 在提交 `3f90e9f3a76e9dc775dc263eb2906e60cc70a818` 后明确同意采用下述DS基准。本节原待确认文字保留历史；来源选择门已关闭，当前实施见 `nidec-light-theme-record.md`。
+
 建议以 `client/src/design-system/styles.css` 的 `--ds-*` 色表作为**共享浅色主题的候选基准**，保留主绿 `#009B4A`。理由是它对文字层级、表面、边框和反馈角色的定义更完整；这是一项建议，不是已批准品牌标准。
 
 pressed/selected、on-brand文字、各状态的foreground/background/stroke组合和深色主题仍没有从这两段变量声明中得到完整一对一依据；下一步在选定基准后形成集中映射提案，不能假称直接复制CPQ即可覆盖Fluent全部token。

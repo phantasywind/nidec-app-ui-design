@@ -11,7 +11,7 @@ import { inspectArchive, redactLog, verifyPhysicalReact } from './qualification-
 const root = resolve(import.meta.dirname, '..');
 const runId = process.argv[3] ?? 'fluent-adaptation';
 assert(/^[a-z0-9][a-z0-9-]{0,63}$/.test(runId), 'Invalid run ID');
-const formBatch = runId === 'fluent-form-batch-1';
+const formBatch = ['fluent-form-batch-1', 'nidec-light-theme-1'].includes(runId);
 const work = join(root, '.tmp', runId);
 const evidence = join(root, '.qualification', 'runs', runId);
 const cache = join(root, '.tmp', 'fluent-npm-cache');
@@ -19,7 +19,7 @@ const source = join(work, 'source');
 const node24 = join(root, '.tmp/node-24.20.0/node-v24.20.0-win-x64/node.exe');
 const node22 = join(root, '.tmp/node-22.22.0/node-v22.22.0-win-x64/node.exe');
 const stage = process.argv[2];
-assert(['prepare', 'build-a', 'build-b', 'consumer-node22', 'baseline-node22', 'seal'].includes(stage), 'Unknown stage');
+assert(['prepare', 'build-a', 'build-b', 'compare-builds', 'consumer-node22', 'baseline-node22', 'seal'].includes(stage), 'Unknown stage');
 assert(stage !== 'baseline-node22' || formBatch, 'Baseline comparison belongs to the form batch');
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 async function files(dir) {
@@ -88,8 +88,14 @@ if (stage === 'prepare') {
   assert.equal(hash(artifact),record.sha256);
   await save(join(evidence,stage,'candidate.tgz'),artifact);
   await save(join(evidence,stage,'artifact.json'),{...record,archive});
-  if (stage === 'build-b') assert.deepEqual(artifact,await readFile(join(evidence,'build-a/candidate.tgz')));
   console.log(`Qualified ${stage}: ${hash(artifact)}`);
+} else if (stage === 'compare-builds') {
+  const first=await readFile(join(evidence,'build-a/candidate.tgz'));
+  const second=await readFile(join(evidence,'build-b/candidate.tgz'));
+  assert.deepEqual(first,second,'Independent archives differ');
+  await save(join(evidence,'build-comparison.json'),{equal:true,sha256:hash(first),bytes:first.length});
+  await save(join(evidence,'comparison-executor.mjs'),await readFile(new URL(import.meta.url)));
+  console.log(`Independent archive comparison passed: ${hash(first)}`);
 } else if (stage === 'consumer-node22' || stage === 'baseline-node22') {
   await mkdir(join(evidence,stage));
   const results = [];
@@ -139,6 +145,10 @@ if (stage === 'prepare') {
   await save(join(evidence,stage,'results.json'),results);
 } else {
   await cp(source,join(evidence,'source'),{recursive:true,errorOnExist:true,force:false});
+  if(runId==='nidec-light-theme-1'){
+    await save(join(evidence,'final-record.md'),await readFile(join(root,'docs/implementation/nidec-light-theme-record.md')));
+    await save(join(evidence,'preview-executor.mjs'),await readFile(join(root,'scripts/preview-form-batch.mjs')));
+  }
   await save(join(evidence,'qualifier-executor.mjs'),await readFile(new URL(import.meta.url)));
   const all = (await files(evidence)).filter(path=>!path.endsWith('SHA256SUMS.txt'));
   const lines = [];

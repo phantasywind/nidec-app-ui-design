@@ -11,6 +11,7 @@
     return {time:new Date().toISOString(),viewport:{width:innerWidth,height:innerHeight,document:document.documentElement.clientWidth,scroll:document.documentElement.scrollWidth},
       state:document.querySelector('#batch-state')?.textContent,active:document.activeElement?.getAttribute('aria-label') ?? document.activeElement?.getAttribute('name') ?? document.activeElement?.textContent,
       roots,outside:control?{font:getComputedStyle(control).fontSize,padding:getComputedStyle(control).padding}:null,
+      colors:[...document.querySelectorAll('#batch-light [role="switch"],#batch-light input,#batch-light textarea,#batch-light select')].map(node=>({tag:node.tagName,type:node.getAttribute('type'),color:getComputedStyle(node).color,background:getComputedStyle(node).backgroundColor,border:getComputedStyle(node).borderColor})),
       dialogs:[...document.querySelectorAll('[role="dialog"]')].map(node=>({text:node.textContent,background:getComputedStyle(node).backgroundColor}))};
   };
   const send = async value => {

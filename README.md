@@ -21,14 +21,15 @@ The controlled React surface is `Button`, `NidecProvider`, `Input`, `Field`, and
 React consumers explicitly install the exact qualified `@fluentui/react-components@9.74.7` alongside the exact shared-package version. React/React DOM and Fluent are external optional peers; optional means token-only consumers can omit them, not that React consumers can omit them. Commit the application lockfile to freeze transitive dependencies.
 
 ```tsx
-import { webLightTheme } from '@fluentui/react-components';
-import { NidecProvider, Button } from '@phantasywind/nidec-app-ui-design';
+import { NidecProvider, Button, nidecLightTheme } from '@phantasywind/nidec-app-ui-design';
 
-// Official demo theme only; NOT an approved Nidec brand theme.
-<NidecProvider theme={webLightTheme}>
+// Explicit shared light theme; application adoption remains separately approved.
+<NidecProvider theme={nidecLightTheme}>
   <Button onClick={handleAction}>Example action</Button>
 </NidecProvider>
 ```
+
+The light-theme palette basis is approved in [ADR-0006](docs/decisions/0006-color-governance.md); the [central mapping record](docs/implementation/nidec-light-theme-record.md) distinguishes source colors from derived UI states and tracks verification. Raw values live in one internal configuration; consumers use the public theme, never internal paths. A Nidec dark theme is not provided.
 
 Button remains a text-only native-button interface, defaults to `type="button"`, preserves disabled/form/ref behavior and composes the `nidec-ui-button` class. There is no polymorphic link or new business behavior. Input/Field/Dialog preserve their upstream public protocols. NidecProvider requires a complete explicit theme and excludes upstream unstable styling options.
 
