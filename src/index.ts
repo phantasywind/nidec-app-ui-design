@@ -36,8 +36,10 @@ export function NidecProvider(props: NidecProviderProps) {
 export {
   Input, Field, Dialog, DialogTrigger, DialogSurface, DialogBody,
   DialogTitle, DialogContent, DialogActions,
+  Textarea, Select, Checkbox, RadioGroup, Radio, Switch,
 } from '@fluentui/react-components';
 export type {
   InputProps, FieldProps, DialogProps, DialogTriggerProps, DialogSurfaceProps,
   DialogBodyProps, DialogTitleProps, DialogContentProps, DialogActionsProps,
+  TextareaProps, SelectProps, CheckboxProps, RadioGroupProps, RadioProps, SwitchProps,
 } from '@fluentui/react-components';

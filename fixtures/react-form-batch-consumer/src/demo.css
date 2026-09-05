@@ -1,0 +1,17 @@
+/* Consumer demo layout only. Not shared package CSS or approved brand tokens. */
+body { margin: 0; background: var(--nidec-demo-canvas); color: var(--nidec-demo-text); font-family: "Segoe UI", sans-serif; }
+.batch-demo { max-width: 1320px; margin: 0 auto; padding: 32px; box-sizing: border-box; }
+.batch-demo header { margin-bottom: 28px; }
+.batch-demo h1 { font-size: 32px; line-height: 1.2; margin: 8px 0 12px; font-weight: 600; }
+.batch-demo h2 { font-size: 20px; line-height: 1.3; margin: 0 0 8px; }
+.batch-demo h3 { font-size: 14px; margin-top: 28px; }
+.batch-demo p { line-height: 1.5; }
+.batch-eyebrow { font-size: 12px; letter-spacing: 0.12em; color: var(--nidec-demo-text-secondary); }
+.batch-columns { display: grid; grid-template-columns: 1.15fr 1fr; gap: 24px; align-items: start; }
+.batch-panel { padding: 24px; border: 1px solid var(--nidec-demo-border); border-radius: 10px; min-width: 0; box-sizing: border-box; }
+.batch-form { display: grid; gap: 20px; margin-top: 24px; }
+.batch-side { display: grid; gap: 24px; min-width: 0; }
+.batch-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.batch-demo output { display: block; font: 12px/1.7 Consolas, monospace; overflow-wrap: anywhere; }
+.batch-demo footer { display: flex; flex-wrap: wrap; gap: 18px; align-items: center; margin-top: 28px; font-size: 12px; }
+@media (max-width: 800px) { .batch-columns { grid-template-columns: 1fr; } .batch-demo { padding: 20px; } }

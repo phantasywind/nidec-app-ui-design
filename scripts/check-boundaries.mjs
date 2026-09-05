@@ -109,7 +109,7 @@ const publicSourceFiles = sourceFiles.filter((path) => !path.includes(`${sep}int
 const publicSourcePaths = publicSourceFiles.map((path) => relative(repositoryRoot, path).replaceAll('\\', '/'));
 assert(
   JSON.stringify(publicSourcePaths) === JSON.stringify(['src/index.ts']),
-  'The Button slice may expose only src/index.ts outside the internal directory.',
+  'The governed Fluent surface may expose only src/index.ts outside the internal directory.',
 );
 
 const forbiddenBusinessTerms = /\b(cpq|epm|quote|pricing|bom|configuration|approval|rbac)\b/i;
@@ -136,8 +136,8 @@ if (distFiles.length > 0) {
   assert(/from\s+['"]@fluentui\/react-components['"]/.test(builtJavaScript), 'Fluent must remain an external peer.');
   assert(!/react\.production|react\.development|__CLIENT_INTERNALS/.test(builtJavaScript), 'React implementation must not be bundled.');
   const runtimeExports = await import(pathToFileURL(join(distPath, 'index.js')).href);
-  const approvedExports = ['Button', 'NidecProvider', 'Input', 'Field', 'Dialog', 'DialogTrigger', 'DialogSurface', 'DialogBody', 'DialogTitle', 'DialogContent', 'DialogActions'].sort();
-  assert(JSON.stringify(Object.keys(runtimeExports).sort()) === JSON.stringify(approvedExports), 'Only ADR-0003 runtime exports are allowed.');
+  const approvedExports = ['Button', 'NidecProvider', 'Input', 'Field', 'Dialog', 'DialogTrigger', 'DialogSurface', 'DialogBody', 'DialogTitle', 'DialogContent', 'DialogActions', 'Textarea', 'Select', 'Checkbox', 'RadioGroup', 'Radio', 'Switch'].sort();
+  assert(JSON.stringify(Object.keys(runtimeExports).sort()) === JSON.stringify(approvedExports), 'Only ADR-0003/ADR-0005 runtime exports are allowed.');
 
   const declaration = await readFile(join(distPath, 'index.d.ts'), 'utf8');
   assert(declaration.includes('ButtonProps') && declaration.includes('function Button('), 'Button declaration is required.');

@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 1,
+  "recordedOn": "2026-09-05",
+  "purpose": "Read-only source/artifact identity snapshot; not original test or browser execution logs",
+  "worktree": "D:\\Documents\\ChatGPT\\worktrees\\cpq-fluent-enquiries-pilot",
+  "branch": "codex/fluent-enquiries-pilot",
+  "baseCommit": "24d118f80a60ce16485a4890681ad5585f4da1ea",
+  "uncommitted": true,
+  "files": [
+    {
+      "path": "client/package.json",
+      "bytes": 1701,
+      "sha256": "b6da481523f1a8aad09eaba73e480f28f790caa6b8339766e04b073db22f6c30"
+    },
+    {
+      "path": "client/package-lock.json",
+      "bytes": 229329,
+      "sha256": "05d6d60900c1b2aea64954428ceeecd7e6eb6e97ee7c8562bc223db43b900e22"
+    },
+    {
+      "path": "client/src/pages/EnquiriesPage.tsx",
+      "bytes": 11830,
+      "sha256": "3e36edd16a7445249a3aaa6804f163b675c5f5437101a1ad7c38d2979b604ca7"
+    },
+    {
+      "path": "client/src/pages/EnquiriesPage.test.tsx",
+      "bytes": 10030,
+      "sha256": "9ef40eccabebb73bb61c103e59d2eea422bd3646755c767d89fceeeaaeff88d3"
+    },
+    {
+      "path": "client/src/pages/EnquiriesSearchInput.tsx",
+      "bytes": 934,
+      "sha256": "7a4415f7147da558aae9ca3c2a6742cc569972100f09d8a5dc26aa118e81462f"
+    },
+    {
+      "path": "client/src/pages/EnquiriesSearchInput.css",
+      "bytes": 845,
+      "sha256": "87a425cbedb0639013199545548305489d152797bc2795b50b9c94b675678fc1"
+    },
+    {
+      "path": "client/src/pages/EnquiriesSearchInput.test.tsx",
+      "bytes": 1082,
+      "sha256": "8171c2cb5319fd6c730aae6c1d21e1e7a88c48867eaf9b9dfafb85b749b19f05"
+    },
+    {
+      "path": "client/fixtures/fluent-enquiries-pilot/index.html",
+      "bytes": 278,
+      "sha256": "dc1919269faae6a97aa53c54f420f463808c6199846548e641f52cf07a1720e9"
+    },
+    {
+      "path": "client/fixtures/fluent-enquiries-pilot/vite.config.ts",
+      "bytes": 381,
+      "sha256": "c496d9375c225fc88acfa3f02958a8cc386078ef9d372a89a5a3effbe95fca5d"
+    },
+    {
+      "path": "client/fixtures/fluent-enquiries-pilot/main.tsx",
+      "bytes": 2580,
+      "sha256": "cdb8d456e108d88dde24e7bc7119525dfdc5dd4ba34c1d4552b6a34d95f947ed"
+    },
+    {
+      "path": "client/fixtures/fluent-enquiries-pilot/pilot.css",
+      "bytes": 339,
+      "sha256": "6ff038fa28d1ac67d208932a0d090d2d0830ef75674d3a51f6449c335ddd5f3c"
+    },
+    {
+      "path": "client/fixtures/fluent-enquiries-pilot/staticApi.ts",
+      "bytes": 1655,
+      "sha256": "04355e2ec19b63c90924ab431dc3e02d2ff8aa001b4941e11a0e83aa78da4d48"
+    },
+    {
+      "path": "client/fixtures/fluent-enquiries-pilot/staticApi.test.ts",
+      "bytes": 1556,
+      "sha256": "e6d4a634820996091d8e50c25329048fb58e953f67192a2a2f8d04f17777e038"
+    },
+    {
+      "path": "client/fixtures/fluent-enquiries-pilot/README.md",
+      "bytes": 458,
+      "sha256": "ed68ebbcbb3a43b4b9005ce140e6fc540bec45983141500e4617f7308432c39e"
+    },
+    {
+      "path": "artifacts/nidec-ui-f1bca649.tgz",
+      "bytes": 3885,
+      "sha256": "f1bca649bcc2828635744c9e477301fc179272b514f6588eeb122f209c07b20a"
+    }
+  ],
+  "upstreamHashDiscrepancies": [
+    {
+      "path": "client/src/pages/EnquiriesSearchInput.test.tsx",
+      "reportedSha256": "8171c2cb5319fd6c730aae6c1d21e1e7a88c48867eaf9b9dfafb85b749b19f",
+      "observedSha256": "8171c2cb5319fd6c730aae6c1d21e1e7a88c48867eaf9b9dfafb85b749b19f05",
+      "note": "Reported hash is truncated by two hexadecimal characters; observed hash is the complete local file digest."
+    }
+  ],
+  "executionEvidence": {
+    "uiTests": "task-tool-output-only; not independently rerun",
+    "browser": "task-tool-output-only; no saved PNG/HAR",
+    "solution": "persisted logs verified separately",
+    "transferSizeDelta": "not measured",
+    "buildSizeDelta": "not measured",
+    "realImeComposition": "not established by Unicode paste"
+  }
+}

@@ -16,7 +16,7 @@ The package remains private and unpublished. The Fluent transition is under tech
 
 ## Fluent React prototype
 
-The controlled React surface is `Button`, `NidecProvider`, `Input`, `Field`, and the `Dialog`, `DialogTrigger`, `DialogSurface`, `DialogBody`, `DialogTitle`, `DialogContent`, `DialogActions` composition family, with corresponding Props types. See [ADR-0003](docs/decisions/0003-fluent-ui-foundation.md) and [transition evidence](docs/implementation/fluent-transition-record.md).
+The controlled React surface is `Button`, `NidecProvider`, `Input`, `Field`, and the `Dialog`, `DialogTrigger`, `DialogSurface`, `DialogBody`, `DialogTitle`, `DialogContent`, `DialogActions` composition family, with corresponding Props types. The first form batch adds `Textarea`, `Select`, `Checkbox`, `RadioGroup`, `Radio`, `Switch` and their Props types, preserving upstream contracts. See [ADR-0003](docs/decisions/0003-fluent-ui-foundation.md), [batch scope and approval gate](docs/decisions/0005-batched-form-components.md) and [transition evidence](docs/implementation/fluent-transition-record.md).
 
 React consumers explicitly install the exact qualified `@fluentui/react-components@9.74.7` alongside the exact shared-package version. React/React DOM and Fluent are external optional peers; optional means token-only consumers can omit them, not that React consumers can omit them. Commit the application lockfile to freeze transitive dependencies.
 

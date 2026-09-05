@@ -1,6 +1,6 @@
 # ADR-0003: Fluent UI v9 foundation
 
-- Status: Accepted for controlled implementation; technical qualification pending
+- Status: Foundation technical-route gate approved by Locke on 2026-09-04 with ADR-0004 limitations; publication and application adoption remain separately gated
 - Decision owner: Locke Yuan
 - Date: 2026-09-04
 - Authorization: explicit instruction to implement the Fluent transition plan, directly replacing the prototype
@@ -28,7 +28,7 @@ The authorized type-adaptation continuation excludes `customStyleHooks_unstable`
 
 ## Qualification gate
 
-Consolidated assessment: `docs/implementation/fluent-technical-route-review.md` recommends proceeding with the current foundation and accepted limitations. The assessment is complete; owner confirmation of the overall technical-route gate is still required. Publication and application acceptance are separate.
+Consolidated assessment: Locke explicitly approved the conclusion in `docs/implementation/fluent-technical-route-review.md`. The current foundation technical-route gate is closed with the accepted ADR-0004 limitations. Next is CPQ bounded-adoption planning only; publication and application implementation/acceptance remain separate.
 
 Disposition update (2026-09-04): ADR-0004 records Locke's acceptance of the identified Tabster sentinel warning and conditional acceptance of the upstream declaration-check limitation. These findings no longer independently block the current route assessment. All other checks and gates below remain applicable; the original failed results are preserved.
 

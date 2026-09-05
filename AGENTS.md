@@ -59,6 +59,14 @@ Unless Locke Yuan explicitly authorizes the specific action:
 
 Local, reversible work must still follow an approved small step. Before each step, state its purpose, operations, expected result, verification method, and rollback method. Stop at the next gate and wait for confirmation.
 
+### Current application handoff workflow (Locke, 2026-09-05)
+
+- Improve shared components in coherent batches in this repository, then validate the complete batch and report to Locke. Do not use a per-component CPQ installation/approval loop.
+- Only after Locke approves a completed batch may this task notify the CPQ UI workstream to adopt that new batch. Package implementation/testing is not application adoption approval.
+- CPQ work is to run on its existing `main` checkout by default. Do not create a CPQ Git worktree without Locke's explicit approval for that worktree; do not silently create a replacement worktree.
+- Locke separately authorized CPQ 02 to integrate the existing single-search-field pilot into `main` and remove exactly `codex/fluent-enquiries-pilot` and `D:\Documents\ChatGPT\worktrees\cpq-fluent-enquiries-pilot`, preserving its artifact/evidence first. This one-time cleanup does not authorize other branch/worktree deletions, new component adoption, pushes or deployment.
+- Generated package-consumer test directories under this repository's `.tmp/` are not Git worktrees or CPQ checkouts; keep them separate from consumer applications.
+
 ## Evidence and release controls
 
 The initial maintainer, release executor, and approver is Locke Yuan (`phantasywind`). While this is a self-review model, each release must use a fixed checklist and prove consistency among the immutable version, Git tag, npm package, GitHub Release, artifact filename, and SHA-256 record.
@@ -68,6 +76,8 @@ When a second maintainer is assigned, release governance must be reviewed and up
 Self-test, build success, or demonstration is technical evidence; it is not independent application acceptance or Production approval.
 
 ## Repository hygiene
+
+- Color ownership follows ADR-0006: shared components consume the explicit theme; current demo theme selection and shell palette are centralized. Do not scatter raw colors into components/pages or treat CPQ's candidate palette as cross-application brand approval. The bounded color guard is part of `css:check`; exceptions require a recorded source/role decision, not disabling the check.
 
 - Preserve unrelated user changes and keep each slice narrow.
 - Keep credentials and generated local secrets out of the repository.

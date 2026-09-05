@@ -38,7 +38,7 @@
     "lint": "eslint eslint.config.js scripts",
     "typecheck": "tsc -p tsconfig.json",
     "tokens:build": "node scripts/build-tokens.mjs",
-    "css:check": "node scripts/check-css-scope.mjs",
+    "css:check": "node scripts/check-css-scope.mjs && node scripts/check-colors.mjs",
     "boundaries:check": "node scripts/check-boundaries.mjs",
     "test": "npm run tokens:build && vitest run",
     "build": "npm run clean && npm run tokens:build && vite build && tsc -p tsconfig.build.json && npm run css:check",

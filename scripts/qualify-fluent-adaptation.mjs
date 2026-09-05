@@ -9,14 +9,18 @@ import { createRequire } from 'node:module';
 import { inspectArchive, redactLog, verifyPhysicalReact } from './qualification-contract.mjs';
 
 const root = resolve(import.meta.dirname, '..');
-const work = join(root, '.tmp', 'fluent-adaptation');
-const evidence = join(root, '.qualification', 'runs', 'fluent-adaptation');
+const runId = process.argv[3] ?? 'fluent-adaptation';
+assert(/^[a-z0-9][a-z0-9-]{0,63}$/.test(runId), 'Invalid run ID');
+const formBatch = runId === 'fluent-form-batch-1';
+const work = join(root, '.tmp', runId);
+const evidence = join(root, '.qualification', 'runs', runId);
 const cache = join(root, '.tmp', 'fluent-npm-cache');
 const source = join(work, 'source');
 const node24 = join(root, '.tmp/node-24.20.0/node-v24.20.0-win-x64/node.exe');
 const node22 = join(root, '.tmp/node-22.22.0/node-v22.22.0-win-x64/node.exe');
 const stage = process.argv[2];
-assert(['prepare', 'build-a', 'build-b', 'consumer-node22', 'seal'].includes(stage), 'Unknown stage');
+assert(['prepare', 'build-a', 'build-b', 'consumer-node22', 'baseline-node22', 'seal'].includes(stage), 'Unknown stage');
+assert(stage !== 'baseline-node22' || formBatch, 'Baseline comparison belongs to the form batch');
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 async function files(dir) {
   const result = [];
@@ -86,28 +90,31 @@ if (stage === 'prepare') {
   await save(join(evidence,stage,'artifact.json'),{...record,archive});
   if (stage === 'build-b') assert.deepEqual(artifact,await readFile(join(evidence,'build-a/candidate.tgz')));
   console.log(`Qualified ${stage}: ${hash(artifact)}`);
-} else if (stage === 'consumer-node22') {
+} else if (stage === 'consumer-node22' || stage === 'baseline-node22') {
   await mkdir(join(evidence,stage));
   const results = [];
-  for (const name of ['token-only-consumer','react-vite-cpq-consumer']) {
+  const consumerNames = stage === 'baseline-node22' ? ['react-vite-cpq-consumer'] :
+    ['token-only-consumer','react-vite-cpq-consumer', ...(formBatch ? ['react-form-batch-consumer'] : [])];
+  for (const name of consumerNames) {
     const destination = join(work,stage,name);
     await mkdir(destination,{recursive:true});
     await cp(join(source,'fixtures',name),destination,{recursive:true});
-    const archive = await readFile(join(evidence,'build-a/candidate.tgz'));
+    const archive = await readFile(stage === 'baseline-node22' ? join(root,'.qualification/runs/fluent-adaptation/build-a/candidate.tgz') : join(evidence,'build-a/candidate.tgz'));
+    if (stage === 'baseline-node22') assert.equal(hash(archive),'f1bca649bcc2828635744c9e477301fc179272b514f6588eeb122f209c07b20a');
     await writeFile(join(destination,'candidate.tgz'),archive,{flag:'wx'});
     const manifestPath = join(destination,'package.json');
     const manifest = JSON.parse(await readFile(manifestPath,'utf8'));
     manifest.dependencies = {...manifest.dependencies, '@phantasywind/nidec-app-ui-design':'file:candidate.tgz'};
     await writeFile(manifestPath,JSON.stringify(manifest,null,2)+'\n');
     // Only prepares resolution here. The actual qualification uses npm ci below.
-    await run(node22,['install','--package-lock-only','--ignore-scripts'],destination,`${name}-lock.txt`);
-    await run(node22,['ci','--ignore-scripts'],destination,`${name}-ci.txt`);
+    await run(node22,['install','--package-lock-only','--ignore-scripts','--offline'],destination,`${name}-lock.txt`);
+    await run(node22,['ci','--ignore-scripts','--offline'],destination,`${name}-ci.txt`);
     await run(node22,['run','verify'],destination,`${name}-verify.txt`);
     const sharedRoot = join(destination,'node_modules/@phantasywind/nidec-app-ui-design');
     const installed = await files(sharedRoot);
-    const expected = await files(join(work,'build-a','dist'));
-    assert.equal(installed.length,expected.length+2);
-    for (const path of expected) assert.deepEqual(await readFile(join(sharedRoot,'dist',relative(join(work,'build-a','dist'),path))),await readFile(path));
+    const expected = inspectArchive(archive).files;
+    assert.equal(installed.length,Object.keys(expected).length);
+    for (const [path,digest] of Object.entries(expected)) assert.equal(hash(await readFile(join(sharedRoot,path))),digest);
     const lock = JSON.parse(await readFile(join(destination,'package-lock.json'),'utf8'));
     let react;
     if (name === 'token-only-consumer') {

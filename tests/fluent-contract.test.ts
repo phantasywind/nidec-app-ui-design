@@ -6,7 +6,8 @@ import * as shared from '../src/index';
 import type { NidecProviderProps } from '../src/index';
 
 const compositions = ['Input', 'Field', 'Dialog', 'DialogTrigger', 'DialogSurface',
-  'DialogBody', 'DialogTitle', 'DialogContent', 'DialogActions'] as const;
+  'DialogBody', 'DialogTitle', 'DialogContent', 'DialogActions',
+  'Textarea', 'Select', 'Checkbox', 'RadioGroup', 'Radio', 'Switch'] as const;
 
 describe('Fluent public boundary', () => {
   it('exports exactly the approved API and preserves upstream composition identity', () => {

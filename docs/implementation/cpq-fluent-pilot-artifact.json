@@ -1,0 +1,15 @@
+{
+  "purpose": "Isolated non-production CPQ search pilot candidate; P2 installation requires authorization",
+  "package": "@phantasywind/nidec-app-ui-design",
+  "version": "0.0.0-development",
+  "fluentVersion": "9.74.7",
+  "source": ".qualification/runs/fluent-adaptation/build-a/candidate.tgz",
+  "mirror": ".qualification/runs/fluent-adaptation/build-b/candidate.tgz",
+  "size": 3885,
+  "sha256": "f1bca649bcc2828635744c9e477301fc179272b514f6588eeb122f209c07b20a",
+  "integrity": "sha512-msgvh6ScPbhjSwVQgnUSVWI/LX5Bxg7wPBK8LQrYFT+vs6Vi9GdDIIKxdlsck1Xpl8OMeuPu+Dg3/lOODdAKEg==",
+  "qualificationManifest": ".qualification/runs/fluent-adaptation/SHA256SUMS.txt",
+  "qualificationManifestSha256": "4e296623b37aeaf5f4168f53c72f138dbcdf9b658c8033bb7e3a746239c52786",
+  "excludedArchive": ".pack/phantasywind-nidec-app-ui-design-0.0.0-development.tgz",
+  "excludedArchiveObservedSha256": "fe21b63b79b4a757fc1d7c8a37ed3245379d3ca5018260191a85f1220966585e"
+}
