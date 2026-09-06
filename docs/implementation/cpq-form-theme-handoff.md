@@ -1,5 +1,15 @@
 # CPQ 表单与浅色主题整批交接
 
+## UI-FORM-BATCH-20260906 工程收口回读
+
+02已交回四处表单批次及最终标准构建收口。来源读取了 CPQ `docs/evidence/cpq-fluent-form-batch/verification-summary.txt` 与 `failure-history.txt`：focused20、适配层2、完整client454、DS、build-separation3/3、TypeScript及最终原样 `npm run build:app` 均记录通过。该记录是实施方摘要，不是原始全量日志或来源独立重跑。
+
+此前EPERM“文件锁”推断已被02更正为受限沙箱写权限：原命令在获准的非受限环境退出0，未停止其他任务进程或手动删除共享输出规避。配置缓存写入、输出清理/创建、lock离线核验写入失败均保留；不能将这些失败尝试写成PASS。测试入口新增exact keyborg2.14.1初始化仅用于JSDOM；产品浏览器无该补丁。
+
+来源实际复算lock SHA256 `cdff54e7f310a65c854722e555813d0cab253278b2a6de29ebba9b76a10d68c4`，候选SHA256 `83d2722a704174850e040a54360d0e05d82c9725ab338aeb40affbc3063190f5`，与回传一致。02报告React/DOM19.2.7、Fluent9.74.7、Vite8.1.4、TypeScript7.0.2未重新解锁；本次未独立执行clean install。
+
+02预览 `http://127.0.0.1:5188/`；四视口、Switch确认前不改值/Cancel焦点返回及干净控制台为其本地模拟观察。真实业务、生产CSP、OS输入法及独立验收未执行，不标记Accepted。当前工程收口完成，无新提交或部署；下一包仅有准备文档，尚未启动。
+
 ## 视觉连续性补充（Locke，2026-09-06）
 
 用户明确要求：新的Fluent UI逐步覆盖既有Design System；缺少元素时借鉴现有实现，在其基础上融合Fluent设计，不出现大的差异。此项是当前及后续批次的设计基调，不是全站替换授权。
