@@ -30,6 +30,8 @@ export async function checkColors(root){
   }}
   await visit(join(root,'src'));
   await visit(join(root,'fixtures/react-form-batch-consumer/src'));
+  await visit(join(root,'fixtures/react-complete-region-consumer/src'));
+  await visit(join(root,'fixtures/react-directory-actions-consumer/src'));
   for(const path of paths){
     const name=relative(root,path).replaceAll('\\','/');
     const source=await readFile(path,'utf8');

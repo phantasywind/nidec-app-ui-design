@@ -100,7 +100,7 @@ if (stage === 'prepare') {
   await mkdir(join(evidence,stage));
   const results = [];
   const consumerNames = stage === 'baseline-node22' ? ['react-vite-cpq-consumer'] :
-    ['token-only-consumer','react-vite-cpq-consumer', ...(formBatch ? ['react-form-batch-consumer'] : [])];
+    ['token-only-consumer','react-vite-cpq-consumer', ...(formBatch ? ['react-form-batch-consumer'] : []), ...(runId === 'fluent-complete-region-1' ? ['react-complete-region-consumer'] : []), ...(runId === 'fluent-directory-actions-1' ? ['react-directory-actions-consumer'] : [])];
   for (const name of consumerNames) {
     const destination = join(work,stage,name);
     await mkdir(destination,{recursive:true});

@@ -1,0 +1,2 @@
+.directory-demo { display: grid; gap: var(--spacingVerticalL); max-width: 64rem; margin: auto; padding: var(--spacingHorizontalXXL); }
+.directory-demo-actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacingHorizontalM); }

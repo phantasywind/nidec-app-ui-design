@@ -1,7 +1,7 @@
 import { createElement } from 'react';
-import type { ComponentPropsWithRef } from 'react';
+import type { ComponentPropsWithRef, ReactElement } from 'react';
 import { Button as FluentButton, FluentProvider, createLightTheme } from '@fluentui/react-components';
-import type { BrandVariants, FluentProviderProps, Theme } from '@fluentui/react-components';
+import type { BrandVariants, ButtonProps as FluentButtonProps, FluentProviderProps, Theme } from '@fluentui/react-components';
 import { lightPalette as palette } from './internal/light-palette.mjs';
 
 // Deterministic sRGB interpolation. Derived states are UI mapping choices, not
@@ -108,10 +108,10 @@ export const nidecLightTheme: Theme = /* @__PURE__ */ (() => ({
   colorPaletteBlueBorderActive: palette.info,
 } satisfies Theme))();
 
-/** Text-labelled button backed by Fluent; no approved brand theme is supplied. */
+/** Text-labelled native action with Fluent appearance; theme belongs to Provider. */
 export type ButtonProps = Omit<ComponentPropsWithRef<'button'>, 'children' | 'dangerouslySetInnerHTML'> & {
   children: string;
-};
+} & Pick<FluentButtonProps, 'appearance' | 'size' | 'shape' | 'icon' | 'iconPosition'>;
 
 export function Button({ children, type = 'button', disabled = false, className, ref, ...props }: ButtonProps) {
   // Bridge object refs through a callback: Fluent's event-derived ref type can
@@ -138,13 +138,37 @@ export function NidecProvider(props: NidecProviderProps) {
   return createElement(FluentProvider, hostProps);
 }
 
+/** Icon actions have an explicit accessible name; business meaning stays with the caller. */
+export type IconButtonProps = Omit<ButtonProps, 'children' | 'icon' | 'aria-label' | 'aria-labelledby'> & {
+  icon: ReactElement;
+  'aria-label': string;
+  children?: never;
+};
+
+export function IconButton({ icon, 'aria-label': label, ...props }: IconButtonProps) {
+  if (!label.trim()) throw new Error('IconButton requires a non-empty aria-label.');
+  return Button({ ...props, icon, 'aria-label': label, children: '' });
+}
+
 export {
   Input, Field, Dialog, DialogTrigger, DialogSurface, DialogBody,
   DialogTitle, DialogContent, DialogActions,
   Textarea, Select, Checkbox, RadioGroup, Radio, Switch,
+  OverlayDrawer, DrawerHeader, DrawerHeaderTitle, DrawerBody, DrawerFooter,
+  MessageBar, MessageBarBody, MessageBarTitle, MessageBarActions,
+  Text, Body1, Caption1, Subtitle2, Spinner,
+  Tooltip, Link, TabList, Tab,
+  Menu, MenuTrigger, MenuPopover, MenuList, MenuItem, MenuDivider,
+  Combobox, Option, OptionGroup,
 } from '@fluentui/react-components';
 export type {
   InputProps, FieldProps, DialogProps, DialogTriggerProps, DialogSurfaceProps,
   DialogBodyProps, DialogTitleProps, DialogContentProps, DialogActionsProps,
   TextareaProps, SelectProps, CheckboxProps, RadioGroupProps, RadioProps, SwitchProps,
+  OverlayDrawerProps, DrawerHeaderProps, DrawerHeaderTitleProps, DrawerBodyProps, DrawerFooterProps,
+  MessageBarProps, MessageBarBodyProps, MessageBarTitleProps, MessageBarActionsProps,
+  TextProps, SpinnerProps,
+  TooltipProps, LinkProps, TabListProps, TabProps,
+  MenuProps, MenuTriggerProps, MenuPopoverProps, MenuListProps, MenuItemProps, MenuDividerProps,
+  ComboboxProps, OptionProps, OptionGroupProps,
 } from '@fluentui/react-components';

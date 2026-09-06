@@ -136,8 +136,13 @@ if (distFiles.length > 0) {
   assert(/from\s+['"]@fluentui\/react-components['"]/.test(builtJavaScript), 'Fluent must remain an external peer.');
   assert(!/react\.production|react\.development|__CLIENT_INTERNALS/.test(builtJavaScript), 'React implementation must not be bundled.');
   const runtimeExports = await import(pathToFileURL(join(distPath, 'index.js')).href);
-  const approvedExports = ['Button', 'NidecProvider', 'nidecLightTheme', 'Input', 'Field', 'Dialog', 'DialogTrigger', 'DialogSurface', 'DialogBody', 'DialogTitle', 'DialogContent', 'DialogActions', 'Textarea', 'Select', 'Checkbox', 'RadioGroup', 'Radio', 'Switch'].sort();
-  assert(JSON.stringify(Object.keys(runtimeExports).sort()) === JSON.stringify(approvedExports), 'Only ADR-0003/ADR-0005 runtime exports are allowed.');
+  const approvedExports = ['Button', 'NidecProvider', 'nidecLightTheme', 'Input', 'Field', 'Dialog', 'DialogTrigger', 'DialogSurface', 'DialogBody', 'DialogTitle', 'DialogContent', 'DialogActions', 'Textarea', 'Select', 'Checkbox', 'RadioGroup', 'Radio', 'Switch',
+    'OverlayDrawer', 'DrawerHeader', 'DrawerHeaderTitle', 'DrawerBody', 'DrawerFooter',
+    'MessageBar', 'MessageBarBody', 'MessageBarTitle', 'MessageBarActions',
+    'Text', 'Body1', 'Caption1', 'Subtitle2', 'Spinner', 'IconButton',
+    'Tooltip', 'Link', 'TabList', 'Tab', 'Menu', 'MenuTrigger', 'MenuPopover', 'MenuList', 'MenuItem', 'MenuDivider',
+    'Combobox', 'Option', 'OptionGroup'].sort();
+  assert(JSON.stringify(Object.keys(runtimeExports).sort()) === JSON.stringify(approvedExports), 'Only the explicitly listed governed runtime exports are allowed.');
 
   const declaration = await readFile(join(distPath, 'index.d.ts'), 'utf8');
   assert(declaration.includes('ButtonProps') && declaration.includes('function Button('), 'Button declaration is required.');

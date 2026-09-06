@@ -7,11 +7,16 @@ import type { NidecProviderProps } from '../src/index';
 
 const compositions = ['Input', 'Field', 'Dialog', 'DialogTrigger', 'DialogSurface',
   'DialogBody', 'DialogTitle', 'DialogContent', 'DialogActions',
-  'Textarea', 'Select', 'Checkbox', 'RadioGroup', 'Radio', 'Switch'] as const;
+  'Textarea', 'Select', 'Checkbox', 'RadioGroup', 'Radio', 'Switch',
+  'OverlayDrawer', 'DrawerHeader', 'DrawerHeaderTitle', 'DrawerBody', 'DrawerFooter',
+  'MessageBar', 'MessageBarBody', 'MessageBarTitle', 'MessageBarActions',
+  'Text', 'Body1', 'Caption1', 'Subtitle2', 'Spinner',
+  'Tooltip', 'Link', 'TabList', 'Tab', 'Menu', 'MenuTrigger', 'MenuPopover', 'MenuList', 'MenuItem', 'MenuDivider',
+  'Combobox', 'Option', 'OptionGroup'] as const;
 
 describe('Fluent public boundary', () => {
   it('exports exactly the approved API and preserves upstream composition identity', () => {
-    expect(Object.keys(shared).sort()).toEqual(['Button', 'NidecProvider', 'nidecLightTheme', ...compositions].sort());
+    expect(Object.keys(shared).sort()).toEqual(['Button', 'IconButton', 'NidecProvider', 'nidecLightTheme', ...compositions].sort());
     for (const name of compositions) expect(shared[name]).toBe(upstream[name]);
   });
   it('forwards an explicit theme and establishes a host', () => {
