@@ -27,13 +27,13 @@
 
 后续通用内容与控件候选：
 
-- 权威运行：`fluent-common-content-controls-2`。
-- 候选文件：`.qualification/runs/fluent-common-content-controls-2/build-a/candidate.tgz`。
-- SHA-256：`5b2c2c28b48acddae66340b3f2a6b3f93671984cec9cdb1b9bfe006c046e100c`。
-- 大小：7358字节。
+- 权威运行：`fluent-common-content-controls-3`。
+- 候选文件：`.qualification/runs/fluent-common-content-controls-3/build-a/candidate.tgz`。
+- SHA-256：`33aa856decbb5f3b70bc38c17701e06cf9b9eb097e4a78276bf0edf4e72cbc92`。
+- 大小：7377字节。
 - 能力：SearchBox/SpinButton/Slider、ToggleButton/MenuButton/SplitButton、Label/InfoLabel/Divider、Avatar/Persona、Tag及Popover。
-- 资格：两个Node24归档一致，14文件/67测试和三个Node22真实tgz消费者通过，253个证据文件封存；真实浏览器/宿主/CSP和应用验收尚未执行。
-- `fluent-common-content-controls-1`产生相同包字节，但冻结fixture遗漏nonce-aware renderer；保留为历史包级证据，不作为严格CSP浏览器正向基线。
+- 资格：两个Node24归档一致，15文件/72测试和三个Node22真实tgz消费者通过，280个证据文件封存。严格nonce合成浏览器完成四视口、核心键盘/焦点与交互；Avatar对比度4.58:1且无新的axe违规，20个浏览器文件另行封存。
+- run2浏览器曾发现中性Avatar 3.94:1对比度失败，run3通过中央主题映射修复；历史失败保留。当前仍保留ADR-0004 Tabster哨兵及line-135 CSP签名，不等于真实应用宿主或部署CSP验收。
 
 ## 已通过的包级资格
 
@@ -79,8 +79,10 @@
 - `.qualification/runs/fluent-platform-surfaces-1/SHA256SUMS.txt`
 - `.qualification/runs/fluent-platform-surfaces-1/BROWSER-SHA256SUMS.txt`
 - `docs/implementation/fluent-common-content-controls-record.md`
-- `.qualification/runs/fluent-common-content-controls-2/build-comparison.json`
-- `.qualification/runs/fluent-common-content-controls-2/consumer-node22/results.json`
-- `.qualification/runs/fluent-common-content-controls-2/SHA256SUMS.txt`
+- `.qualification/runs/fluent-common-content-controls-3/build-comparison.json`
+- `.qualification/runs/fluent-common-content-controls-3/consumer-node22/results.json`
+- `.qualification/runs/fluent-common-content-controls-3/browser-summary.json`
+- `.qualification/runs/fluent-common-content-controls-3/SHA256SUMS.txt`
+- `.qualification/runs/fluent-common-content-controls-3/BROWSER-SHA256SUMS.txt`
 
 本记录是职责与证据交接，不是安装、发布或部署命令。

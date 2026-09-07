@@ -41,7 +41,10 @@ export const nidecLightTheme: Theme = /* @__PURE__ */ (() => ({
   colorNeutralForeground1Pressed: palette.text,
   colorNeutralForeground1Selected: palette.text,
   colorNeutralForeground2: palette.textSecondary,
-  colorNeutralForeground3: palette.textMuted,
+  // Fluent pairs this role with darker neutral surfaces (for example the
+  // neutral Avatar background), so darken the approved muted-text source just
+  // enough to retain AA text contrast across the supported light-theme pair.
+  colorNeutralForeground3: mixColor(palette.textMuted, palette.text, 0.12),
   colorNeutralForegroundOnBrand: palette.surface,
   colorNeutralBackground1: palette.surface,
   colorNeutralBackground2: palette.canvas,

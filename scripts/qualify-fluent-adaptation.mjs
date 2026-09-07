@@ -13,7 +13,7 @@ const runId = process.argv[3] ?? 'fluent-adaptation';
 assert(/^[a-z0-9][a-z0-9-]{0,63}$/.test(runId), 'Invalid run ID');
 const formBatch = ['fluent-form-batch-1', 'nidec-light-theme-1'].includes(runId);
 const platformSurfacesBatch = runId === 'fluent-platform-surfaces-1';
-const commonContentControlsBatch = ['fluent-common-content-controls-1', 'fluent-common-content-controls-2'].includes(runId);
+const commonContentControlsBatch = ['fluent-common-content-controls-1', 'fluent-common-content-controls-2', 'fluent-common-content-controls-3'].includes(runId);
 const work = join(root, '.tmp', runId);
 const evidence = join(root, '.qualification', 'runs', runId);
 const cache = join(root, '.tmp', 'fluent-npm-cache');

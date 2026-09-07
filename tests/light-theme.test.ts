@@ -36,6 +36,7 @@ describe('central light theme mapping',()=>{
       [t.colorNeutralForeground1,t.colorNeutralBackground1],
       [t.colorNeutralForeground2,t.colorNeutralBackground1],
       [t.colorNeutralForeground3,t.colorNeutralBackground1],
+      [t.colorNeutralForeground3,t.colorNeutralBackground6],
       [t.colorBrandForegroundLink,t.colorNeutralBackground1],
       [t.colorNeutralForegroundOnBrand,t.colorBrandBackground],
       [t.colorNeutralForegroundOnBrand,t.colorBrandBackgroundHover],
