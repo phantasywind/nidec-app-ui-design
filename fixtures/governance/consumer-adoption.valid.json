@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "consumer": {
+    "id": "example-application",
+    "repository": "example/application",
+    "sourceRevision": "0123456789abcdef0123456789abcdef01234567"
+  },
+  "package": {
+    "name": "@phantasywind/nidec-app-ui-design",
+    "version": "1.2.3",
+    "artifactSha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+    "fluentVersion": "9.74.7"
+  },
+  "items": [
+    {
+      "id": "example-search",
+      "legacySurface": "LegacySearch",
+      "targetCapability": "SearchBox",
+      "status": "legacy-retired",
+      "owner": "example-ui-workstream",
+      "sourceLocations": ["src/pages/ExamplePage.tsx"],
+      "preservedContracts": ["query value", "keyboard focus", "request timing"],
+      "evidence": {
+        "packageQualification": ["evidence/package.json"],
+        "integrationSelfTest": ["evidence/integration.json"],
+        "productionBuild": ["evidence/build.txt"],
+        "rollback": ["evidence/rollback.md"],
+        "independentAcceptance": ["evidence/acceptance.md"],
+        "legacyRemoval": ["evidence/removal.json"]
+      },
+      "legacyAudit": {
+        "activeReferences": 0,
+        "dynamicEntrypointsChecked": true,
+        "testsAndExamplesChecked": true
+      }
+    }
+  ]
+}

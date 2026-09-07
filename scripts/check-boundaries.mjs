@@ -141,7 +141,24 @@ if (distFiles.length > 0) {
     'MessageBar', 'MessageBarBody', 'MessageBarTitle', 'MessageBarActions',
     'Text', 'Body1', 'Caption1', 'Subtitle2', 'Spinner', 'IconButton',
     'Tooltip', 'Link', 'TabList', 'Tab', 'Menu', 'MenuTrigger', 'MenuPopover', 'MenuList', 'MenuItem', 'MenuDivider',
-    'Combobox', 'Option', 'OptionGroup'].sort();
+    'Combobox', 'Option', 'OptionGroup',
+    'Table', 'TableHeader', 'TableBody', 'TableRow', 'TableHeaderCell', 'TableCell',
+    'TableCellLayout', 'TableSelectionCell', 'TableCellActions',
+    'DataGrid', 'DataGridHeader', 'DataGridBody', 'DataGridRow', 'DataGridHeaderCell', 'DataGridCell',
+    'Card', 'CardHeader', 'CardPreview', 'CardFooter',
+    'Badge', 'CounterBadge', 'PresenceBadge', 'Skeleton', 'SkeletonItem', 'ProgressBar',
+    'Breadcrumb', 'BreadcrumbItem', 'BreadcrumbDivider', 'BreadcrumbButton',
+    'Toolbar', 'ToolbarButton', 'ToolbarDivider', 'ToolbarGroup',
+    'Nav', 'NavItem', 'NavCategory', 'NavCategoryItem', 'NavSubItem', 'NavSubItemGroup',
+    'NavDrawer', 'NavDrawerHeader', 'NavDrawerBody', 'NavDrawerFooter', 'NavDivider',
+    'AppItem', 'AppItemStatic', 'Hamburger',
+    'Tree', 'TreeItem', 'TreeItemLayout',
+    'Accordion', 'AccordionItem', 'AccordionHeader', 'AccordionPanel',
+    'SearchBox', 'SpinButton', 'Slider',
+    'ToggleButton', 'MenuButton', 'SplitButton',
+    'Label', 'InfoLabel', 'Divider',
+    'Avatar', 'AvatarGroup', 'AvatarGroupItem', 'AvatarGroupPopover', 'Persona',
+    'Tag', 'TagGroup', 'Popover', 'PopoverTrigger', 'PopoverSurface'].sort();
   assert(JSON.stringify(Object.keys(runtimeExports).sort()) === JSON.stringify(approvedExports), 'Only the explicitly listed governed runtime exports are allowed.');
 
   const declaration = await readFile(join(distPath, 'index.d.ts'), 'utf8');

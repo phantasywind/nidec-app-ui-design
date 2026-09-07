@@ -1,0 +1,9 @@
+.surface-fixture { min-height: 100vh; padding: 1.5rem; }
+.surface-fixture header { margin-bottom: 1.5rem; }
+.surface-fixture h1 { margin: .75rem 0 0; }
+.surface-fixture-layout { display: grid; grid-template-columns: minmax(11rem, 14rem) minmax(0, 1fr); gap: 1.5rem; }
+.surface-fixture main { display: grid; gap: 1rem; min-width: 0; }
+.surface-fixture table { min-width: 32rem; }
+.surface-fixture [role="table"] { overflow-x: auto; }
+.surface-fixture [aria-label="Loading example"] { display: grid; gap: .5rem; }
+@media (max-width: 720px) { .surface-fixture-layout { grid-template-columns: 1fr; } }

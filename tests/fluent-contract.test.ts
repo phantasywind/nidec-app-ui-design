@@ -13,11 +13,31 @@ const compositions = ['Input', 'Field', 'Dialog', 'DialogTrigger', 'DialogSurfac
   'Text', 'Body1', 'Caption1', 'Subtitle2', 'Spinner',
   'Tooltip', 'Link', 'TabList', 'Tab', 'Menu', 'MenuTrigger', 'MenuPopover', 'MenuList', 'MenuItem', 'MenuDivider',
   'Combobox', 'Option', 'OptionGroup'] as const;
+const platformSurfaces = [
+  'Table', 'TableHeader', 'TableBody', 'TableRow', 'TableHeaderCell', 'TableCell',
+  'TableCellLayout', 'TableSelectionCell', 'TableCellActions',
+  'DataGrid', 'DataGridHeader', 'DataGridBody', 'DataGridRow', 'DataGridHeaderCell', 'DataGridCell',
+  'Card', 'CardHeader', 'CardPreview', 'CardFooter',
+  'Badge', 'CounterBadge', 'PresenceBadge', 'Skeleton', 'SkeletonItem', 'ProgressBar',
+  'Breadcrumb', 'BreadcrumbItem', 'BreadcrumbDivider', 'BreadcrumbButton',
+  'Toolbar', 'ToolbarButton', 'ToolbarDivider', 'ToolbarGroup',
+  'Nav', 'NavItem', 'NavCategory', 'NavCategoryItem', 'NavSubItem', 'NavSubItemGroup',
+  'NavDrawer', 'NavDrawerHeader', 'NavDrawerBody', 'NavDrawerFooter', 'NavDivider',
+  'AppItem', 'AppItemStatic', 'Hamburger',
+  'Tree', 'TreeItem', 'TreeItemLayout', 'Accordion', 'AccordionItem', 'AccordionHeader', 'AccordionPanel',
+] as const;
+const commonContentControls = [
+  'SearchBox', 'SpinButton', 'Slider',
+  'ToggleButton', 'MenuButton', 'SplitButton',
+  'Label', 'InfoLabel', 'Divider',
+  'Avatar', 'AvatarGroup', 'AvatarGroupItem', 'AvatarGroupPopover', 'Persona',
+  'Tag', 'TagGroup', 'Popover', 'PopoverTrigger', 'PopoverSurface',
+] as const;
 
 describe('Fluent public boundary', () => {
   it('exports exactly the approved API and preserves upstream composition identity', () => {
-    expect(Object.keys(shared).sort()).toEqual(['Button', 'IconButton', 'NidecProvider', 'nidecLightTheme', ...compositions].sort());
-    for (const name of compositions) expect(shared[name]).toBe(upstream[name]);
+    expect(Object.keys(shared).sort()).toEqual(['Button', 'IconButton', 'NidecProvider', 'nidecLightTheme', ...compositions, ...platformSurfaces, ...commonContentControls].sort());
+    for (const name of [...compositions, ...platformSurfaces, ...commonContentControls]) expect(shared[name]).toBe(upstream[name]);
   });
   it('forwards an explicit theme and establishes a host', () => {
     const element = shared.NidecProvider({theme:upstream.webLightTheme, id:'host', children:'Fixture'});
