@@ -22,6 +22,7 @@
 - `scripts/check-colors.mjs` 纳入原 `css:check`，扫描共享src及当前整批演示；除登记的palette外，拒绝常见hex、颜色函数、CSS具名色及JS颜色属性直接值。禁止页面绕过集中主题入口。
 - 这是可复核的有界静态检查，不是完整JS/CSS求值器：字符串拼接、计算属性或复杂间接写法仍需代码评审。上游依赖、历史fixture/证据、scaffold生成文件不在本规则范围，不能声称整仓所有颜色已完全归一。
 - 不修改公开API、精确依赖、旧tgz、发布阻断或CPQ/EPM代码。现有token/style子路径仍是scaffold，不把本轮demo palette冒充生产token输出。
+- 2026-09-08发布候选修订：Locke批准以已接受的共享浅色主题进入`0.1.0-rc.1`本地发布收口。16个原始颜色角色迁移为`tokens/nidec-light.tokens.json`的唯一生成输入，同时生成框架中立token输出与内部Fluent palette；原scaffold输入及发布阻断标记退出当前源。Dark Mode仍不在范围内。此修订只授权本地资格准备，实际发布仍需独立明确授权。
 
 ## 后续正式映射的验收条件
 

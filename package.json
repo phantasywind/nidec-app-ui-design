@@ -1,7 +1,7 @@
 {
   "name": "@phantasywind/nidec-app-ui-design",
-  "version": "0.0.0-development",
-  "private": true,
+  "version": "0.1.0-rc.1",
+  "private": false,
   "description": "Shared, governed UI foundations for Nidec applications.",
   "type": "module",
   "license": "UNLICENSED",
@@ -15,6 +15,10 @@
   "packageManager": "npm@11.19.0",
   "files": [
     "dist"
+  ],
+  "sideEffects": [
+    "./dist/styles.css",
+    "./dist/tokens.css"
   ],
   "types": "./dist/index.d.ts",
   "module": "./dist/index.js",
@@ -43,14 +47,20 @@
     "test": "npm run tokens:build && vitest run",
     "build": "npm run clean && npm run tokens:build && vite build && tsc -p tsconfig.build.json && npm run css:check",
     "pack:verify": "npm run build && node scripts/verify-package.mjs",
+    "prepack": "npm run build",
     "consumer:verify": "node scripts/verify-consumer.mjs",
     "rollback:verify": "node scripts/verify-stage3-rollback.mjs",
     "publication:check": "node scripts/check-publication.mjs",
+    "release:authorize": "node scripts/check-release-authorization.mjs",
     "adoption:check": "node scripts/verify-adoption-record.mjs",
-    "prepublishOnly": "npm run publication:check",
+    "prepublishOnly": "npm run publication:check && npm run release:authorize",
     "verify": "npm run lint && npm run typecheck && npm run build && npm test && npm run boundaries:check && npm run adoption:check",
     "verify:stage3e": "npm run verify && npm run pack:verify && npm run consumer:verify",
     "verify:stage3f": "npm run verify:stage3e && npm run rollback:verify"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "restricted"
   },
   "peerDependencies": {
     "@fluentui/react-components": "9.74.7",

@@ -6,7 +6,7 @@
 
 原始值只在 `src/internal/light-palette.mjs` 的16个命名角色中登记，来自上一轮保存的DS色表。组件代码不直接写色值；主题映射位于公共入口的独立主题区，组件实现仍委托Fluent。只导出完整 `nidecLightTheme`，Provider仍必须显式传入theme。消费者不依赖内部palette路径。
 
-演示的 `themes.ts` 选择共享浅色主题；`palette.css` 由 `build-theme-demo.mjs` 从同一源生成，不能手改。生成结果一致性及原始色值位置均由css:check检查。旧tokens/style子路径仍为scaffold，未偷偷变更为生产颜色输出。
+演示的 `themes.ts` 选择共享浅色主题；`palette.css` 由 `build-theme-demo.mjs` 从同一源生成，不能手改。生成结果一致性及原始色值位置均由css:check检查。历史版本的tokens/style子路径仍为scaffold；2026-09-08经发布收口批准后，当前`0.1.0-rc.1`改由`tokens/nidec-light.tokens.json`生成正式候选token输出，旧证据保持历史原状。
 
 ## 原始值、角色与派生策略
 

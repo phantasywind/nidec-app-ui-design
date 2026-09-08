@@ -12,11 +12,11 @@ CPQ and EPM are the initial reference consumers used to establish and verify the
 - [ADR-0001: Repository and distribution governance](docs/decisions/0001-repository-and-distribution-governance.md)
 - [Gated delivery roadmap](docs/roadmap.md)
 
-The package remains private and unpublished. The Fluent transition is under technical qualification; historical scaffold or native Button evidence does not qualify this implementation.
+The first complete shared surface is being hardened as release candidate `0.1.0-rc.1`. It remains unpublished until the explicit Stage 5 authorization gate. Historical development artifacts do not qualify or identify the release-candidate bytes.
 
-## Fluent React prototype
+## Fluent React package
 
-The controlled React surface is `Button`, `NidecProvider`, `Input`, `Field`, and the `Dialog`, `DialogTrigger`, `DialogSurface`, `DialogBody`, `DialogTitle`, `DialogContent`, `DialogActions` composition family, with corresponding Props types. The first form batch adds `Textarea`, `Select`, `Checkbox`, `RadioGroup`, `Radio`, `Switch` and their Props types, preserving upstream contracts. See [ADR-0003](docs/decisions/0003-fluent-ui-foundation.md), [batch scope and approval gate](docs/decisions/0005-batched-form-components.md) and [transition evidence](docs/implementation/fluent-transition-record.md).
+The finite React surface covers governed forms, dialogs/drawers, feedback, navigation, menus, tables/data grids, cards, status/content controls, and the shared `CollectionList`, `CardGallery`, and `ProcessStageIndicator` compositions. Upstream Fluent contracts are preserved where components are directly exported; consumer business workflows remain outside this package. See [ADR-0003](docs/decisions/0003-fluent-ui-foundation.md), [batch scope](docs/decisions/0005-batched-form-components.md), and the [release-candidate record](docs/releases/0.1.0-rc.1.md).
 
 React consumers explicitly install the exact qualified `@fluentui/react-components@9.74.7` alongside the exact shared-package version. React/React DOM and Fluent are external optional peers; optional means token-only consumers can omit them, not that React consumers can omit them. Commit the application lockfile to freeze transitive dependencies.
 
@@ -33,4 +33,19 @@ The light-theme palette basis is approved in [ADR-0006](docs/decisions/0006-colo
 
 Button remains a text-only native-button interface, defaults to `type="button"`, preserves disabled/form/ref behavior and composes the `nidec-ui-button` class. There is no polymorphic link or new business behavior. Input/Field/Dialog preserve their upstream public protocols. NidecProvider requires a complete explicit theme and excludes upstream unstable styling options.
 
-`tokens.css`, `styles.css` and `tokens.json` remain framework-neutral entrypoints. Fixture tokens are NOT production brand values. Nidec static CSS is explicitly imported; Fluent runtime styles are managed by its Provider/Griffel mechanism and do not require `styles.css` to activate. CSP, portal isolation and application acceptance remain separate qualification gates. No custom fonts, icons or global reset are introduced by this prototype.
+`tokens.css`, `styles.css` and `tokens.json` are framework-neutral entrypoints generated from the governed ADR-0006 light-theme input. Nidec static CSS is explicitly imported; Fluent runtime styles are managed by its Provider/Griffel mechanism and do not require `styles.css` to activate. CSP, portal isolation and application acceptance remain separate qualification gates. No custom fonts, icon package contract or global reset is introduced.
+
+## Exact-version consumption
+
+Configure the private GitHub Packages registry through the application's credential-managed npm setup, then install exact versions:
+
+```ini
+@phantasywind:registry=https://npm.pkg.github.com
+save-exact=true
+```
+
+```powershell
+npm install --save-exact @phantasywind/nidec-app-ui-design@0.1.0-rc.1 @fluentui/react-components@9.74.7
+```
+
+The application must already use a qualified exact React/React DOM 19.2.x pair. Do not use `latest`, ranges, Git URLs, or `main`. A built application does not contact GitHub at runtime.

@@ -1,3 +1,5 @@
+import { readFile } from 'node:fs/promises';
+import { join, resolve } from 'node:path';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
@@ -10,6 +12,7 @@ const stages = [
   { id: 'review', label: 'Review', description: 'Example description', status: 'current', statusLabel: 'Current' },
   { id: 'release', label: 'Release', status: 'upcoming', statusLabel: 'Upcoming', disabled: true },
 ] as const;
+const repositoryRoot = resolve(import.meta.dirname, '..');
 
 describe('consumer-neutral composite patterns', () => {
   it('renders a semantic Fluent collection without owning selection meaning', () => {
@@ -53,6 +56,17 @@ describe('consumer-neutral composite patterns', () => {
     expect(html).toContain('<button');
     expect(html).toContain('type="button"');
     expect(html).toContain('disabled=""');
+  });
+
+  it('keeps stage hover bounded and connectors outside marker geometry', async () => {
+    const source = await readFile(join(repositoryRoot, 'src', 'index.ts'), 'utf8');
+    const css = await readFile(join(repositoryRoot, 'styles', 'components.css'), 'utf8');
+    expect(source).toContain("appearance: 'transparent'");
+    expect(source).toContain("className: 'nidec-ui-process-stage__layout'");
+    expect(css).toContain('width: fit-content');
+    expect(css).toContain('inset-inline-start: calc(var(--spacingHorizontalXS) + 1.5rem)');
+    expect(css).toContain('inset-block-start: calc(var(--spacingVerticalXS) + 1.5rem)');
+    expect(css).not.toContain('inset-inline: calc(50% + 1.25rem)');
   });
 
   it('rejects ambiguous structural input without interpreting business state', () => {

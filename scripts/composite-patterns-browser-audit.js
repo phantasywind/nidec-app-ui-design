@@ -24,6 +24,32 @@
   const snapshot = kind => {
     const gallery = document.querySelector('.nidec-ui-card-gallery');
     const stages = document.querySelector('.nidec-ui-process-stage');
+    const stageGeometry = [...document.querySelectorAll('.nidec-ui-process-stage__item')].map((item, index, items) => {
+      const itemRect = item.getBoundingClientRect();
+      const marker = item.querySelector('.nidec-ui-process-stage__marker');
+      const button = item.querySelector('.nidec-ui-process-stage__button');
+      const nextMarker = items[index + 1]?.querySelector('.nidec-ui-process-stage__marker');
+      const markerRect = marker?.getBoundingClientRect();
+      const nextMarkerRect = nextMarker?.getBoundingClientRect();
+      const connector = getComputedStyle(item, '::after');
+      const number = value => Number.isFinite(Number.parseFloat(value)) ? Number.parseFloat(value) : null;
+      const left = number(connector.left);
+      const right = number(connector.right);
+      const top = number(connector.top);
+      return {
+        itemWidth: Number(itemRect.width.toFixed(2)),
+        buttonWidth: button ? Number(button.getBoundingClientRect().width.toFixed(2)) : null,
+        markerLeft: markerRect ? Number(markerRect.left.toFixed(2)) : null,
+        markerRight: markerRect ? Number(markerRect.right.toFixed(2)) : null,
+        markerBottom: markerRect ? Number(markerRect.bottom.toFixed(2)) : null,
+        markerCenterX: markerRect ? Number(((markerRect.left + markerRect.right) / 2).toFixed(2)) : null,
+        nextMarkerLeft: nextMarkerRect ? Number(nextMarkerRect.left.toFixed(2)) : null,
+        connectorStartX: left === null ? null : Number((itemRect.left + left).toFixed(2)),
+        connectorEndX: right === null ? null : Number((itemRect.right - right).toFixed(2)),
+        connectorX: left === null ? null : Number((itemRect.left + left).toFixed(2)),
+        connectorStartY: top === null ? null : Number((itemRect.top + top).toFixed(2)),
+      };
+    });
     return {
       kind,
       time: new Date().toISOString(),
@@ -42,6 +68,13 @@
       currentStages: document.querySelectorAll('[aria-current="step"]').length,
       disabledStages: document.querySelectorAll('.nidec-ui-process-stage__button:disabled').length,
       processDisplay: stages ? getComputedStyle(stages).display : null,
+      stageGeometry,
+      dataTableRows: document.querySelectorAll('table[aria-label="Example data records"] tbody tr').length,
+      dataTableHeaders: document.querySelectorAll('table[aria-label="Example data records"] th').length,
+      dataTableRegionScrollable: (() => {
+        const region = document.querySelector('.data-table-scroll');
+        return region ? getComputedStyle(region).overflowX === 'auto' && region.scrollWidth >= region.clientWidth : false;
+      })(),
       lastAction: document.querySelector('.stage-result')?.textContent?.trim() ?? null,
       activeElement: document.activeElement?.textContent?.trim() || document.activeElement?.getAttribute('aria-label') || document.activeElement?.tagName,
       contrastPairs: [...document.querySelectorAll('.nidec-ui-process-stage__marker, .nidec-ui-process-stage__description')].map(contrast),

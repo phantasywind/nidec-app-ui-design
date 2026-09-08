@@ -9,7 +9,7 @@ const root = resolve(import.meta.dirname, '..');
 const name = process.argv[2] ?? 'browser-1';
 assert(/^browser-[1-9][0-9]*$/.test(name));
 const runId = process.argv[3] ?? 'fluent-composite-patterns-2';
-assert(/^fluent-composite-patterns-[1-9][0-9]*$/.test(runId));
+assert(/^fluent-composite-patterns-[1-9][0-9]*$/.test(runId) || runId === 'release-0-1-0-rc-1');
 const run = join(root, '.qualification/runs', runId);
 const evidence = join(run, name);
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');

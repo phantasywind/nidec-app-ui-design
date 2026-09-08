@@ -1,0 +1,31 @@
+{
+  "$description": "Nidec Engineering Design System light-theme release-candidate tokens.",
+  "$extensions": {
+    "com.nidec.ui": {
+      "status": "release-candidate",
+      "publication": "qualified-input",
+      "theme": "light",
+      "authority": "ADR-0006",
+      "darkMode": "out-of-scope"
+    }
+  },
+  "color": {
+    "$type": "color",
+    "brand": { "$value": { "colorSpace": "srgb", "components": [0, 0.607843137254902, 0.2901960784313726], "alpha": 1 } },
+    "brandStrong": { "$value": { "colorSpace": "srgb", "components": [0, 0.4980392156862745, 0.23921568627450981], "alpha": 1 } },
+    "brandSoft": { "$value": { "colorSpace": "srgb", "components": [0.8745098039215686, 0.9529411764705882, 0.9098039215686274], "alpha": 1 } },
+    "text": { "$value": { "colorSpace": "srgb", "components": [0.09019607843137255, 0.12941176470588237, 0.10980392156862745], "alpha": 1 } },
+    "textSecondary": { "$value": { "colorSpace": "srgb", "components": [0.24705882352941178, 0.29411764705882354, 0.27058823529411763], "alpha": 1 } },
+    "textMuted": { "$value": { "colorSpace": "srgb", "components": [0.40784313725490196, 0.45098039215686275, 0.42745098039215684], "alpha": 1 } },
+    "canvas": { "$value": { "colorSpace": "srgb", "components": [0.9607843137254902, 0.9686274509803922, 0.9647058823529412], "alpha": 1 } },
+    "surface": { "$value": { "colorSpace": "srgb", "components": [1, 1, 1], "alpha": 1 } },
+    "surfaceSubtle": { "$value": { "colorSpace": "srgb", "components": [0.9411764705882353, 0.9529411764705882, 0.9450980392156862], "alpha": 1 } },
+    "border": { "$value": { "colorSpace": "srgb", "components": [0.8431372549019608, 0.8666666666666667, 0.8509803921568627], "alpha": 1 } },
+    "borderStrong": { "$value": { "colorSpace": "srgb", "components": [0.7254901960784313, 0.7607843137254902, 0.7411764705882353], "alpha": 1 } },
+    "info": { "$value": { "colorSpace": "srgb", "components": [0.09019607843137255, 0.4117647058823529, 0.6666666666666666], "alpha": 1 } },
+    "success": { "$value": { "colorSpace": "srgb", "components": [0.03137254901960784, 0.47058823529411764, 0.23137254901960785], "alpha": 1 } },
+    "warning": { "$value": { "colorSpace": "srgb", "components": [0.6039215686274509, 0.33725490196078434, 0], "alpha": 1 } },
+    "danger": { "$value": { "colorSpace": "srgb", "components": [0.7058823529411765, 0.13725490196078433, 0.17254901960784313], "alpha": 1 } },
+    "focus": { "$value": { "colorSpace": "srgb", "components": [0.09019607843137255, 0.4117647058823529, 0.6666666666666666], "alpha": 1 } }
+  }
+}

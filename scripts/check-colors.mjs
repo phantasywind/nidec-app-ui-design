@@ -4,7 +4,7 @@ import { join, relative, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 // Bounded source guard, not a complete CSS/JS interpreter. Upstream, historical
-// fixtures, generated scaffold files and test negative cases are not scanned.
+// historical fixtures, generated token outputs and test negative cases are not scanned.
 export function colorFindings(text, css=false){
   const source=text.replace(/\/\*[\s\S]*?\*\//g,'');
   const findings=[];
@@ -38,7 +38,7 @@ export async function checkColors(root){
     const name=relative(root,path).replaceAll('\\','/');
     const source=await readFile(path,'utf8');
     if(name==='src/internal/light-palette.mjs'){
-      assert(source.includes('ADR-0006'),'Raw source requires recorded authority');
+      assert(source.includes('GENERATED from tokens/nidec-light.tokens.json')&&source.includes('ADR-0006'),'Generated palette requires recorded source and authority');
       assert.equal([...source.matchAll(/#[\da-f]{6}\b/gi)].length,16,'Review raw role changes explicitly');
       continue;
     }

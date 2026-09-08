@@ -1,4 +1,4 @@
-/* SCAFFOLD FIXTURE ONLY. NOT APPROVED BRAND DATA. PUBLICATION BLOCKED. */
+/* NIDEC LIGHT THEME RELEASE CANDIDATE. Source: ADR-0006. */
 @layer nidec-ui {
   :where([data-nidec-ui]) .nidec-ui-collection-list,
   :where([data-nidec-ui]) .nidec-ui-card-gallery,
@@ -97,9 +97,11 @@
     background: var(--colorNeutralStroke2);
     content: "";
     height: var(--strokeWidthThick);
-    inset-block-start: calc(var(--spacingVerticalM) + 0.75rem);
-    inset-inline: calc(50% + 1.25rem) calc(-50% + 1.25rem);
+    inset-block-start: calc(var(--spacingVerticalXS) + 0.75rem);
+    inset-inline-end: calc(0px - var(--spacingHorizontalXS) - var(--spacingHorizontalXS));
+    inset-inline-start: calc(var(--spacingHorizontalXS) + 1.5rem);
     position: absolute;
+    transform: translateY(-50%);
   }
 
   :where([data-nidec-ui]) .nidec-ui-process-stage__item[data-stage-status="completed"]:not(:last-child)::after {
@@ -110,16 +112,22 @@
   :where([data-nidec-ui]) .nidec-ui-process-stage__content {
     align-items: start;
     box-sizing: border-box;
-    display: grid;
-    gap: var(--spacingHorizontalS);
-    grid-template-columns: auto minmax(0, 1fr);
     justify-content: start;
+    max-width: 100%;
     min-width: 0;
-    padding: var(--spacingVerticalM) var(--spacingHorizontalS);
+    padding: var(--spacingVerticalXS) var(--spacingHorizontalXS);
     position: relative;
     text-align: start;
-    width: 100%;
+    width: fit-content;
     z-index: 1;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-process-stage__layout {
+    display: grid;
+    gap: var(--spacingVerticalXS);
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    min-width: 0;
   }
 
   :where([data-nidec-ui]) .nidec-ui-process-stage__marker {
@@ -135,6 +143,7 @@
     height: 1.5rem;
     justify-content: center;
     line-height: var(--lineHeightBase200);
+    flex: none;
     width: 1.5rem;
   }
 
@@ -165,10 +174,19 @@
     display: grid;
   }
 
+  :where([data-nidec-ui]) .nidec-ui-process-stage--vertical .nidec-ui-process-stage__layout {
+    column-gap: var(--spacingHorizontalS);
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-rows: auto;
+  }
+
   :where([data-nidec-ui]) .nidec-ui-process-stage--vertical .nidec-ui-process-stage__item:not(:last-child)::after {
     height: auto;
-    inset-block: calc(var(--spacingVerticalM) + 2rem) calc(0rem - var(--spacingVerticalM));
-    inset-inline: calc(var(--spacingHorizontalS) + 0.75rem) auto;
+    inset-block-end: calc(0px - var(--spacingVerticalXS) - var(--spacingVerticalXS));
+    inset-block-start: calc(var(--spacingVerticalXS) + 1.5rem);
+    inset-inline-end: auto;
+    inset-inline-start: calc(var(--spacingHorizontalXS) + 0.75rem);
+    transform: translateX(-50%);
     width: var(--strokeWidthThick);
   }
 
@@ -186,10 +204,19 @@
       display: grid;
     }
 
+    :where([data-nidec-ui]) .nidec-ui-process-stage--responsive .nidec-ui-process-stage__layout {
+      column-gap: var(--spacingHorizontalS);
+      grid-template-columns: auto minmax(0, 1fr);
+      grid-template-rows: auto;
+    }
+
     :where([data-nidec-ui]) .nidec-ui-process-stage--responsive .nidec-ui-process-stage__item:not(:last-child)::after {
       height: auto;
-      inset-block: calc(var(--spacingVerticalM) + 2rem) calc(0rem - var(--spacingVerticalM));
-      inset-inline: calc(var(--spacingHorizontalS) + 0.75rem) auto;
+      inset-block-end: calc(0px - var(--spacingVerticalXS) - var(--spacingVerticalXS));
+      inset-block-start: calc(var(--spacingVerticalXS) + 1.5rem);
+      inset-inline-end: auto;
+      inset-inline-start: calc(var(--spacingHorizontalXS) + 0.75rem);
+      transform: translateX(-50%);
       width: var(--strokeWidthThick);
     }
   }

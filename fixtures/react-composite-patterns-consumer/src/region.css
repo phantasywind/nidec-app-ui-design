@@ -81,6 +81,22 @@
   width: 2rem;
 }
 
+.composite-fixture .data-table-scroll {
+  border: var(--strokeWidthThin) solid var(--colorNeutralStroke1);
+  border-radius: var(--borderRadiusMedium);
+  overflow-x: auto;
+}
+
+.composite-fixture .data-table-scroll table {
+  min-width: 48rem;
+}
+
+.composite-fixture .table-note {
+  color: var(--colorNeutralForeground3);
+  font-size: var(--fontSizeBase200);
+  line-height: var(--lineHeightBase200);
+}
+
 @media (max-width: 720px) {
   .composite-fixture {
     padding: var(--spacingVerticalL) var(--spacingHorizontalM);

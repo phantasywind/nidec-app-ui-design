@@ -1,4 +1,4 @@
-import { createElement, Fragment } from 'react';
+import { createElement } from 'react';
 import type { ComponentPropsWithRef, ComponentPropsWithoutRef, MouseEvent, ReactElement, ReactNode } from 'react';
 import { Button as FluentButton, Card as FluentCard, FluentProvider, createLightTheme } from '@fluentui/react-components';
 import type { BrandVariants, ButtonProps as FluentButtonProps, CardProps as FluentCardProps, FluentProviderProps, Theme } from '@fluentui/react-components';
@@ -231,15 +231,16 @@ export function ProcessStageIndicator({ 'aria-label': ariaLabel, stages, orienta
   return createElement('ol', { ...props, 'aria-label': ariaLabel, className: withClass(`nidec-ui-process-stage nidec-ui-process-stage--${orientation}`, className) },
     stages.map((stage, index) => {
       const current = stage.status === 'current' ? { 'aria-current': 'step' as const } : {};
-      const content = createElement(Fragment, null,
+      const content = createElement('span', { className: 'nidec-ui-process-stage__layout' },
         createElement('span', { className: 'nidec-ui-process-stage__marker', 'aria-hidden': true }, index + 1),
         createElement('span', { className: 'nidec-ui-process-stage__text' },
           createElement('span', { className: 'nidec-ui-process-stage__label' }, stage.label),
           stage.description === undefined ? null : createElement('span', { className: 'nidec-ui-process-stage__description' }, stage.description),
           createElement('span', { className: 'nidec-ui-visually-hidden' }, stage.statusLabel)));
       const stageContent = onStageSelect ? createElement(FluentButton, {
-        ...current, appearance: 'subtle', className: 'nidec-ui-process-stage__button', disabled: stage.disabled ?? false,
-        onClick: (event: MouseEvent<HTMLButtonElement>) => onStageSelect(event, stage), type: 'button',
+        ...current, appearance: 'transparent', className: 'nidec-ui-process-stage__button', disabled: stage.disabled ?? false,
+        onClick: (event: MouseEvent<HTMLButtonElement>) => onStageSelect(event, stage),
+        style: { minWidth: 0, padding: 'var(--spacingVerticalXS) var(--spacingHorizontalXS)', width: 'fit-content' }, type: 'button',
       }, content) : createElement('div', { ...current, className: 'nidec-ui-process-stage__content' }, content);
       return createElement('li', { key: stage.id, className: 'nidec-ui-process-stage__item', 'data-stage-status': stage.status }, stageContent);
     }));

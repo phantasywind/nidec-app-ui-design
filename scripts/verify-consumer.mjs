@@ -1,19 +1,24 @@
-import { cp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
+import { cp, mkdir, readFile, readdir, realpath, rm, writeFile } from 'node:fs/promises';
 import { delimiter, dirname, join, relative, resolve, sep } from 'node:path';
 import { spawnSync } from 'node:child_process';
-import { verifyBinding, verifyPhysicalReact } from './qualification-contract.mjs';
+import { createRequire } from 'node:module';
+import { verifyPhysicalReact } from './qualification-contract.mjs';
+import { RELEASE_PACKAGE_VERSION as packageVersion, verifyReleaseBinding as verifyBinding } from './release-contract.mjs';
 
 const packageName = '@phantasywind/nidec-app-ui-design';
-const packageVersion = '0.0.0-development';
 const repositoryRoot = resolve(import.meta.dirname, '..');
 const fixturesRoot = join(repositoryRoot, 'fixtures');
 const packRoot = join(repositoryRoot, '.pack');
 const consumerEvidencePath = join(packRoot, 'consumer-result.json');
 const temporaryRoot = resolve(repositoryRoot, '.tmp', 'consumers');
+const cacheRoot = resolve(repositoryRoot, '.tmp', 'fluent-npm-cache');
 const npmCliPath = process.env.npm_execpath;
 const exactToolchainEnvironment = {
   ...process.env,
   PATH: `${dirname(process.execPath)}${delimiter}${process.env.PATH ?? ''}`,
+  npm_config_cache: cacheRoot,
+  npm_config_audit: 'false',
+  npm_config_fund: 'false',
 };
 
 function assert(condition, message) {
@@ -102,6 +107,7 @@ async function verifyInstalledPackage(consumerRoot) {
     JSON.stringify(actualFiles) === JSON.stringify(expectedFiles),
     `Installed package contains unexpected files in ${consumerRoot}:\n${actualFiles.join('\n')}`,
   );
+  return installedManifest;
 }
 
 async function verifyNoRuntimeGitHubDependency(consumerRoot) {
@@ -128,7 +134,7 @@ async function verifyConsumer(name, artifactUrl) {
 
   console.log(`Preparing isolated ${name} fixture.`);
   verifyBinding(await readFile(artifactPath), packEvidence.archiveEvidence);
-  runNpm(['install', '--ignore-scripts', '--no-fund'], consumerRoot);
+  runNpm(['install', '--ignore-scripts', '--no-fund', '--offline'], consumerRoot);
 
   const lock = JSON.parse(await readFile(join(consumerRoot, 'package-lock.json'), 'utf8'));
   assert(lock.lockfileVersion === 3, `${name} must use lockfile version 3.`);
@@ -138,11 +144,11 @@ async function verifyConsumer(name, artifactUrl) {
   assert(modulesPath === `${consumerRoot}${sep}node_modules`, `Unexpected node_modules path: ${modulesPath}`);
   await rm(modulesPath, { force: true, recursive: true });
   verifyBinding(await readFile(artifactPath), packEvidence.archiveEvidence);
-  runNpm(['ci', '--ignore-scripts', '--no-fund'], consumerRoot);
+  runNpm(['ci', '--ignore-scripts', '--no-fund', '--offline'], consumerRoot);
   verifyBinding(await readFile(artifactPath), packEvidence.archiveEvidence);
   runNpm(['run', 'verify'], consumerRoot);
 
-  await verifyInstalledPackage(consumerRoot);
+  const installedManifest = await verifyInstalledPackage(consumerRoot);
   await verifyNoRuntimeGitHubDependency(consumerRoot);
 
   if (name === 'token-only-consumer') {
@@ -166,10 +172,25 @@ async function verifyConsumer(name, artifactUrl) {
     assert(JSON.stringify([...versions.get('react-dom')]) === JSON.stringify(['19.2.7']), 'React DOM must resolve exactly once at 19.2.7.');
   }
 
+  let navigationDependency;
+  if (name === 'react-navigation-cold-consumer') {
+    assert(manifest.dependencies?.['@fluentui/react-icons'] === undefined, 'Cold Navigation fixture must not declare Fluent icons.');
+    assert(installedManifest.dependencies?.['@fluentui/react-icons'] === undefined && installedManifest.peerDependencies?.['@fluentui/react-icons'] === undefined,
+      'Shared package must not claim a direct icon dependency without reproduced evidence.');
+    const iconLock = lock.packages?.['node_modules/@fluentui/react-icons'];
+    assert(iconLock?.version === '2.0.339', 'Fluent 9.74.7 dependency closure must resolve react-icons 2.0.339.');
+    const requireApp = createRequire(manifestPath);
+    const resolvedPath = await realpath(requireApp.resolve('@fluentui/react-icons'));
+    const tree = JSON.parse(runNpm(['ls', '@fluentui/react-icons', '--all', '--json'], consumerRoot, true));
+    navigationDependency = { declaredByApplication: false, version: iconLock.version, resolvedPath, tree };
+  }
+
   console.log(`Verified isolated ${name} fixture.`);
+  return navigationDependency;
 }
 
 assert(temporaryRoot === `${repositoryRoot}${sep}.tmp${sep}consumers`, `Unexpected temporary root: ${temporaryRoot}`);
+await mkdir(cacheRoot, { recursive: true });
 const artifacts = (await readdir(packRoot)).filter((name) => name.endsWith('.tgz'));
 assert(artifacts.length === 1, 'Exactly one packed .tgz is required before consumer verification.');
 const artifactPath = join(packRoot, artifacts[0]);
@@ -183,6 +204,7 @@ const evidence = {
   npmUserAgent: process.env.npm_config_user_agent ?? 'unknown',
   artifact: artifacts[0],
   completedConsumers,
+  navigationDependency: undefined,
   temporaryConsumersRemoved: false,
 };
 
@@ -194,6 +216,8 @@ try {
   completedConsumers.push('token-only-consumer');
   await verifyConsumer('react-vite-cpq-consumer', artifactUrl);
   completedConsumers.push('react-vite-cpq-consumer');
+  evidence.navigationDependency = await verifyConsumer('react-navigation-cold-consumer', artifactUrl);
+  completedConsumers.push('react-navigation-cold-consumer');
   evidence.status = 'passed';
 } catch (error) {
   evidence.status = 'failed';

@@ -1,12 +1,13 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 
-const fixtureMarker = 'SCAFFOLD FIXTURE ONLY. NOT APPROVED BRAND DATA. PUBLICATION BLOCKED.';
-const extensionKey = 'com.nidec.ui.scaffold';
+const releaseMarker = 'NIDEC LIGHT THEME RELEASE CANDIDATE. Source: ADR-0006.';
+const extensionKey = 'com.nidec.ui';
 const repositoryRoot = resolve(import.meta.dirname, '..');
-const sourcePath = join(repositoryRoot, 'tokens', 'fixtures', 'scaffold.tokens.json');
+const sourcePath = join(repositoryRoot, 'tokens', 'nidec-light.tokens.json');
 const stylesPath = join(repositoryRoot, 'styles');
 const componentSourcePath = join(stylesPath, 'components.css');
+const palettePath = join(repositoryRoot, 'src', 'internal', 'light-palette.mjs');
 const distPath = join(repositoryRoot, 'dist');
 
 function assert(condition, message) {
@@ -40,8 +41,8 @@ function cssNumber(value, context) {
 function toCssValue(token) {
   if (token.type === 'color') {
     const { colorSpace, components, alpha = 1 } = token.value ?? {};
-    assert(colorSpace === 'srgb', `Fixture color must use sRGB: ${token.path}`);
-    assert(Array.isArray(components) && components.length === 3, `Fixture color must have three components: ${token.path}`);
+    assert(colorSpace === 'srgb', `Color must use sRGB: ${token.path}`);
+    assert(Array.isArray(components) && components.length === 3, `Color must have three components: ${token.path}`);
     const serializedComponents = components.map((value) => {
       assert(typeof value === 'number' && value >= 0 && value <= 1, `Invalid sRGB component: ${token.path}`);
       return cssNumber(value, token.path);
@@ -61,33 +62,31 @@ function toCssValue(token) {
     return cssNumber(token.value, token.path);
   }
 
-  throw new Error(`Unsupported scaffold token type: ${token.type}`);
+  throw new Error(`Unsupported release token type: ${token.type}`);
 }
 
 function toCssVariable(path) {
-  const suffix = path.replaceAll('.', '-').replaceAll(/[^a-zA-Z0-9-]/g, '-').toLowerCase();
+  const suffix = path.replaceAll(/([a-z0-9])([A-Z])/g, '$1-$2').replaceAll('.', '-').replaceAll(/[^a-zA-Z0-9-]/g, '-').toLowerCase();
   return `--nidec-ui-${suffix}`;
 }
 
 const source = JSON.parse(await readFile(sourcePath, 'utf8'));
-const scaffoldExtension = source.$extensions?.[extensionKey];
-assert(source.$description === fixtureMarker, 'Fixture marker is missing or changed.');
-assert(scaffoldExtension?.status === 'scaffold-only', 'Fixture status must remain scaffold-only.');
-assert(scaffoldExtension?.publication === 'blocked', 'Fixture publication must remain blocked.');
-assert(scaffoldExtension?.brandAuthority === 'absent', 'Fixture must not claim brand authority.');
+const releaseExtension = source.$extensions?.[extensionKey];
+assert(releaseExtension?.status === 'release-candidate', 'Token source must remain a release candidate.');
+assert(releaseExtension?.publication === 'qualified-input', 'Token source is not approved for candidate qualification.');
+assert(releaseExtension?.authority === 'ADR-0006', 'Token authority must remain ADR-0006.');
+assert(releaseExtension?.darkMode === 'out-of-scope', 'Dark Mode must remain outside this release scope.');
 
 const tokens = flattenTokens(source).sort((left, right) => left.path.localeCompare(right.path, 'en'));
-assert(tokens.length > 0, 'Scaffold fixture must exercise at least one token.');
-assert(tokens.every((token) => token.path.startsWith('fixture.')), 'Every scaffold token path must start with fixture.');
+assert(tokens.length === 16, 'The approved light palette must contain exactly 16 roles.');
+assert(tokens.every((token) => token.path.startsWith('color.')), 'Every release token path must start with color.');
 
 const metadata = {
-  $description: fixtureMarker,
+  $description: source.$description,
   $extensions: {
     [extensionKey]: {
-      status: 'scaffold-only',
-      publication: 'blocked',
-      brandAuthority: 'absent',
-      source: 'tokens/fixtures/scaffold.tokens.json',
+      ...releaseExtension,
+      source: 'tokens/nidec-light.tokens.json',
     },
   },
   tokens: tokens.map((token) => ({
@@ -101,15 +100,25 @@ const metadata = {
 const cssDeclarations = tokens
   .map((token) => `    ${toCssVariable(token.path)}: ${toCssValue(token)};`)
   .join('\n');
-const tokenCss = `/* ${fixtureMarker} */\n@layer nidec-ui {\n  [data-nidec-ui] {\n${cssDeclarations}\n  }\n}\n`;
+const tokenCss = `/* ${releaseMarker} */\n@layer nidec-ui {\n  [data-nidec-ui] {\n${cssDeclarations}\n  }\n}\n`;
 const componentCss = await readFile(componentSourcePath, 'utf8');
-assert(componentCss.includes(`/* ${fixtureMarker} */`), 'Component stylesheet marker is missing.');
+assert(componentCss.includes(`/* ${releaseMarker} */`), 'Component stylesheet release marker is missing.');
 assert(componentCss.includes('@layer nidec-ui'), 'Component stylesheet layer is missing.');
 const tokenJson = `${JSON.stringify(metadata, null, 2)}\n`;
 const stylesheetDeclaration = 'declare const stylesheet: string;\nexport default stylesheet;\n';
 
+const paletteEntries = Object.fromEntries(tokens.map((token) => {
+  const role = token.path.slice('color.'.length);
+  const components = token.value.components.map((value) => Math.round(value * 255).toString(16).padStart(2, '0'));
+  return [role, `#${components.join('')}`];
+}));
+const paletteSource = `// GENERATED from tokens/nidec-light.tokens.json. Authority: ADR-0006.\n` +
+  `// State derivatives live in the central theme mapping, never in components.\n` +
+  `export const lightPalette = /* @__PURE__ */ Object.freeze(${JSON.stringify(paletteEntries, null, 2)});\n`;
+
 await mkdir(stylesPath, { recursive: true });
 await mkdir(distPath, { recursive: true });
+await writeFile(palettePath, paletteSource, 'utf8');
 
 for (const [fileName, content] of [
   ['tokens.css', tokenCss],
@@ -122,4 +131,4 @@ for (const [fileName, content] of [
   await writeFile(join(distPath, fileName), content, 'utf8');
 }
 
-console.log(`Generated ${tokens.length} scaffold-only tokens. Publication remains blocked.`);
+console.log(`Generated ${tokens.length} governed light-theme tokens from ADR-0006.`);

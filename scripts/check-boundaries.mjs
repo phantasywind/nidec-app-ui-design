@@ -51,12 +51,13 @@ function isExactVersion(value) {
 const packageJson = await readJson(packagePath);
 
 assert(packageJson.name === '@phantasywind/nidec-app-ui-design', 'Unexpected package name.');
-assert(packageJson.version === '0.0.0-development', 'Unexpected development version.');
-assert(packageJson.private === true, 'Package must remain private.');
+assert(packageJson.version === '0.1.0-rc.1', 'Unexpected release-candidate version.');
+assert(packageJson.private === false, 'Release candidate must be explicitly publishable.');
 assert(packageJson.type === 'module', 'Package must remain ESM.');
 assert(packageJson.packageManager === 'npm@11.19.0', 'Unexpected package manager.');
 assert(packageJson.engines?.node === '>=22.12.0', 'Unexpected consumer Node engine floor.');
 assert(JSON.stringify(packageJson.files) === JSON.stringify(['dist']), 'Package files allowlist must contain only dist.');
+assert(JSON.stringify(packageJson.sideEffects) === JSON.stringify(['./dist/styles.css', './dist/tokens.css']), 'Only explicit CSS exports may have side effects.');
 assert(packageJson.types === './dist/index.d.ts', 'Unexpected declaration entry.');
 assert(packageJson.module === './dist/index.js', 'Unexpected ESM entry.');
 assert(
@@ -78,6 +79,7 @@ assert(
   'Only the approved Stage 3D public subpaths are allowed.',
 );
 assert(packageJson.dependencies === undefined, 'Runtime foundations must remain external optional peers.');
+assert(packageJson.publishConfig?.registry === 'https://npm.pkg.github.com' && packageJson.publishConfig?.access === 'restricted', 'GitHub Packages publish configuration required.');
 assert(packageJson.peerDependencies?.['@fluentui/react-components'] === '9.74.7', 'Exact Fluent peer required.');
 assert(packageJson.peerDependenciesMeta?.['@fluentui/react-components']?.optional === true, 'Fluent must remain optional for token-only consumers.');
 assert(packageJson.devDependencies?.['@fluentui/react-components'] === '9.74.7', 'Exact Fluent development dependency required.');

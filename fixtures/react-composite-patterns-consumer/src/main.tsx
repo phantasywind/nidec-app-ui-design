@@ -3,7 +3,8 @@ import { createRoot } from 'react-dom/client';
 import { createDOMRenderer, RendererProvider } from '@fluentui/react-components';
 import {
   Button, CardGallery, CardGalleryItem, CardHeader, Checkbox, CollectionList, CollectionListItem,
-  NidecProvider, ProcessStageIndicator, Tag, nidecLightTheme,
+  Badge, NidecProvider, ProcessStageIndicator, Table, TableBody, TableCell,
+  TableCellLayout, TableHeader, TableHeaderCell, TableRow, Tag, nidecLightTheme,
 } from '@phantasywind/nidec-app-ui-design';
 import '@phantasywind/nidec-app-ui-design/styles.css';
 import './region.css';
@@ -21,6 +22,12 @@ const gallerySections = [
   { id: 'evidence', title: 'Evidence', description: 'Version, artifact hash, tests, limitations, and adoption maturity.' },
 ];
 
+const tableRecords = [
+  { id: 'REC-1042', name: 'Example Alpha', category: 'Standard', status: 'Ready', tone: 'success', updated: 'Today' },
+  { id: 'REC-1038', name: 'Example Beta with a longer descriptive name', category: 'Configured', status: 'Review', tone: 'warning', updated: 'Yesterday' },
+  { id: 'REC-1021', name: 'Example Gamma', category: 'Special', status: 'Blocked', tone: 'danger', updated: '3 days ago' },
+] as const;
+
 const stages = [
   { id: 'prepare', label: 'Prepare', description: 'Example completed step', status: 'completed', statusLabel: 'Completed' },
   { id: 'review', label: 'Review', description: 'Example current step', status: 'current', statusLabel: 'Current stage' },
@@ -33,7 +40,7 @@ function App() {
   const [lastAction, setLastAction] = useState('No stage activated');
   return <NidecProvider theme={nidecLightTheme} className="composite-fixture">
     <header className="page-header">
-      <div><p className="eyebrow">Shared composite patterns</p><h1>Collections, galleries, and process stages</h1></div>
+      <div><p className="eyebrow">Shared composite patterns</p><h1>Collections, data tables, galleries, and process stages</h1></div>
       <p>Fluent owns control behavior and states; the shared package governs reusable composition.</p>
     </header>
     <main>
@@ -57,6 +64,26 @@ function App() {
             actions={<Button onClick={() => undefined}>Open</Button>}
           />)}
         </CollectionList>
+      </section>
+
+      <section aria-labelledby="table-heading">
+        <div className="section-heading"><div><h2 id="table-heading">Data Table List</h2><p>Fluent table structure for dense records, status, metadata, and row actions.</p></div><Tag appearance="outline">Scrollable</Tag></div>
+        <div className="data-table-scroll" tabIndex={0} role="region" aria-label="Scrollable example records table">
+          <Table aria-label="Example data records">
+            <TableHeader><TableRow>
+              <TableHeaderCell>ID</TableHeaderCell><TableHeaderCell>Name</TableHeaderCell><TableHeaderCell>Category</TableHeaderCell><TableHeaderCell>Status</TableHeaderCell><TableHeaderCell>Updated</TableHeaderCell><TableHeaderCell>Actions</TableHeaderCell>
+            </TableRow></TableHeader>
+            <TableBody>{tableRecords.map(record => <TableRow key={record.id}>
+              <TableCell><TableCellLayout>{record.id}</TableCellLayout></TableCell>
+              <TableCell><TableCellLayout>{record.name}</TableCellLayout></TableCell>
+              <TableCell>{record.category}</TableCell>
+              <TableCell><Badge appearance="tint" color={record.tone}>{record.status}</Badge></TableCell>
+              <TableCell>{record.updated}</TableCell>
+              <TableCell><Button>Open</Button></TableCell>
+            </TableRow>)}</TableBody>
+          </Table>
+        </div>
+        <p className="table-note">Column meaning, sorting, selection, pagination, and data loading remain consumer-owned.</p>
       </section>
 
       <section aria-labelledby="gallery-heading">

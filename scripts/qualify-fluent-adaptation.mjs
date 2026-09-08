@@ -7,6 +7,7 @@ import { cp, mkdir, readFile, readdir, realpath, writeFile } from 'node:fs/promi
 import { dirname, delimiter, join, relative, resolve } from 'node:path';
 import { createRequire } from 'node:module';
 import { inspectArchive, redactLog, verifyPhysicalReact } from './qualification-contract.mjs';
+import { inspectReleaseArchive } from './release-contract.mjs';
 
 const root = resolve(import.meta.dirname, '..');
 const runId = process.argv[3] ?? 'fluent-adaptation';
@@ -15,6 +16,8 @@ const formBatch = ['fluent-form-batch-1', 'nidec-light-theme-1'].includes(runId)
 const platformSurfacesBatch = runId === 'fluent-platform-surfaces-1';
 const commonContentControlsBatch = ['fluent-common-content-controls-1', 'fluent-common-content-controls-2', 'fluent-common-content-controls-3'].includes(runId);
 const compositePatternsBatch = /^fluent-composite-patterns-[1-9][0-9]*$/.test(runId);
+const releaseCandidateBatch = runId === 'release-0-1-0-rc-1';
+const inspectCandidateArchive = releaseCandidateBatch ? inspectReleaseArchive : inspectArchive;
 const work = join(root, '.tmp', runId);
 const evidence = join(root, '.qualification', 'runs', runId);
 const cache = join(root, '.tmp', 'fluent-npm-cache');
@@ -57,6 +60,8 @@ async function run(node, args, cwd, log) {
 }
 
 if (stage === 'prepare') {
+  const status = execFileSync('git',['status','--porcelain'],{cwd:root}).toString();
+  if (releaseCandidateBatch) assert.equal(status.trim(), '', 'Release qualification requires a clean committed source');
   await mkdir(evidence); await mkdir(work); await mkdir(source);
   const names = execFileSync('git',['ls-files','--cached','--others','--exclude-standard','-z'],{cwd:root})
     .toString().split('\0').filter(Boolean);
@@ -69,7 +74,7 @@ if (stage === 'prepare') {
     records.push({path:name,sha256:hash(bytes)});
   }
   await save(join(evidence,'source.json'), {head:execFileSync('git',['rev-parse','HEAD'],{cwd:root}).toString().trim(),
-    clean:false, description:'Immutable working-source snapshot; not a committed release qualification',files:records});
+    clean:releaseCandidateBatch, description:releaseCandidateBatch ? 'Immutable clean committed source for release-candidate qualification' : 'Immutable working-source snapshot; not a committed release qualification',files:records});
   const metadata = JSON.parse(await readFile(join(root,'.qualification/runs/fluent-transition/type-gate/registry-metadata.json'),'utf8'));
   const requireNpm = createRequire(join(dirname(node24),'node_modules/npm/package.json'));
   const cacache = requireNpm('cacache');
@@ -87,7 +92,7 @@ if (stage === 'prepare') {
   await run(node24,['run','pack:verify'],destination,'pack.txt');
   const record = JSON.parse(await readFile(join(destination,'.pack/pack-result.json'),'utf8'));
   const artifact = await readFile(join(destination,'.pack',record.filename));
-  const archive = inspectArchive(artifact);
+  const archive = inspectCandidateArchive(artifact);
   assert.equal(hash(artifact),record.sha256);
   await save(join(evidence,stage,'candidate.tgz'),artifact);
   await save(join(evidence,stage,'artifact.json'),{...record,archive});
@@ -102,7 +107,8 @@ if (stage === 'prepare') {
 } else if (stage === 'consumer-node22' || stage === 'baseline-node22') {
   await mkdir(join(evidence,stage));
   const results = [];
-  const consumerNames = stage === 'baseline-node22' ? ['react-vite-cpq-consumer'] :
+  const consumerNames = stage === 'baseline-node22' ? ['react-vite-cpq-consumer'] : releaseCandidateBatch ?
+    ['token-only-consumer','react-vite-cpq-consumer','react-navigation-cold-consumer','react-form-batch-consumer','react-complete-region-consumer','react-directory-actions-consumer','react-platform-surfaces-consumer','react-common-content-controls-consumer','react-composite-patterns-consumer'] :
     ['token-only-consumer','react-vite-cpq-consumer', ...(formBatch ? ['react-form-batch-consumer'] : []), ...(runId === 'fluent-complete-region-1' ? ['react-complete-region-consumer'] : []), ...(runId === 'fluent-directory-actions-1' ? ['react-directory-actions-consumer'] : []), ...(platformSurfacesBatch ? ['react-platform-surfaces-consumer'] : []), ...(commonContentControlsBatch ? ['react-common-content-controls-consumer'] : []), ...(compositePatternsBatch ? ['react-composite-patterns-consumer'] : [])];
   for (const name of consumerNames) {
     const destination = join(work,stage,name);
@@ -121,7 +127,7 @@ if (stage === 'prepare') {
     await run(node22,['run','verify'],destination,`${name}-verify.txt`);
     const sharedRoot = join(destination,'node_modules/@phantasywind/nidec-app-ui-design');
     const installed = await files(sharedRoot);
-    const expected = inspectArchive(archive).files;
+    const expected = inspectCandidateArchive(archive).files;
     assert.equal(installed.length,Object.keys(expected).length);
     for (const [path,digest] of Object.entries(expected)) assert.equal(hash(await readFile(join(sharedRoot,path))),digest);
     const lock = JSON.parse(await readFile(join(destination,'package-lock.json'),'utf8'));

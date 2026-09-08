@@ -12,7 +12,8 @@ describe('generated CSS isolation', () => {
     expect(css).toContain('@layer nidec-ui');
     expect(css).toContain('[data-nidec-ui] {');
     expect(css).not.toMatch(/:root|\bhtml\b|\bbody\b/);
-    expect(css).not.toContain('#009b4a');
+    expect(css).toContain('--nidec-ui-color-brand:');
+    expect(css).not.toContain('SCAFFOLD FIXTURE ONLY');
   });
 
   it('keeps composite-pattern styles inside the host and package namespace', async () => {

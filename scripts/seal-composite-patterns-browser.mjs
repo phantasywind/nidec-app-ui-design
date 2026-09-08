@@ -5,7 +5,8 @@ import { join, relative, resolve } from 'node:path';
 
 const root = resolve(import.meta.dirname, '..');
 const runId = process.argv[2] ?? 'fluent-composite-patterns-2';
-assert(/^fluent-composite-patterns-[1-9][0-9]*$/.test(runId));
+assert(/^fluent-composite-patterns-[1-9][0-9]*$/.test(runId) || runId === 'release-0-1-0-rc-1');
+const requiresDataTable = runId === 'fluent-composite-patterns-3' || runId === 'release-0-1-0-rc-1';
 const paths = process.argv.slice(3);
 assert(paths.length > 0 && paths.every(path => /^browser-[1-9][0-9]*$/.test(path)), 'Browser evidence paths are required');
 const run = join(root, '.qualification/runs', runId);
@@ -28,8 +29,27 @@ for (const path of paths) {
     if (!audit.axe || audit.collectionItems !== 3) continue;
     assert.equal(audit.galleryItems, 4, `${path}/${name} gallery item count`);
     assert.equal(audit.stageItems, 4, `${path}/${name} stage item count`);
+    if (requiresDataTable) {
+      assert.equal(audit.dataTableRows, 3, `${path}/${name} data table row count`);
+      assert.equal(audit.dataTableHeaders, 6, `${path}/${name} data table header count`);
+      assert(audit.dataTableRegionScrollable, `${path}/${name} data table lacks bounded horizontal overflow`);
+    }
     assert.equal(audit.currentStages, 1, `${path}/${name} current stage count`);
     assert.equal(audit.disabledStages, 1, `${path}/${name} disabled stage count`);
+    if (audit.processDisplay === 'flex') {
+      for (const [index, geometry] of audit.stageGeometry.entries()) {
+        assert(geometry.buttonWidth < geometry.itemWidth, `${path}/${name} stage ${index} still uses the full column hit area`);
+        if (geometry.nextMarkerLeft !== null) {
+          assert(Math.abs(geometry.connectorStartX - geometry.markerRight) <= 1, `${path}/${name} stage ${index} connector overlaps its marker`);
+          assert(Math.abs(geometry.connectorEndX - geometry.nextMarkerLeft) <= 1, `${path}/${name} stage ${index} connector misses the next marker edge`);
+        }
+      }
+    } else {
+      for (const [index, geometry] of audit.stageGeometry.entries()) if (geometry.nextMarkerLeft !== null) {
+        assert(Math.abs(geometry.connectorX - geometry.markerCenterX) <= 1, `${path}/${name} vertical stage ${index} connector is not centered`);
+        assert(Math.abs(geometry.connectorStartY - geometry.markerBottom) <= 1, `${path}/${name} vertical stage ${index} connector overlaps its marker`);
+      }
+    }
     assert(audit.viewport.scrollWidth <= audit.viewport.width, `${path}/${name} has horizontal overflow`);
     assert.equal(audit.axe.violations.length, 0, `${path}/${name} has axe violations`);
     for (const item of audit.axe.incomplete) {

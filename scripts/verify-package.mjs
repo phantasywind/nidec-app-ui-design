@@ -2,10 +2,11 @@ import { createHash } from 'node:crypto';
 import { readFile, rm, mkdir, writeFile } from 'node:fs/promises';
 import { join, resolve, sep } from 'node:path';
 import { spawnSync } from 'node:child_process';
-import { inspectArchive } from './qualification-contract.mjs';
+import { inspectReleaseArchive, RELEASE_FILES, RELEASE_PACKAGE_NAME, RELEASE_PACKAGE_VERSION } from './release-contract.mjs';
 
 const repositoryRoot = resolve(import.meta.dirname, '..');
 const packPath = resolve(repositoryRoot, '.pack');
+const cachePath = resolve(repositoryRoot, '.tmp', 'fluent-npm-cache');
 const npmCliPath = process.env.npm_execpath;
 
 function assert(condition, message) {
@@ -18,6 +19,7 @@ assert(packPath === `${repositoryRoot}${sep}.pack`, `Unexpected pack path: ${pac
 assert(typeof npmCliPath === 'string' && npmCliPath.length > 0, 'npm_execpath is required for exact npm execution.');
 await rm(packPath, { force: true, recursive: true });
 await mkdir(packPath, { recursive: true });
+await mkdir(cachePath, { recursive: true });
 
 const packResult = spawnSync(
   process.execPath,
@@ -25,7 +27,7 @@ const packResult = spawnSync(
   {
     cwd: repositoryRoot,
     encoding: 'utf8',
-    env: process.env,
+    env: { ...process.env, npm_config_cache: cachePath, npm_config_audit: 'false', npm_config_fund: 'false' },
     maxBuffer: 10 * 1024 * 1024,
   },
 );
@@ -39,20 +41,10 @@ assert(packResult.status === 0, `npm pack failed with exit code ${packResult.sta
 const parsed = JSON.parse(packResult.stdout);
 assert(Array.isArray(parsed) && parsed.length === 1, 'npm pack must produce exactly one artifact record.');
 const artifact = parsed[0];
-assert(artifact.name === '@phantasywind/nidec-app-ui-design', 'Unexpected packed package name.');
-assert(artifact.version === '0.0.0-development', 'Unexpected packed package version.');
+assert(artifact.name === RELEASE_PACKAGE_NAME, 'Unexpected packed package name.');
+assert(artifact.version === RELEASE_PACKAGE_VERSION, 'Unexpected packed package version.');
 
-const expectedFiles = [
-  'README.md',
-  'dist/index.d.ts',
-  'dist/index.js',
-  'dist/styles.css',
-  'dist/styles.css.d.ts',
-  'dist/tokens.css',
-  'dist/tokens.css.d.ts',
-  'dist/tokens.json',
-  'package.json',
-];
+const expectedFiles = RELEASE_FILES;
 const actualFiles = artifact.files.map((file) => file.path.replaceAll('\\', '/')).sort();
 assert(
   JSON.stringify(actualFiles) === JSON.stringify(expectedFiles),
@@ -61,7 +53,7 @@ assert(
 
 const artifactPath = join(packPath, artifact.filename);
 const artifactBytes = await readFile(artifactPath);
-const archiveEvidence = inspectArchive(artifactBytes);
+const archiveEvidence = inspectReleaseArchive(artifactBytes);
 const sha256 = createHash('sha256').update(artifactBytes).digest('hex');
 const evidence = {
   package: artifact.name,
