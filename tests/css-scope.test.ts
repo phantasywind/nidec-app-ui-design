@@ -15,11 +15,13 @@ describe('generated CSS isolation', () => {
     expect(css).not.toContain('#009b4a');
   });
 
-  it('keeps custom component styles empty for the native Button prototype', async () => {
+  it('keeps composite-pattern styles inside the host and package namespace', async () => {
     const css = await readFile(join(repositoryRoot, 'dist', 'styles.css'), 'utf8');
 
     expect(css).toContain('@layer nidec-ui');
-    expect(css).not.toContain('[data-nidec-ui]');
-    expect(css).not.toMatch(/\.[a-zA-Z_-][a-zA-Z0-9_-]*\s*\{/);
+    expect(css).toContain(':where([data-nidec-ui]) .nidec-ui-collection-list');
+    expect(css).toContain(':where([data-nidec-ui]) .nidec-ui-card-gallery');
+    expect(css).toContain(':where([data-nidec-ui]) .nidec-ui-process-stage');
+    expect(css).not.toMatch(/(^|\})\s*\.(?!nidec-ui-)/);
   });
 });

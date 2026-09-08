@@ -6,6 +6,7 @@ const extensionKey = 'com.nidec.ui.scaffold';
 const repositoryRoot = resolve(import.meta.dirname, '..');
 const sourcePath = join(repositoryRoot, 'tokens', 'fixtures', 'scaffold.tokens.json');
 const stylesPath = join(repositoryRoot, 'styles');
+const componentSourcePath = join(stylesPath, 'components.css');
 const distPath = join(repositoryRoot, 'dist');
 
 function assert(condition, message) {
@@ -101,7 +102,9 @@ const cssDeclarations = tokens
   .map((token) => `    ${toCssVariable(token.path)}: ${toCssValue(token)};`)
   .join('\n');
 const tokenCss = `/* ${fixtureMarker} */\n@layer nidec-ui {\n  [data-nidec-ui] {\n${cssDeclarations}\n  }\n}\n`;
-const componentCss = `/* ${fixtureMarker} */\n@layer nidec-ui {\n}\n`;
+const componentCss = await readFile(componentSourcePath, 'utf8');
+assert(componentCss.includes(`/* ${fixtureMarker} */`), 'Component stylesheet marker is missing.');
+assert(componentCss.includes('@layer nidec-ui'), 'Component stylesheet layer is missing.');
 const tokenJson = `${JSON.stringify(metadata, null, 2)}\n`;
 const stylesheetDeclaration = 'declare const stylesheet: string;\nexport default stylesheet;\n';
 

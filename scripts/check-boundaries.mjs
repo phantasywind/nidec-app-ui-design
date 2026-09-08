@@ -154,6 +154,7 @@ if (distFiles.length > 0) {
     'AppItem', 'AppItemStatic', 'Hamburger',
     'Tree', 'TreeItem', 'TreeItemLayout',
     'Accordion', 'AccordionItem', 'AccordionHeader', 'AccordionPanel',
+    'CollectionList', 'CollectionListItem', 'CardGallery', 'CardGalleryItem', 'ProcessStageIndicator',
     'SearchBox', 'SpinButton', 'Slider',
     'ToggleButton', 'MenuButton', 'SplitButton',
     'Label', 'InfoLabel', 'Divider',

@@ -34,7 +34,11 @@ for (const root of ['styles', 'dist']) {
     declaredVariables.every((variable) => variable.startsWith('--nidec-ui-fixture-')),
     `${root}/tokens.css contains an unapproved variable namespace.`,
   );
-  assert(!componentCss.includes('[data-nidec-ui]'), `${root}/styles.css stays empty; Fluent runtime CSS requires browser qualification.`);
+  assert(componentCss.includes('.nidec-ui-process-stage'), `${root}/styles.css is missing the governed composite-pattern styles.`);
+  for (const line of componentCss.replaceAll(/\/\*[\s\S]*?\*\//g, '').split(/\r?\n/).map(value => value.trim())) {
+    if (!line.endsWith('{') || line.startsWith('@')) continue;
+    assert(line.includes(':where([data-nidec-ui])'), `${root}/styles.css contains an unscoped selector: ${line}`);
+  }
 }
 
 console.log('Scoped fixture CSS contract verified.');

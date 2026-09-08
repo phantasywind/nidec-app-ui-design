@@ -14,6 +14,7 @@ assert(/^[a-z0-9][a-z0-9-]{0,63}$/.test(runId), 'Invalid run ID');
 const formBatch = ['fluent-form-batch-1', 'nidec-light-theme-1'].includes(runId);
 const platformSurfacesBatch = runId === 'fluent-platform-surfaces-1';
 const commonContentControlsBatch = ['fluent-common-content-controls-1', 'fluent-common-content-controls-2', 'fluent-common-content-controls-3'].includes(runId);
+const compositePatternsBatch = /^fluent-composite-patterns-[1-9][0-9]*$/.test(runId);
 const work = join(root, '.tmp', runId);
 const evidence = join(root, '.qualification', 'runs', runId);
 const cache = join(root, '.tmp', 'fluent-npm-cache');
@@ -102,7 +103,7 @@ if (stage === 'prepare') {
   await mkdir(join(evidence,stage));
   const results = [];
   const consumerNames = stage === 'baseline-node22' ? ['react-vite-cpq-consumer'] :
-    ['token-only-consumer','react-vite-cpq-consumer', ...(formBatch ? ['react-form-batch-consumer'] : []), ...(runId === 'fluent-complete-region-1' ? ['react-complete-region-consumer'] : []), ...(runId === 'fluent-directory-actions-1' ? ['react-directory-actions-consumer'] : []), ...(platformSurfacesBatch ? ['react-platform-surfaces-consumer'] : []), ...(commonContentControlsBatch ? ['react-common-content-controls-consumer'] : [])];
+    ['token-only-consumer','react-vite-cpq-consumer', ...(formBatch ? ['react-form-batch-consumer'] : []), ...(runId === 'fluent-complete-region-1' ? ['react-complete-region-consumer'] : []), ...(runId === 'fluent-directory-actions-1' ? ['react-directory-actions-consumer'] : []), ...(platformSurfacesBatch ? ['react-platform-surfaces-consumer'] : []), ...(commonContentControlsBatch ? ['react-common-content-controls-consumer'] : []), ...(compositePatternsBatch ? ['react-composite-patterns-consumer'] : [])];
   for (const name of consumerNames) {
     const destination = join(work,stage,name);
     await mkdir(destination,{recursive:true});

@@ -1,0 +1,103 @@
+.composite-fixture {
+  background: var(--colorNeutralBackground2);
+  box-sizing: border-box;
+  color: var(--colorNeutralForeground1);
+  font-family: var(--fontFamilyBase);
+  min-height: 100vh;
+  padding: var(--spacingVerticalXXL) var(--spacingHorizontalXXL);
+}
+
+.composite-fixture .page-header,
+.composite-fixture main {
+  margin-inline: auto;
+  max-width: 80rem;
+}
+
+.composite-fixture .page-header,
+.composite-fixture .section-heading {
+  align-items: end;
+  display: flex;
+  gap: var(--spacingHorizontalL);
+  justify-content: space-between;
+}
+
+.composite-fixture h1,
+.composite-fixture h2,
+.composite-fixture h3,
+.composite-fixture p {
+  margin-block: 0;
+}
+
+.composite-fixture h1 {
+  font-size: var(--fontSizeHero800);
+  line-height: var(--lineHeightHero800);
+}
+
+.composite-fixture h2 {
+  font-size: var(--fontSizeBase500);
+  line-height: var(--lineHeightBase500);
+}
+
+.composite-fixture h3 {
+  font-size: var(--fontSizeBase400);
+  line-height: var(--lineHeightBase400);
+}
+
+.composite-fixture .eyebrow,
+.composite-fixture .stage-result {
+  color: var(--colorBrandForeground1);
+  font-weight: var(--fontWeightSemibold);
+}
+
+.composite-fixture main {
+  display: grid;
+  gap: var(--spacingVerticalXXL);
+  margin-block-start: var(--spacingVerticalXXL);
+}
+
+.composite-fixture section {
+  background: var(--colorNeutralBackground1);
+  border: var(--strokeWidthThin) solid var(--colorNeutralStroke1);
+  border-radius: var(--borderRadiusLarge);
+  display: grid;
+  gap: var(--spacingVerticalL);
+  padding: var(--spacingVerticalXL) var(--spacingHorizontalXL);
+}
+
+.composite-fixture .section-heading p,
+.composite-fixture .page-header > p {
+  color: var(--colorNeutralForeground3);
+  max-width: 36rem;
+}
+
+.composite-fixture .record-marker {
+  align-items: center;
+  background: var(--colorBrandBackground2);
+  border-radius: var(--borderRadiusCircular);
+  color: var(--colorBrandForeground1);
+  display: inline-flex;
+  height: 2rem;
+  justify-content: center;
+  width: 2rem;
+}
+
+@media (max-width: 720px) {
+  .composite-fixture {
+    padding: var(--spacingVerticalL) var(--spacingHorizontalM);
+  }
+
+  .composite-fixture .page-header,
+  .composite-fixture .section-heading {
+    align-items: start;
+    display: grid;
+  }
+
+  .composite-fixture h1 {
+    font-size: var(--fontSizeBase600);
+    line-height: var(--lineHeightBase600);
+  }
+
+  .composite-fixture section {
+    padding: var(--spacingVerticalL) var(--spacingHorizontalM);
+  }
+}

@@ -33,10 +33,13 @@ const commonContentControls = [
   'Avatar', 'AvatarGroup', 'AvatarGroupItem', 'AvatarGroupPopover', 'Persona',
   'Tag', 'TagGroup', 'Popover', 'PopoverTrigger', 'PopoverSurface',
 ] as const;
+const compositePatterns = [
+  'CollectionList', 'CollectionListItem', 'CardGallery', 'CardGalleryItem', 'ProcessStageIndicator',
+] as const;
 
 describe('Fluent public boundary', () => {
   it('exports exactly the approved API and preserves upstream composition identity', () => {
-    expect(Object.keys(shared).sort()).toEqual(['Button', 'IconButton', 'NidecProvider', 'nidecLightTheme', ...compositions, ...platformSurfaces, ...commonContentControls].sort());
+    expect(Object.keys(shared).sort()).toEqual(['Button', 'IconButton', 'NidecProvider', 'nidecLightTheme', ...compositions, ...platformSurfaces, ...commonContentControls, ...compositePatterns].sort());
     for (const name of [...compositions, ...platformSurfaces, ...commonContentControls]) expect(shared[name]).toBe(upstream[name]);
   });
   it('forwards an explicit theme and establishes a host', () => {
