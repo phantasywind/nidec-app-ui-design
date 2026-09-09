@@ -61,10 +61,12 @@ describe('consumer-neutral composite patterns', () => {
   it('keeps stage hover bounded and connectors outside marker geometry', async () => {
     const source = await readFile(join(repositoryRoot, 'src', 'index.ts'), 'utf8');
     const css = await readFile(join(repositoryRoot, 'styles', 'components.css'), 'utf8');
+    const sealSource = await readFile(join(repositoryRoot, 'scripts', 'seal-composite-patterns-browser.mjs'), 'utf8');
     expect(source).toContain("appearance: 'transparent'");
     expect(source).toContain("className: 'nidec-ui-process-stage__layout'");
     expect(css).toContain('width: fit-content');
     expect(css).toContain('max-width: calc(100% - var(--spacingHorizontalXS))');
+    expect(sealSource).toContain('axe-color-contrast-incomplete:scrollable-table-clipping-at-720');
     expect(css).toContain('inset-inline-start: calc(var(--spacingHorizontalXS) + 1.5rem + var(--strokeWidthThin) + var(--strokeWidthThin) + var(--strokeWidthThin))');
     expect(css).toContain('inset-block-start: calc(var(--spacingVerticalXS) + 1.5rem + var(--strokeWidthThin) + var(--strokeWidthThin) + var(--strokeWidthThin))');
     expect(css).not.toContain('inset-inline: calc(50% + 1.25rem)');

@@ -54,8 +54,14 @@ for (const path of paths) {
     assert.equal(audit.axe.violations.length, 0, `${path}/${name} has axe violations`);
     for (const item of audit.axe.incomplete) {
       assert.equal(item.id, 'color-contrast', `${path}/${name} has unexpected incomplete result`);
-      assert(item.nodes.every(node => node.html.includes('nidec-ui-process-stage__marker') || node.html.includes('nidec-ui-process-stage__description')), `${path}/${name} has unexpected contrast target`);
-      limitations.add('axe-color-contrast-incomplete:process-stage-overlap');
+      for (const node of item.nodes) {
+        const processStageOverlap = node.html.includes('nidec-ui-process-stage__marker') || node.html.includes('nidec-ui-process-stage__description');
+        const scrollableTableClipping = requiresDataTable && audit.viewport.width === 720 && audit.dataTableRegionScrollable &&
+          node.html.includes('fui-TableHeaderCell__button') && node.any?.every(check => check.data?.messageKey === 'elmPartiallyObscured');
+        assert(processStageOverlap || scrollableTableClipping, `${path}/${name} has unexpected contrast target`);
+        if (processStageOverlap) limitations.add('axe-color-contrast-incomplete:process-stage-overlap');
+        if (scrollableTableClipping) limitations.add('axe-color-contrast-incomplete:scrollable-table-clipping-at-720');
+      }
     }
     assert(audit.contrastPairs.length >= 7 && audit.contrastPairs.every(pair => pair.ratio >= 4.5), `${path}/${name} manual contrast check failed`);
     assert(audit.injectedStyles.length > 0 && audit.injectedStyles.every(style => style.nonceMatches && style.rules > 0), `${path}/${name} has invalid dynamic style nonce`);
