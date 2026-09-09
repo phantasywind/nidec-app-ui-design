@@ -12,7 +12,7 @@ CPQ and EPM are the initial reference consumers used to establish and verify the
 - [ADR-0001: Repository and distribution governance](docs/decisions/0001-repository-and-distribution-governance.md)
 - [Gated delivery roadmap](docs/roadmap.md)
 
-The first complete shared surface is being hardened as release candidate `0.1.0-rc.1`. It remains unpublished until the explicit Stage 5 authorization gate. Historical development artifacts do not qualify or identify the release-candidate bytes.
+The first complete shared surface is published as immutable pre-release `0.1.0-rc.1` through GitHub Packages and the matching [GitHub Release](https://github.com/phantasywind/nidec-app-ui-design/releases/tag/v0.1.0-rc.1). Its qualified archive SHA-256 is `66f199f1b66b34968851cd020d31be7a0b731d44457fc5135ef7f148bfeae91c`. This publication enables controlled application qualification; it is not a stable `0.1.0`, independent application acceptance, deployment approval or Production approval.
 
 ## Fluent React package
 
