@@ -98,8 +98,8 @@
     content: "";
     height: var(--strokeWidthThick);
     inset-block-start: calc(var(--spacingVerticalXS) + 0.75rem);
-    inset-inline-end: calc(0px - var(--spacingHorizontalXS) - var(--spacingHorizontalXS));
-    inset-inline-start: calc(var(--spacingHorizontalXS) + 1.5rem);
+    inset-inline-end: calc(0px - var(--spacingHorizontalXS) - var(--spacingHorizontalXS) - var(--strokeWidthThin));
+    inset-inline-start: calc(var(--spacingHorizontalXS) + 1.5rem + var(--strokeWidthThin) + var(--strokeWidthThin) + var(--strokeWidthThin));
     position: absolute;
     transform: translateY(-50%);
   }
@@ -183,9 +183,9 @@
   :where([data-nidec-ui]) .nidec-ui-process-stage--vertical .nidec-ui-process-stage__item:not(:last-child)::after {
     height: auto;
     inset-block-end: calc(0px - var(--spacingVerticalXS) - var(--spacingVerticalXS));
-    inset-block-start: calc(var(--spacingVerticalXS) + 1.5rem);
+    inset-block-start: calc(var(--spacingVerticalXS) + 1.5rem + var(--strokeWidthThin) + var(--strokeWidthThin) + var(--strokeWidthThin));
     inset-inline-end: auto;
-    inset-inline-start: calc(var(--spacingHorizontalXS) + 0.75rem);
+    inset-inline-start: calc(var(--spacingHorizontalXS) + 0.75rem + var(--strokeWidthThin) + var(--strokeWidthThin));
     transform: translateX(-50%);
     width: var(--strokeWidthThick);
   }
@@ -213,9 +213,9 @@
     :where([data-nidec-ui]) .nidec-ui-process-stage--responsive .nidec-ui-process-stage__item:not(:last-child)::after {
       height: auto;
       inset-block-end: calc(0px - var(--spacingVerticalXS) - var(--spacingVerticalXS));
-      inset-block-start: calc(var(--spacingVerticalXS) + 1.5rem);
+      inset-block-start: calc(var(--spacingVerticalXS) + 1.5rem + var(--strokeWidthThin) + var(--strokeWidthThin) + var(--strokeWidthThin));
       inset-inline-end: auto;
-      inset-inline-start: calc(var(--spacingHorizontalXS) + 0.75rem);
+      inset-inline-start: calc(var(--spacingHorizontalXS) + 0.75rem + var(--strokeWidthThin) + var(--strokeWidthThin));
       transform: translateX(-50%);
       width: var(--strokeWidthThick);
     }
