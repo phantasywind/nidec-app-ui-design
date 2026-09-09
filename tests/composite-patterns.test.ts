@@ -64,6 +64,7 @@ describe('consumer-neutral composite patterns', () => {
     expect(source).toContain("appearance: 'transparent'");
     expect(source).toContain("className: 'nidec-ui-process-stage__layout'");
     expect(css).toContain('width: fit-content');
+    expect(css).toContain('max-width: calc(100% - var(--spacingHorizontalXS))');
     expect(css).toContain('inset-inline-start: calc(var(--spacingHorizontalXS) + 1.5rem + var(--strokeWidthThin) + var(--strokeWidthThin) + var(--strokeWidthThin))');
     expect(css).toContain('inset-block-start: calc(var(--spacingVerticalXS) + 1.5rem + var(--strokeWidthThin) + var(--strokeWidthThin) + var(--strokeWidthThin))');
     expect(css).not.toContain('inset-inline: calc(50% + 1.25rem)');

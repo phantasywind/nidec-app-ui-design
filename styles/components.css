@@ -122,6 +122,10 @@
     z-index: 1;
   }
 
+  :where([data-nidec-ui]) .nidec-ui-process-stage__button {
+    max-width: calc(100% - var(--spacingHorizontalXS));
+  }
+
   :where([data-nidec-ui]) .nidec-ui-process-stage__layout {
     display: grid;
     gap: var(--spacingVerticalXS);
