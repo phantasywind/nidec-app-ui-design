@@ -1,14 +1,16 @@
 # Nidec App UI Deployment 交接记录
 
-状态：PUBLISHED RC READY FOR DEPLOYMENT COORDINATION / SHARED MAINLINE REMAINS HERE。
+状态：HISTORICAL / SUPERSEDED BY DIRECT CONSUMER ADOPTION WORKFLOW。
 
 首次交接：2026-09-07。正式发布更新：2026-09-09。
 
 本次更新取代本文较早的“开发候选、尚未发布”身份。采用应用只能消费下述正式发布的精确版本；本文后文提到的旧运行和旧 SHA 仅保留为历史资格证据，不得安装或重新标记。
 
-## 职责转移
+2026-09-10流程变更：Locke决定不再使用独立Deployment任务作为后续中转。共享仓库只维护README中的通用、版本化接入方法；Locke将该方法转发给各App对话，各App在自己的仓库和对话中完成安装、实施、证据、回退、验收与部署。本仓库不再新增App专属部署/交接记录。本文仅保留为职责演变和`0.1.0-rc.1`发布身份的历史证据，不再是活动任务入口。
 
-`Nidec App UI Deployment`自本记录起负责：
+## 2026-09-07原职责转移（历史）
+
+当时的`Nidec App UI Deployment`职责曾定义为：
 
 - 接收共享Design System的固定候选、校验值、资格证据和已知限制；
 - 与CPQ `02 UI设计与前端实现`协调现有`main`上的应用接入；
@@ -55,7 +57,7 @@
 - CPQ实施默认在既有`main`进行，未经Locke明确授权不得创建分支或worktree。
 - 不得自动commit、push、发布或部署。
 
-## Deployment任务建议的接手顺序
+## 原Deployment任务建议接手顺序（历史）
 
 1. 回读本记录、`docs/releases/0.1.0-rc.1.md`、`fluent-six-phase-execution.md`和权威资格目录；明确拒绝所有历史候选SHA。
 2. 先做发布后渠道验证：在全新隔离消费者中从GitHub Packages安装精确`@phantasywind/nidec-app-ui-design@0.1.0-rc.1`和`@fluentui/react-components@9.74.7`，冻结lock，并比较安装内容与Release tgz。认证只能通过应用环境的凭据机制提供，不得记录token。

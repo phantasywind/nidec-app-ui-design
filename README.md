@@ -49,3 +49,18 @@ npm install --save-exact @phantasywind/nidec-app-ui-design@0.1.0-rc.1 @fluentui/
 ```
 
 The application must already use a qualified exact React/React DOM 19.2.x pair. Do not use `latest`, ranges, Git URLs, or `main`. A built application does not contact GitHub at runtime.
+
+## Consumer-owned adoption method
+
+Locke forwards the version-specific method below to each adopting application's own task. The application performs and records all work in its own repository and conversation; this Design System repository does not create per-application deployment files.
+
+1. Read the target application's governance and confirm authorization, branch/checkout policy, current HEAD, dirty work, occupied files and rollback point before changing anything.
+2. Confirm compatibility with the published peers: exact Fluent `9.74.7` and one exact compatible React/React DOM 19.2.x pair. Record unresolved application semantics as `Business Rule Pending`; do not move API, RBAC, routing or state-machine behavior into the shared package.
+3. Configure credential-managed access to GitHub Packages without recording a token, install the two exact versions shown above, and commit the consumer lockfile. Never install from `main`, a Git URL, a dist-tag, a version range or an old local candidate.
+4. Verify the resolved package version, lockfile identity and single React/React DOM/Fluent resolution. For a first adoption of a release, compare the installed package content with the matching GitHub Release archive and SHA-256 record.
+5. Replace coherent UI regions using Fluent-owned appearance and states. Exclude legacy decorations at the integration boundary; do not layer the old skin over Fluent. Preserve application-owned events, values, focus, submission, permissions, requests and recovery behavior.
+6. Run the application's typecheck, tests and production build, then validate actual host CSS and pseudo-elements, 1440/1280/900/720 layouts, keyboard paths including Tab/Shift+Tab/Escape, dialogs/portals, CSP and relevant resource/size changes.
+7. Keep self-test, independent acceptance, deployment and Production approval as separate gates. Report the exact version, scope, evidence, limitations and rollback to Locke before advancing.
+8. If a shared component or contract is deficient, return the smallest reproducible public-contract issue to this repository. Do not hide it with a permanent application-only override; a shared correction requires a new immutable package version.
+
+The published release record supplies the authoritative source commit, artifact name, checksum and known package-level limits. Each application remains responsible for its own compatibility and acceptance evidence.
