@@ -35,6 +35,7 @@ const commonContentControls = [
 ] as const;
 const compositePatterns = [
   'CollectionList', 'CollectionListItem', 'CardGallery', 'CardGalleryItem', 'ProcessStageIndicator',
+  'RecordIdentityCellLayout',
 ] as const;
 
 describe('Fluent public boundary', () => {

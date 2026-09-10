@@ -157,6 +157,7 @@ if (distFiles.length > 0) {
     'Tree', 'TreeItem', 'TreeItemLayout',
     'Accordion', 'AccordionItem', 'AccordionHeader', 'AccordionPanel',
     'CollectionList', 'CollectionListItem', 'CardGallery', 'CardGalleryItem', 'ProcessStageIndicator',
+    'RecordIdentityCellLayout',
     'SearchBox', 'SpinButton', 'Slider',
     'ToggleButton', 'MenuButton', 'SplitButton',
     'Label', 'InfoLabel', 'Divider',

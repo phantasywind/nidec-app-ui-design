@@ -37,6 +37,35 @@ Gallery是开发和治理工具，不是生产业务组件。标准页面依次�
 - 2026-09-08应Locke预览反馈，综合消费者补入Data Table型列表：6列表头、3条合成记录、长名称、三种状态Badge、更新时间与行操作；720等窄屏采用表格区域内部滚动，不扩大整页宽度。当前Node 22真实tgz消费者类型及生产构建通过，并完成本地视觉/语义检查。该补充只使用候选中已资格化的Table/Badge/Button接口，因此包字节与`84172cf5...db6fc`哈希不变；不把本次示例扩展描述为新的包发布或应用验收。
 - 2026-09-08发布收口修正预览发现的Stage视觉问题：可交互范围由整列缩为内容边界，Fluent按钮采用透明外观，横向/纵向连接线从当前marker边缘开始并在下一marker边缘结束，不再穿过marker或由hover底色遮盖。该变更需要绑定`0.1.0-rc.1`新候选重新进行浏览器资格验证；旧`84172cf5...db6fc`证据不转移。
 
+## 发布后Table信息层级补充（主线未发布）
+
+2026-09-10消费端只读核对确认：`0.1.0-rc.1`中的`CollectionListItem`已治理primary/secondary层级，但Table/DataGrid只提供Fluent结构组件，Gallery示例没有把record identity、普通字段和supporting metadata的层级形成可执行公共合同。应用使用`strong`/`small`自行决定视觉层级可能令同一行多个字段同时成为primary。
+
+主线新增薄组合`RecordIdentityCellLayout`，仅包装Fluent `TableCellLayout`并固定`appearance="primary"`。消费者必须显式传入`primary`，可选传入`secondary`、`media`和`truncate`等稳定上游布局属性；组件不渲染`TableCell`或`DataGridCell`，不拥有列、行、排序、选择、分页、状态映射、动作或业务字段，因此可在两类表格单元格中使用。
+
+公共呈现规则：
+
+- 每个数据行只指定一个primary record identity，使用Fluent primary cell layout的semibold主文本；应用负责决定哪个字段是该记录的身份。
+- 其他独立业务字段保持Fluent默认regular层级；字段业务重要性不自动产生第二个视觉primary。
+- 与主身份属于同一单元格的supporting metadata通过`secondary`进入Fluent description槽，使用上游Caption层级和弱化前景色。
+- 状态仅使用共享导出的`Badge`表达其受控tone/appearance，不叠加页面字重或颜色。
+- 表头使用共享导出的Fluent Table/DataGrid Header组件，不叠加应用字体皮肤；列名、排序和`aria-sort`仍归消费者。
+- `RecordIdentityCellLayout`不能在TypeScript层跨兄弟单元格证明“一行唯一”；该约束由Gallery正例、公共测试、代码评审和消费端采用检查共同治理。不得为此创建包含业务列模型的`DirectoryTable`。
+
+该能力位于`0.1.0-rc.1`之后的未发布主线，不能追溯声称为已发布RC合同，也不修改或覆盖该版本。现有RC消费者可临时直接使用Fluent `TableCellLayout appearance="primary"`及`description`槽而无需页面字体CSS；正式消费`RecordIdentityCellLayout`必须等待未来新版本发布。
+
+本轮主仓完整验证通过16个测试文件/79项测试，以及lint、严格类型、生产构建、CSS/颜色、七文件公共边界和采用合同检查；生成声明包含`RecordIdentityCellLayoutProps`和组件导出。直接在源fixture目录运行其`verify`不是有效tgz消费验证：该fixture manifest按资格设计不声明共享包，必须由资格脚本在隔离副本中注入真实归档；直接运行因此无法解析共享包，并同时命中fixture既有PostCSS类型环境问题。本轮不添加源码别名或本地依赖绕过包边界，真实tgz消费者与浏览器资格留到未来新版本候选阶段。
+
+## 发布后record-entry交互补充（主线未发布）
+
+2026-09-10针对应用中“整行点击、专用打开按钮、主字段链接”并存的问题完成Fluent官方模式核对。Fluent List把交互项建模为一个primary action和可选secondary actions，要求使用`onAction`而不是原始`onClick`，并按单动作`items`或多动作`composite`模式提供鼠标、Enter、Space和方向键合同。Fluent Link负责资源导航；Table/DataGrid的identity cell和cell actions应分离。
+
+共享治理采用语义规则而非要求应用理解Fluent内部模式：应用只声明静态/导航/命令、选择模式、次级动作及其业务目标；共享包决定呈现和键盘机制。单动作Collection List的目标模式是整项primary action；带选择或次级动作的List必须隔离选择、primary action和secondary actions；Table/DataGrid以唯一record identity Link进入记录，行本身不可作为隐藏链接；Dialog/Drawer等非导航命令使用显式按钮或菜单。每条记录禁止同时出现整行打开、重复identity Link和重复Open按钮。
+
+精确基线`@fluentui/react-components@9.74.7`解析到的`@fluentui/react-list@9.6.18`仍在其随包README声明不可用于产品，因此本轮不推翻既有决定、不直接转导出该List，也不临时重建其composite焦点系统。包内README已加入上述应用消费规则，并明确临时安全边界：在新的共享actionable-list API完成资格并发布前，record navigation使用现有Fluent Link作为primary内容，外围`CollectionListItem`保持非actionable。该说明不追溯改变不可变`0.1.0-rc.1`。
+
+README消费合同由自动测试固定；加入该检查后，完整`npm run verify`通过16个测试文件/80项测试，以及lint、严格类型、生产构建、CSS/颜色、七文件公共边界和采用记录检查。没有生成候选、修改版本或触发发布。
+
 ## 下一道门
 
-共享主线的List、Gallery、Design System Gallery结构和中立Process Stage视觉合同已具备。后续采用必须由`Nidec App UI Deployment`基于应用实际清单决定安装范围；业务BPF引擎、状态映射、权限和跳转仍由各应用所有。任何应用反馈若揭示共享缺陷，回到本仓库统一修复并生成新候选，不在应用侧叠加旧皮肤。
+共享主线的List、Gallery、Design System Gallery结构、中立Process Stage和Table record-identity视觉合同已具备。各应用对照自己的实际清单在其仓库和对话中决定采用范围；业务BPF引擎、状态映射、权限和跳转仍由各应用所有。任何应用反馈若揭示共享缺陷，回到本仓库统一修复并在获批后生成新版本，不在应用侧叠加旧皮肤。本轮Table层级补充尚未发布。

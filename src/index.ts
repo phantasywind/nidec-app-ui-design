@@ -1,7 +1,13 @@
 import { createElement } from 'react';
 import type { ComponentPropsWithRef, ComponentPropsWithoutRef, MouseEvent, ReactElement, ReactNode } from 'react';
-import { Button as FluentButton, Card as FluentCard, FluentProvider, createLightTheme } from '@fluentui/react-components';
-import type { BrandVariants, ButtonProps as FluentButtonProps, CardProps as FluentCardProps, FluentProviderProps, Theme } from '@fluentui/react-components';
+import {
+  Button as FluentButton, Card as FluentCard, FluentProvider,
+  TableCellLayout as FluentTableCellLayout, createLightTheme,
+} from '@fluentui/react-components';
+import type {
+  BrandVariants, ButtonProps as FluentButtonProps, CardProps as FluentCardProps,
+  FluentProviderProps, TableCellLayoutProps as FluentTableCellLayoutProps, Theme,
+} from '@fluentui/react-components';
 import { lightPalette as palette } from './internal/light-palette.mjs';
 
 // Deterministic sRGB interpolation. Derived states are UI mapping choices, not
@@ -183,6 +189,24 @@ export function CollectionListItem({ primary, secondary, selection, leading, met
       secondary === undefined ? null : createElement('span', { className: 'nidec-ui-collection-list__secondary' }, secondary)),
     metadata === undefined ? null : createElement('span', { className: 'nidec-ui-collection-list__metadata' }, metadata),
     actions === undefined ? null : createElement('span', { className: 'nidec-ui-collection-list__actions' }, actions));
+}
+
+export type RecordIdentityCellLayoutProps = Omit<FluentTableCellLayoutProps,
+  'appearance' | 'children' | 'description'> & {
+  primary: ReactNode;
+  secondary?: ReactNode;
+};
+
+/**
+ * Declares the single record identity within a consumer-owned Table/DataGrid row.
+ * The surrounding cell, row, columns and business meaning remain consumer-owned.
+ */
+export function RecordIdentityCellLayout({ primary, secondary, ...props }: RecordIdentityCellLayoutProps): ReactElement<FluentTableCellLayoutProps> {
+  return createElement(FluentTableCellLayout, {
+    ...props,
+    appearance: 'primary',
+    ...(secondary === undefined ? {} : { description: { children: secondary } }),
+  }, primary);
 }
 
 export type CardGalleryProps = Omit<ComponentPropsWithoutRef<'ul'>, 'children'> & {

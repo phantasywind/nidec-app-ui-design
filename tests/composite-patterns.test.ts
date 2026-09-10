@@ -5,7 +5,9 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 import {
   CardGallery, CardGalleryItem, CollectionList, CollectionListItem, ProcessStageIndicator,
+  RecordIdentityCellLayout, TableCellLayout,
 } from '../src/index';
+import type { RecordIdentityCellLayoutProps } from '../src/index';
 
 const stages = [
   { id: 'draft', label: 'Draft', status: 'completed', statusLabel: 'Completed' },
@@ -13,8 +15,35 @@ const stages = [
   { id: 'release', label: 'Release', status: 'upcoming', statusLabel: 'Upcoming', disabled: true },
 ] as const;
 const repositoryRoot = resolve(import.meta.dirname, '..');
+const recordIdentityContract: RecordIdentityCellLayoutProps = { primary: 'Example' };
+// @ts-expect-error The shared composition owns the primary appearance.
+const recordIdentityWithAppearance: RecordIdentityCellLayoutProps = { primary: 'Example', appearance: 'primary' };
+// @ts-expect-error Consumers use secondary rather than overriding the Fluent description slot.
+const recordIdentityWithDescription: RecordIdentityCellLayoutProps = { primary: 'Example', description: 'Supporting' };
+// @ts-expect-error Every identity layout requires explicit primary content.
+const recordIdentityWithoutPrimary: RecordIdentityCellLayoutProps = {};
+void [recordIdentityContract, recordIdentityWithAppearance, recordIdentityWithDescription, recordIdentityWithoutPrimary];
 
 describe('consumer-neutral composite patterns', () => {
+  it('declares one record identity layout without owning the surrounding table cell', () => {
+    const element = RecordIdentityCellLayout({
+      primary: 'Example Alpha',
+      secondary: 'Reference REC-1042',
+      truncate: true,
+    });
+    expect(element.type).toBe(TableCellLayout);
+    expect(element.props.appearance).toBe('primary');
+    expect(element.props.children).toBe('Example Alpha');
+    expect(element.props.description).toEqual({ children: 'Reference REC-1042' });
+    expect(element.props.truncate).toBe(true);
+
+    const html = renderToStaticMarkup(element);
+    expect(html).toContain('fui-TableCellLayout');
+    expect(html).toContain('Example Alpha');
+    expect(html).toContain('Reference REC-1042');
+    expect(html).not.toContain('<td');
+  });
+
   it('renders a semantic Fluent collection without owning selection meaning', () => {
     const html = renderToStaticMarkup(createElement(CollectionList, { density: 'compact', 'aria-label': 'Example records' },
       createElement(CollectionListItem, {
@@ -28,6 +57,15 @@ describe('consumer-neutral composite patterns', () => {
     expect(html).toContain('Updated today');
     expect(html).toContain('aria-label="Select record one"');
     expect(html).not.toContain('role="option"');
+  });
+
+  it('ships an explicit record-entry decision rule for adopting applications', async () => {
+    const readme = await readFile(join(repositoryRoot, 'README.md'), 'utf8');
+    expect(readme).toContain('## Record-entry interaction contract');
+    expect(readme).toContain('Each record has exactly one primary entry mechanism.');
+    expect(readme).toContain('do not implement this with a raw `<li onClick>`');
+    expect(readme).toContain('The row itself is not a hidden navigation target.');
+    expect(readme).toContain('does not retroactively add an interaction API to immutable `0.1.0-rc.1`');
   });
 
   it('renders a responsive semantic gallery with Fluent Cards', () => {

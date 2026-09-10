@@ -35,6 +35,24 @@ Button remains a text-only native-button interface, defaults to `type="button"`,
 
 `tokens.css`, `styles.css` and `tokens.json` are framework-neutral entrypoints generated from the governed ADR-0006 light-theme input. Nidec static CSS is explicitly imported; Fluent runtime styles are managed by its Provider/Griffel mechanism and do not require `styles.css` to activate. CSP, portal isolation and application acceptance remain separate qualification gates. No custom fonts, icon package contract or global reset is introduced.
 
+## Record-entry interaction contract
+
+An adopting application declares the meaning of a record collection; it does not choose raw Fluent navigation modes or invent a page-specific click convention. For every rendered collection, the application must identify whether the content is static, whether opening a record is URL navigation or an application command, whether records are selectable, and whether each item contains secondary actions. Routing, authorization and business effects remain application-owned.
+
+Use the following presentation rules:
+
+| Surface and semantics | Required record-entry interaction |
+| --- | --- |
+| Static collection | No row action, pointer cursor, action hover or keyboard action target. |
+| `CollectionList` with one record-opening action and no interactive descendants | The complete item is the single primary action. Mouse activation and keyboard activation must have the same result. |
+| `CollectionList` with selection or secondary actions | Keep selection and secondary controls independent. `Space` is reserved for selection and `Enter` for the primary action. Use composite keyboard behavior; do not implement this with a raw `<li onClick>`. |
+| `Table` or `DataGrid` containing records | Put the navigable record identity in the one primary cell as a semantic `Link`. The row itself is not a hidden navigation target. |
+| Dialog, drawer or non-navigation command | Use an explicitly labelled button or menu action rather than presenting the command as a link. |
+
+Each record has exactly one primary entry mechanism. Do not combine whole-row activation, a duplicate identity link and a duplicate `Open` button on the same record. Row-end buttons and menus are secondary actions only and must not trigger the record-entry action.
+
+The current shared `CollectionList` is a stable semantic/layout composition rather than a re-export of Fluent List. The Fluent List dependency resolved by the pinned Fluent `9.74.7` baseline still carries an upstream non-production-ready notice, so consumers must not import it through internal package paths or recreate its behavior with ungoverned click handlers. Until a qualified shared actionable-list API is published, use the semantic identity `Link` for record navigation and treat the surrounding `CollectionListItem` as non-actionable. This section governs the next package version; it does not retroactively add an interaction API to immutable `0.1.0-rc.1`.
+
 ## Exact-version consumption
 
 Configure the private GitHub Packages registry through the application's credential-managed npm setup, then install exact versions:

@@ -4,7 +4,7 @@ import { createDOMRenderer, RendererProvider } from '@fluentui/react-components'
 import {
   Button, CardGallery, CardGalleryItem, CardHeader, Checkbox, CollectionList, CollectionListItem,
   Badge, NidecProvider, ProcessStageIndicator, Table, TableBody, TableCell,
-  TableCellLayout, TableHeader, TableHeaderCell, TableRow, Tag, nidecLightTheme,
+  RecordIdentityCellLayout, TableHeader, TableHeaderCell, TableRow, Tag, nidecLightTheme,
 } from '@phantasywind/nidec-app-ui-design';
 import '@phantasywind/nidec-app-ui-design/styles.css';
 import './region.css';
@@ -23,9 +23,9 @@ const gallerySections = [
 ];
 
 const tableRecords = [
-  { id: 'REC-1042', name: 'Example Alpha', category: 'Standard', status: 'Ready', tone: 'success', updated: 'Today' },
-  { id: 'REC-1038', name: 'Example Beta with a longer descriptive name', category: 'Configured', status: 'Review', tone: 'warning', updated: 'Yesterday' },
-  { id: 'REC-1021', name: 'Example Gamma', category: 'Special', status: 'Blocked', tone: 'danger', updated: '3 days ago' },
+  { id: 'REC-1042', name: 'Example Alpha', owner: 'North engineering team', category: 'Standard', status: 'Ready', tone: 'success', updated: 'Today' },
+  { id: 'REC-1038', name: 'Example Beta with a longer descriptive name', owner: 'Central engineering team', category: 'Configured', status: 'Review', tone: 'warning', updated: 'Yesterday' },
+  { id: 'REC-1021', name: 'Example Gamma', owner: 'South engineering team', category: 'Special', status: 'Blocked', tone: 'danger', updated: '3 days ago' },
 ] as const;
 
 const stages = [
@@ -67,15 +67,15 @@ function App() {
       </section>
 
       <section aria-labelledby="table-heading">
-        <div className="section-heading"><div><h2 id="table-heading">Data Table List</h2><p>Fluent table structure for dense records, status, metadata, and row actions.</p></div><Tag appearance="outline">Scrollable</Tag></div>
+        <div className="section-heading"><div><h2 id="table-heading">Data Table List</h2><p>Each row declares one record identity; ordinary fields, status, metadata, and row actions retain distinct roles.</p></div><Tag appearance="outline">Scrollable</Tag></div>
         <div className="data-table-scroll" tabIndex={0} role="region" aria-label="Scrollable example records table">
           <Table aria-label="Example data records">
             <TableHeader><TableRow>
               <TableHeaderCell>ID</TableHeaderCell><TableHeaderCell>Name</TableHeaderCell><TableHeaderCell>Category</TableHeaderCell><TableHeaderCell>Status</TableHeaderCell><TableHeaderCell>Updated</TableHeaderCell><TableHeaderCell>Actions</TableHeaderCell>
             </TableRow></TableHeader>
             <TableBody>{tableRecords.map(record => <TableRow key={record.id}>
-              <TableCell><TableCellLayout>{record.id}</TableCellLayout></TableCell>
-              <TableCell><TableCellLayout>{record.name}</TableCellLayout></TableCell>
+              <TableCell>{record.id}</TableCell>
+              <TableCell><RecordIdentityCellLayout primary={record.name} secondary={record.owner} truncate /></TableCell>
               <TableCell>{record.category}</TableCell>
               <TableCell><Badge appearance="tint" color={record.tone}>{record.status}</Badge></TableCell>
               <TableCell>{record.updated}</TableCell>
@@ -83,7 +83,7 @@ function App() {
             </TableRow>)}</TableBody>
           </Table>
         </div>
-        <p className="table-note">Column meaning, sorting, selection, pagination, and data loading remain consumer-owned.</p>
+        <p className="table-note">The consumer designates exactly one record identity per row. Column meaning, sorting, selection, pagination, and data loading remain consumer-owned.</p>
       </section>
 
       <section aria-labelledby="gallery-heading">
