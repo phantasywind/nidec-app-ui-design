@@ -14,9 +14,11 @@ CPQ and EPM are the initial reference consumers used to establish and verify the
 
 The first complete shared surface is published as immutable pre-release `0.1.0-rc.1` through GitHub Packages and the matching [GitHub Release](https://github.com/phantasywind/nidec-app-ui-design/releases/tag/v0.1.0-rc.1). Its qualified archive SHA-256 is `66f199f1b66b34968851cd020d31be7a0b731d44457fc5135ef7f148bfeae91c`. This publication enables controlled application qualification; it is not a stable `0.1.0`, independent application acceptance, deployment approval or Production approval.
 
+The current source identifies the next immutable candidate as `0.1.0-rc.2`. Until its matching tag, GitHub Package, GitHub Release archive and SHA-256 record all exist and agree, applications must continue using the previously published exact version rather than treating `main` as consumable.
+
 ## Fluent React package
 
-The finite React surface covers governed forms, dialogs/drawers, feedback, navigation, menus, tables/data grids, cards, status/content controls, and the shared `CollectionList`, `CardGallery`, and `ProcessStageIndicator` compositions. Upstream Fluent contracts are preserved where components are directly exported; consumer business workflows remain outside this package. See [ADR-0003](docs/decisions/0003-fluent-ui-foundation.md), [batch scope](docs/decisions/0005-batched-form-components.md), and the [release-candidate record](docs/releases/0.1.0-rc.1.md).
+The finite React surface covers governed forms, dialogs/drawers, feedback, navigation, menus, tables/data grids, cards, status/content controls, and the shared `CollectionList`, `CardGallery`, `StageNavigator`, and `BusinessProcessFlow` compositions. `ProcessStageIndicator` remains only as a deprecated compatibility export. Upstream Fluent contracts are preserved where components are directly exported; consumer business workflows remain outside this package. See [ADR-0003](docs/decisions/0003-fluent-ui-foundation.md), [batch scope](docs/decisions/0005-batched-form-components.md), and the [release-candidate record](docs/releases/0.1.0-rc.1.md).
 
 React consumers explicitly install the exact qualified `@fluentui/react-components@9.74.7` alongside the exact shared-package version. React/React DOM and Fluent are external optional peers; optional means token-only consumers can omit them, not that React consumers can omit them. Commit the application lockfile to freeze transitive dependencies.
 
@@ -46,12 +48,75 @@ Use the following presentation rules:
 | Static collection | No row action, pointer cursor, action hover or keyboard action target. |
 | `CollectionList` with one record-opening action and no interactive descendants | The complete item is the single primary action. Mouse activation and keyboard activation must have the same result. |
 | `CollectionList` with selection or secondary actions | Keep selection and secondary controls independent. `Space` is reserved for selection and `Enter` for the primary action. Use composite keyboard behavior; do not implement this with a raw `<li onClick>`. |
-| `Table` or `DataGrid` containing records | Put the navigable record identity in the one primary cell as a semantic `Link`. The row itself is not a hidden navigation target. |
+| `Table` or `DataGrid` containing records | Use `RecordTableHeader` or `RecordDataGridHeader` to distinguish the header from data rows. Put the navigable record identity in the one primary cell as a semantic `Link`. The row itself is not a hidden navigation target. |
 | Dialog, drawer or non-navigation command | Use an explicitly labelled button or menu action rather than presenting the command as a link. |
 
-Each record has exactly one primary entry mechanism. Do not combine whole-row activation, a duplicate identity link and a duplicate `Open` button on the same record. Row-end buttons and menus are secondary actions only and must not trigger the record-entry action.
+Each record has exactly one primary entry mechanism. In a navigable Data Table/DataGrid, render that mechanism as a theme-governed Fluent `Link` with `inline` in the primary identity cell so it remains visibly underlined and distinct from ordinary data. Do not combine whole-row activation, a duplicate identity link and a duplicate `Open` button on the same record. Row-end buttons and menus are secondary actions only and must not trigger the record-entry action.
+
+Data Table and DataGrid direct row actions use `TableActionIconButton` inside Fluent `TableCellActions`; they do not use the text-labelled `Button`. `TableActionIconButton` fixes each direct row action to Fluent `appearance="transparent"`, `size="small"` and the standard rounded shape. With the pinned Fluent `9.74.7` baseline, this is a 24 x 24 CSS pixel target with a 20 x 20 icon: there is no persistent border, text label or filled backplate, while Fluent retains its hover, pressed, focus-visible and disabled states. Applications must not recreate the control with raw CSS or layer a legacy button skin over it.
+
+Every icon action requires both a non-empty `aria-label` and a visible-on-hover/focus `Tooltip` carrying the same plain-language action wording. The icon itself and the action meaning remain application-owned. `type="button"` remains the default, so a row action cannot submit a surrounding form unless the application explicitly declares that behavior. Keep direct row actions visibly present by setting `TableCellActions visible`; do not make discovery depend on pointer hover. If several actions are present, keep them within `TableCellActions` and move lower-priority actions into an overflow `Menu`; action priority, authorization, confirmation and destructive business effects remain consumer responsibilities.
 
 The current shared `CollectionList` is a stable semantic/layout composition rather than a re-export of Fluent List. The Fluent List dependency resolved by the pinned Fluent `9.74.7` baseline still carries an upstream non-production-ready notice, so consumers must not import it through internal package paths or recreate its behavior with ungoverned click handlers. Until a qualified shared actionable-list API is published, use the semantic identity `Link` for record navigation and treat the surrounding `CollectionListItem` as non-actionable. This section governs the next package version; it does not retroactively add an interaction API to immutable `0.1.0-rc.1`.
+
+```tsx
+<Table aria-label="Records">
+  <RecordTableHeader>
+    <TableRow>
+      <TableHeaderCell>Record</TableHeaderCell>
+      <TableHeaderCell>Status</TableHeaderCell>
+      <TableHeaderCell>Actions</TableHeaderCell>
+    </TableRow>
+  </RecordTableHeader>
+  <TableBody>
+    <TableRow>
+      <TableCell>
+        <RecordIdentityCellLayout
+          primary={<Link inline href="/records/REC-1042">Example record</Link>}
+          secondary="Supporting metadata"
+        />
+      </TableCell>
+      <TableCell>
+        <TableCellActions visible>
+          <Tooltip content="More actions" relationship="description">
+            <TableActionIconButton aria-label="More actions" icon={<YourMoreIcon />} />
+          </Tooltip>
+        </TableCellActions>
+      </TableCell>
+    </TableRow>
+  </TableBody>
+</Table>
+```
+
+`RecordTableHeader` and `RecordDataGridHeader` preserve their corresponding Fluent header props and add only the shared visual hierarchy: neutral background, semibold labels and a stronger neutral bottom boundary. Data rows retain the upstream Fluent presentation; applications must not reproduce this distinction with page-specific raw colors or typography overrides.
+
+## Stage navigation and business-process contract
+
+The package deliberately exposes two different stage presentations. Applications must select the component from the interaction meaning, not from the preferred shape.
+
+Adopting teams should use the consumer-facing [阶段呈现模式选择规范](docs/stage-pattern-selection.md) before implementation. It includes the decision rule, permitted scenarios, prohibited combinations, responsibility boundary and migration path from the deprecated compatibility component.
+
+| Component | Use when | Interaction contract | Application ownership |
+| --- | --- | --- | --- |
+| `StageNavigator` | The numbered stages are sibling workspaces or views that a user may visit directly, similar to a tab set. | Every enabled stage is a real Fluent button. `onStageSelect` is required; pointer, Enter and Space activate the same consumer callback. | Selected/current state, navigation, availability, routing and any unsaved-change guard. It does not imply lifecycle progression. |
+| `BusinessProcessFlow` | The arrows report a true business lifecycle controlled by process state. | Read-only ordered progress. It exposes no stage activation callback and renders no stage button. The component never advances, reverses or skips a stage. | Authoritative state, permitted transitions, commands, validation, RBAC, persistence and APIs. |
+
+`ProcessStageIndicator` is retained temporarily so existing consumers continue to compile, but it is deprecated and must not be used for new work. Existing usages migrate to `StageNavigator` when direct switching is valid, or to `BusinessProcessFlow` when only the business process may move the stage. Do not add click handlers, pointer cursors or hidden links around `BusinessProcessFlow` arrows.
+
+Both components accept only consumer-provided labels, descriptions and explicit statuses. They do not infer order or transition rules. `BusinessProcessFlow` uses a bounded horizontal scroll region at narrow widths rather than wrapping or changing the lifecycle order.
+
+```tsx
+<StageNavigator
+  aria-label="Configuration workspaces"
+  stages={workspaceStages}
+  onStageSelect={(_, stage) => navigateToWorkspace(stage.id)}
+/>
+
+<BusinessProcessFlow
+  aria-label="Approval process"
+  stages={serverReportedStages}
+/>
+```
 
 ## Exact-version consumption
 
@@ -63,7 +128,7 @@ save-exact=true
 ```
 
 ```powershell
-npm install --save-exact @phantasywind/nidec-app-ui-design@0.1.0-rc.1 @fluentui/react-components@9.74.7
+npm install --save-exact @phantasywind/nidec-app-ui-design@0.1.0-rc.2 @fluentui/react-components@9.74.7
 ```
 
 The application must already use a qualified exact React/React DOM 19.2.x pair. Do not use `latest`, ranges, Git URLs, or `main`. A built application does not contact GitHub at runtime.

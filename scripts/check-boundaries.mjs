@@ -1,6 +1,7 @@
 import { readFile, readdir } from 'node:fs/promises';
 import { extname, join, relative, resolve, sep } from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { RELEASE_PACKAGE_VERSION } from './release-contract.mjs';
 
 const repositoryRoot = resolve(import.meta.dirname, '..');
 const packagePath = join(repositoryRoot, 'package.json');
@@ -51,7 +52,7 @@ function isExactVersion(value) {
 const packageJson = await readJson(packagePath);
 
 assert(packageJson.name === '@phantasywind/nidec-app-ui-design', 'Unexpected package name.');
-assert(packageJson.version === '0.1.0-rc.1', 'Unexpected release-candidate version.');
+assert(packageJson.version === RELEASE_PACKAGE_VERSION, 'Unexpected release-candidate version.');
 assert(packageJson.private === false, 'Release candidate must be explicitly publishable.');
 assert(packageJson.type === 'module', 'Package must remain ESM.');
 assert(packageJson.packageManager === 'npm@11.19.0', 'Unexpected package manager.');
@@ -156,8 +157,8 @@ if (distFiles.length > 0) {
     'AppItem', 'AppItemStatic', 'Hamburger',
     'Tree', 'TreeItem', 'TreeItemLayout',
     'Accordion', 'AccordionItem', 'AccordionHeader', 'AccordionPanel',
-    'CollectionList', 'CollectionListItem', 'CardGallery', 'CardGalleryItem', 'ProcessStageIndicator',
-    'RecordIdentityCellLayout',
+    'CollectionList', 'CollectionListItem', 'CardGallery', 'CardGalleryItem', 'ProcessStageIndicator', 'StageNavigator', 'BusinessProcessFlow',
+    'RecordIdentityCellLayout', 'RecordTableHeader', 'RecordDataGridHeader', 'TableActionIconButton',
     'SearchBox', 'SpinButton', 'Slider',
     'ToggleButton', 'MenuButton', 'SplitButton',
     'Label', 'InfoLabel', 'Divider',

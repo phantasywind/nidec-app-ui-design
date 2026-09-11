@@ -2,11 +2,14 @@ import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
 import { readFile, readdir, writeFile } from 'node:fs/promises';
 import { join, relative, resolve } from 'node:path';
+import { RELEASE_PACKAGE_VERSION } from './release-contract.mjs';
 
 const root = resolve(import.meta.dirname, '..');
 const runId = process.argv[2] ?? 'fluent-composite-patterns-2';
-assert(/^fluent-composite-patterns-[1-9][0-9]*$/.test(runId) || runId === 'release-0-1-0-rc-1');
-const requiresDataTable = runId === 'fluent-composite-patterns-3' || runId === 'release-0-1-0-rc-1';
+const expectedReleaseRunId = `release-${RELEASE_PACKAGE_VERSION.replaceAll('.', '-')}`;
+assert(/^fluent-composite-patterns-[1-9][0-9]*$/.test(runId) || runId === expectedReleaseRunId);
+const requiresDataTable = runId === 'fluent-composite-patterns-3' || runId === expectedReleaseRunId;
+const requiresStageSplit = runId === expectedReleaseRunId;
 const paths = process.argv.slice(3);
 assert(paths.length > 0 && paths.every(path => /^browser-[1-9][0-9]*$/.test(path)), 'Browser evidence paths are required');
 const run = join(root, '.qualification/runs', runId);
@@ -36,6 +39,14 @@ for (const path of paths) {
     }
     assert.equal(audit.currentStages, 1, `${path}/${name} current stage count`);
     assert.equal(audit.disabledStages, 1, `${path}/${name} disabled stage count`);
+    if (requiresStageSplit) {
+      assert.equal(audit.businessProcessItems, 4, `${path}/${name} business-process item count`);
+      assert.equal(audit.businessProcessCurrentStages, 1, `${path}/${name} business-process current stage count`);
+      assert.equal(audit.businessProcessButtons, 0, `${path}/${name} business process must remain read-only`);
+      assert(audit.businessProcessStageHeights.every(height => Math.abs(height - 52) <= 1), `${path}/${name} business-process height drift`);
+      assert(audit.businessProcessMarkerHeights.every(height => Math.abs(height - 28) <= 1), `${path}/${name} business-process marker drift`);
+      assert.equal(audit.businessProcessOverflowX, 'auto', `${path}/${name} business process lacks bounded horizontal overflow`);
+    }
     if (audit.processDisplay === 'flex') {
       for (const [index, geometry] of audit.stageGeometry.entries()) {
         assert(geometry.buttonWidth < geometry.itemWidth, `${path}/${name} stage ${index} still uses the full column hit area`);

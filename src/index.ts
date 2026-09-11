@@ -2,11 +2,13 @@ import { createElement } from 'react';
 import type { ComponentPropsWithRef, ComponentPropsWithoutRef, MouseEvent, ReactElement, ReactNode } from 'react';
 import {
   Button as FluentButton, Card as FluentCard, FluentProvider,
-  TableCellLayout as FluentTableCellLayout, createLightTheme,
+  DataGridHeader as FluentDataGridHeader, TableCellLayout as FluentTableCellLayout,
+  TableHeader as FluentTableHeader, createLightTheme,
 } from '@fluentui/react-components';
 import type {
   BrandVariants, ButtonProps as FluentButtonProps, CardProps as FluentCardProps,
-  FluentProviderProps, TableCellLayoutProps as FluentTableCellLayoutProps, Theme,
+  DataGridHeaderProps as FluentDataGridHeaderProps, FluentProviderProps,
+  TableCellLayoutProps as FluentTableCellLayoutProps, TableHeaderProps as FluentTableHeaderProps, Theme,
 } from '@fluentui/react-components';
 import { lightPalette as palette } from './internal/light-palette.mjs';
 
@@ -159,6 +161,21 @@ export function IconButton({ icon, 'aria-label': label, ...props }: IconButtonPr
   return Button({ ...props, icon, 'aria-label': label, children: '' });
 }
 
+export type TableActionIconButtonProps = Omit<IconButtonProps, 'appearance' | 'size' | 'shape'>;
+
+/** Compact secondary action for a Table/DataGrid row; icon meaning stays consumer-owned. */
+export function TableActionIconButton({ icon, 'aria-label': label, className, ...props }: TableActionIconButtonProps) {
+  return IconButton({
+    ...props,
+    icon,
+    'aria-label': label,
+    className: withClass('nidec-ui-table-action-icon-button', className),
+    appearance: 'transparent',
+    size: 'small',
+    shape: 'rounded',
+  });
+}
+
 const withClass = (base: string, className?: string) => className ? `${base} ${className}` : base;
 
 export type CollectionListProps = Omit<ComponentPropsWithoutRef<'ul'>, 'children'> & {
@@ -199,6 +216,7 @@ export type RecordIdentityCellLayoutProps = Omit<FluentTableCellLayoutProps,
 
 /**
  * Declares the single record identity within a consumer-owned Table/DataGrid row.
+ * Navigable identities are supplied as a semantic Fluent Link in the primary slot.
  * The surrounding cell, row, columns and business meaning remain consumer-owned.
  */
 export function RecordIdentityCellLayout({ primary, secondary, ...props }: RecordIdentityCellLayoutProps): ReactElement<FluentTableCellLayoutProps> {
@@ -207,6 +225,26 @@ export function RecordIdentityCellLayout({ primary, secondary, ...props }: Recor
     appearance: 'primary',
     ...(secondary === undefined ? {} : { description: { children: secondary } }),
   }, primary);
+}
+
+export type RecordTableHeaderProps = FluentTableHeaderProps;
+
+/** Gives record tables a governed header hierarchy without owning their columns. */
+export function RecordTableHeader({ className, ...props }: RecordTableHeaderProps): ReactElement<FluentTableHeaderProps> {
+  return createElement(FluentTableHeader, {
+    ...props,
+    className: withClass('nidec-ui-record-table-header', className),
+  });
+}
+
+export type RecordDataGridHeaderProps = FluentDataGridHeaderProps;
+
+/** Gives record data grids the same governed header hierarchy. */
+export function RecordDataGridHeader({ className, ...props }: RecordDataGridHeaderProps): ReactElement<FluentDataGridHeaderProps> {
+  return createElement(FluentDataGridHeader, {
+    ...props,
+    className: withClass('nidec-ui-record-table-header', className),
+  });
 }
 
 export type CardGalleryProps = Omit<ComponentPropsWithoutRef<'ul'>, 'children'> & {
@@ -246,7 +284,11 @@ export type ProcessStageIndicatorProps = Omit<ComponentPropsWithoutRef<'ol'>, 'c
   onStageSelect?: (event: MouseEvent<HTMLButtonElement>, stage: ProcessStageDefinition) => void;
 };
 
-/** Visual-only stage composition; consumers own transitions, permissions, and state derivation. */
+export type StageNavigatorProps = Omit<ProcessStageIndicatorProps, 'onStageSelect'> & {
+  onStageSelect: (event: MouseEvent<HTMLButtonElement>, stage: ProcessStageDefinition) => void;
+};
+
+/** @deprecated Use StageNavigator for navigation or BusinessProcessFlow for read-only lifecycle state. */
 export function ProcessStageIndicator({ 'aria-label': ariaLabel, stages, orientation = 'responsive', onStageSelect, className, ...props }: ProcessStageIndicatorProps) {
   if (!ariaLabel.trim()) throw new Error('ProcessStageIndicator requires a non-empty aria-label.');
   if (stages.length === 0) throw new Error('ProcessStageIndicator requires at least one stage.');
@@ -268,6 +310,49 @@ export function ProcessStageIndicator({ 'aria-label': ariaLabel, stages, orienta
       }, content) : createElement('div', { ...current, className: 'nidec-ui-process-stage__content' }, content);
       return createElement('li', { key: stage.id, className: 'nidec-ui-process-stage__item', 'data-stage-status': stage.status }, stageContent);
     }));
+}
+
+/** Interactive navigation between sibling workspaces; it does not represent automatic lifecycle progression. */
+export function StageNavigator(props: StageNavigatorProps) {
+  return ProcessStageIndicator(props);
+}
+
+export type BusinessProcessStageDefinition = Readonly<{
+  id: string;
+  label: string;
+  status: ProcessStageStatus;
+  statusLabel: string;
+  description?: string;
+}>;
+
+export type BusinessProcessFlowProps = Omit<ComponentPropsWithoutRef<'section'>, 'children' | 'aria-label'> & {
+  'aria-label': string;
+  stages: readonly BusinessProcessStageDefinition[];
+};
+
+/** Read-only, application-controlled lifecycle presentation with no manual stage-switch API. */
+export function BusinessProcessFlow({ 'aria-label': ariaLabel, stages, className, ...props }: BusinessProcessFlowProps) {
+  if (!ariaLabel.trim()) throw new Error('BusinessProcessFlow requires a non-empty aria-label.');
+  if (stages.length === 0) throw new Error('BusinessProcessFlow requires at least one stage.');
+  if (new Set(stages.map(stage => stage.id)).size !== stages.length) throw new Error('Business process stage IDs must be unique.');
+  if (stages.filter(stage => stage.status === 'current').length > 1) throw new Error('Only one business process stage may be current.');
+
+  return createElement('section', {
+    ...props,
+    'aria-label': ariaLabel,
+    className: withClass('nidec-ui-business-process-flow', className),
+  }, createElement('ol', { className: 'nidec-ui-business-process-flow__track' },
+    stages.map((stage, index) => createElement('li', {
+      key: stage.id,
+      'aria-current': stage.status === 'current' ? 'step' : undefined,
+      className: 'nidec-ui-business-process-flow__stage',
+      'data-stage-status': stage.status,
+    },
+    createElement('span', { className: 'nidec-ui-business-process-flow__marker', 'aria-hidden': true }, index + 1),
+    createElement('span', { className: 'nidec-ui-business-process-flow__copy' },
+      createElement('strong', null, stage.label),
+      stage.description === undefined ? null : createElement('small', null, stage.description),
+      createElement('span', { className: 'nidec-ui-visually-hidden' }, stage.statusLabel))))));
 }
 
 export {

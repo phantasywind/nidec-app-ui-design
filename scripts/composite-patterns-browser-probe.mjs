@@ -4,12 +4,14 @@ import { createHash, randomBytes } from 'node:crypto';
 import { appendFileSync } from 'node:fs';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
+import { RELEASE_PACKAGE_VERSION } from './release-contract.mjs';
 
 const root = resolve(import.meta.dirname, '..');
 const name = process.argv[2] ?? 'browser-1';
 assert(/^browser-[1-9][0-9]*$/.test(name));
 const runId = process.argv[3] ?? 'fluent-composite-patterns-2';
-assert(/^fluent-composite-patterns-[1-9][0-9]*$/.test(runId) || runId === 'release-0-1-0-rc-1');
+const expectedReleaseRunId = `release-${RELEASE_PACKAGE_VERSION.replaceAll('.', '-')}`;
+assert(/^fluent-composite-patterns-[1-9][0-9]*$/.test(runId) || runId === expectedReleaseRunId);
 const run = join(root, '.qualification/runs', runId);
 const evidence = join(run, name);
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');

@@ -1,5 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
+import { RELEASE_PACKAGE_VERSION } from './release-contract.mjs';
 
 const blockedMarker = 'SCAFFOLD FIXTURE ONLY. NOT APPROVED BRAND DATA. PUBLICATION BLOCKED.';
 const repositoryRoot = resolve(import.meta.dirname, '..');
@@ -9,7 +10,7 @@ const source = JSON.parse(await readFile(join(repositoryRoot, 'tokens', 'nidec-l
 const metadata = JSON.parse(await readFile(join(repositoryRoot, 'styles', 'tokens.json'), 'utf8'));
 const blockers = [];
 
-if (packageJson.version !== '0.1.0-rc.1') blockers.push('unexpected release-candidate version');
+if (packageJson.version !== RELEASE_PACKAGE_VERSION) blockers.push('unexpected release-candidate version');
 if (packageJson.private !== false) blockers.push('package is not explicitly publishable');
 if (packageJson.publishConfig?.registry !== 'https://npm.pkg.github.com' || packageJson.publishConfig?.access !== 'restricted') blockers.push('GitHub Packages publishConfig is incomplete');
 if (lock.version !== packageJson.version || lock.packages?.['']?.version !== packageJson.version) blockers.push('package lock identity is stale');

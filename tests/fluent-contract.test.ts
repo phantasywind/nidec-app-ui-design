@@ -34,8 +34,9 @@ const commonContentControls = [
   'Tag', 'TagGroup', 'Popover', 'PopoverTrigger', 'PopoverSurface',
 ] as const;
 const compositePatterns = [
-  'CollectionList', 'CollectionListItem', 'CardGallery', 'CardGalleryItem', 'ProcessStageIndicator',
-  'RecordIdentityCellLayout',
+  'CollectionList', 'CollectionListItem', 'CardGallery', 'CardGalleryItem',
+  'ProcessStageIndicator', 'StageNavigator', 'BusinessProcessFlow',
+  'RecordIdentityCellLayout', 'RecordTableHeader', 'RecordDataGridHeader', 'TableActionIconButton',
 ] as const;
 
 describe('Fluent public boundary', () => {

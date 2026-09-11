@@ -7,7 +7,7 @@ import { cp, mkdir, readFile, readdir, realpath, writeFile } from 'node:fs/promi
 import { dirname, delimiter, join, relative, resolve } from 'node:path';
 import { createRequire } from 'node:module';
 import { inspectArchive, redactLog, verifyPhysicalReact } from './qualification-contract.mjs';
-import { inspectReleaseArchive } from './release-contract.mjs';
+import { inspectReleaseArchive, RELEASE_PACKAGE_VERSION } from './release-contract.mjs';
 
 const root = resolve(import.meta.dirname, '..');
 const runId = process.argv[3] ?? 'fluent-adaptation';
@@ -16,7 +16,8 @@ const formBatch = ['fluent-form-batch-1', 'nidec-light-theme-1'].includes(runId)
 const platformSurfacesBatch = runId === 'fluent-platform-surfaces-1';
 const commonContentControlsBatch = ['fluent-common-content-controls-1', 'fluent-common-content-controls-2', 'fluent-common-content-controls-3'].includes(runId);
 const compositePatternsBatch = /^fluent-composite-patterns-[1-9][0-9]*$/.test(runId);
-const releaseCandidateBatch = runId === 'release-0-1-0-rc-1';
+const expectedReleaseRunId = `release-${RELEASE_PACKAGE_VERSION.replaceAll('.', '-')}`;
+const releaseCandidateBatch = runId === expectedReleaseRunId;
 const inspectCandidateArchive = releaseCandidateBatch ? inspectReleaseArchive : inspectArchive;
 const work = join(root, '.tmp', runId);
 const evidence = join(root, '.qualification', 'runs', runId);

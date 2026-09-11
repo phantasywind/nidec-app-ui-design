@@ -24,6 +24,7 @@
   const snapshot = kind => {
     const gallery = document.querySelector('.nidec-ui-card-gallery');
     const stages = document.querySelector('.nidec-ui-process-stage');
+    const businessProcess = document.querySelector('.nidec-ui-business-process-flow');
     const stageGeometry = [...document.querySelectorAll('.nidec-ui-process-stage__item')].map((item, index, items) => {
       const itemRect = item.getBoundingClientRect();
       const marker = item.querySelector('.nidec-ui-process-stage__marker');
@@ -65,10 +66,16 @@
       galleryItems: document.querySelectorAll('.nidec-ui-card-gallery__item').length,
       galleryColumns: gallery ? getComputedStyle(gallery).gridTemplateColumns.split(' ').filter(value => Number.parseFloat(value) > 0).length : 0,
       stageItems: document.querySelectorAll('.nidec-ui-process-stage__item').length,
-      currentStages: document.querySelectorAll('[aria-current="step"]').length,
+      currentStages: document.querySelectorAll('.nidec-ui-process-stage [aria-current="step"]').length,
       disabledStages: document.querySelectorAll('.nidec-ui-process-stage__button:disabled').length,
       processDisplay: stages ? getComputedStyle(stages).display : null,
       stageGeometry,
+      businessProcessItems: document.querySelectorAll('.nidec-ui-business-process-flow__stage').length,
+      businessProcessCurrentStages: document.querySelectorAll('.nidec-ui-business-process-flow [aria-current="step"]').length,
+      businessProcessButtons: document.querySelectorAll('.nidec-ui-business-process-flow button').length,
+      businessProcessStageHeights: [...document.querySelectorAll('.nidec-ui-business-process-flow__stage')].map(node => Number(node.getBoundingClientRect().height.toFixed(2))),
+      businessProcessMarkerHeights: [...document.querySelectorAll('.nidec-ui-business-process-flow__marker')].map(node => Number(node.getBoundingClientRect().height.toFixed(2))),
+      businessProcessOverflowX: businessProcess ? getComputedStyle(businessProcess).overflowX : null,
       dataTableRows: document.querySelectorAll('table[aria-label="Example data records"] tbody tr').length,
       dataTableHeaders: document.querySelectorAll('table[aria-label="Example data records"] th').length,
       dataTableRegionScrollable: (() => {
@@ -77,7 +84,7 @@
       })(),
       lastAction: document.querySelector('.stage-result')?.textContent?.trim() ?? null,
       activeElement: document.activeElement?.textContent?.trim() || document.activeElement?.getAttribute('aria-label') || document.activeElement?.tagName,
-      contrastPairs: [...document.querySelectorAll('.nidec-ui-process-stage__marker, .nidec-ui-process-stage__description')].map(contrast),
+      contrastPairs: [...document.querySelectorAll('.nidec-ui-process-stage__marker, .nidec-ui-process-stage__description, .nidec-ui-business-process-flow__copy strong, .nidec-ui-business-process-flow__copy small')].map(contrast),
       injectedStyles: [...document.querySelectorAll('style')].map(node => ({
         nonceMatches: !!node.nonce && node.nonce === document.querySelector('meta[name="csp-nonce"]')?.content,
         rules: node.sheet?.cssRules.length ?? 0,
