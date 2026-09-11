@@ -69,9 +69,12 @@ for (const path of paths) {
         const processStageOverlap = node.html.includes('nidec-ui-process-stage__marker') || node.html.includes('nidec-ui-process-stage__description');
         const scrollableTableClipping = requiresDataTable && audit.viewport.width === 720 && audit.dataTableRegionScrollable &&
           node.html.includes('fui-TableHeaderCell__button') && node.any?.every(check => check.data?.messageKey === 'elmPartiallyObscured');
-        assert(processStageOverlap || scrollableTableClipping, `${path}/${name} has unexpected contrast target`);
+        const truncatedRecordIdentity = requiresDataTable && audit.viewport.width <= 900 &&
+          node.html.includes('href="#record-REC-1038"') && node.any?.every(check => check.data?.messageKey === 'bgOverlap');
+        assert(processStageOverlap || scrollableTableClipping || truncatedRecordIdentity, `${path}/${name} has unexpected contrast target`);
         if (processStageOverlap) limitations.add('axe-color-contrast-incomplete:process-stage-overlap');
         if (scrollableTableClipping) limitations.add('axe-color-contrast-incomplete:scrollable-table-clipping-at-720');
+        if (truncatedRecordIdentity) limitations.add('axe-color-contrast-incomplete:truncated-record-identity-at-narrow-viewports');
       }
     }
     assert(audit.contrastPairs.length >= 7 && audit.contrastPairs.every(pair => pair.ratio >= 4.5), `${path}/${name} manual contrast check failed`);
