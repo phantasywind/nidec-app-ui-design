@@ -223,7 +223,7 @@
 
   :where([data-nidec-ui]) .nidec-ui-business-process-flow__stage[data-stage-status="completed"] {
     background: var(--colorBrandBackground2);
-    color: var(--colorBrandForeground1);
+    color: var(--colorNeutralForeground1);
   }
 
   :where([data-nidec-ui]) .nidec-ui-business-process-flow__stage[data-stage-status="current"] {
@@ -278,7 +278,7 @@
     color: inherit;
     font-size: var(--fontSizeBase200);
     line-height: var(--lineHeightBase200);
-    opacity: 0.82;
+    opacity: 1;
   }
 
   :where([data-nidec-ui]) .nidec-ui-visually-hidden {

@@ -214,6 +214,8 @@ describe('consumer-neutral composite patterns', () => {
     expect(css).toContain('padding: var(--spacingVerticalXS) 1.5rem var(--spacingVerticalXS) 1.25rem');
     expect(css).toContain('grid-template-columns: 1.75rem minmax(0, 1fr)');
     expect(css).toContain('height: 1.75rem');
+    expect(css).toMatch(/data-stage-status="completed"[\s\S]*?color: var\(--colorNeutralForeground1\)/);
+    expect(css).toMatch(/nidec-ui-business-process-flow__copy small[\s\S]*?opacity: 1/);
   });
 
   it('rejects ambiguous BusinessProcessFlow structure without interpreting lifecycle rules', () => {
