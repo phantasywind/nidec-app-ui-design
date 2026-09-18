@@ -1,16 +1,20 @@
 import { readFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { createElement } from 'react';
+import type { ReactElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
+import type { TableRowId } from '@fluentui/react-components';
 import { describe, expect, it } from 'vitest';
 import {
   BusinessProcessFlow, CardGallery, CardGalleryItem, CollectionList, CollectionListItem,
   ProcessStageIndicator, StageNavigator,
-  RecordDataGridHeader, RecordIdentityCellLayout, RecordTableHeader, TableActionIconButton,
-  DataGridHeader, TableCellLayout, TableHeader,
+  RecordDataGridHeader, RecordIdentityCellLayout, RecordSelectionDataGrid, RecordSelectionDataGridRow,
+  RecordSelectionRegion, RecordTableHeader, TableActionIconButton,
+  DataGrid, DataGridHeader, DataGridRow, TableCellLayout, TableHeader,
 } from '../src/index';
 import type {
-  BusinessProcessFlowProps, RecordIdentityCellLayoutProps, StageNavigatorProps, TableActionIconButtonProps,
+  BusinessProcessFlowProps, RecordIdentityCellLayoutProps, RecordSelectionDataGridProps,
+  RecordSelectionDataGridRowProps, StageNavigatorProps, TableActionIconButtonProps,
 } from '../src/index';
 
 const stages = [
@@ -47,6 +51,25 @@ const tableActionWithSize: TableActionIconButtonProps = { ...tableActionContract
 // @ts-expect-error Table row actions are icon-only.
 const tableActionWithText: TableActionIconButtonProps = { ...tableActionContract, children: 'Open' };
 void [tableActionContract, tableActionWithAppearance, tableActionWithSize, tableActionWithText];
+const recordSelectionContract: RecordSelectionDataGridProps = {
+  'aria-label': 'Available records',
+  columns: [],
+  getRowId: item => (item as { id: string }).id,
+  items: [],
+  onSelectionChange: () => undefined,
+  selectedItems: new Set(),
+};
+// @ts-expect-error Selection mode is fixed to one record.
+const recordSelectionWithMode: RecordSelectionDataGridProps = { ...recordSelectionContract, selectionMode: 'multiselect' };
+// @ts-expect-error The shared contract owns the selection appearance.
+const recordSelectionWithAppearance: RecordSelectionDataGridProps = { ...recordSelectionContract, selectionAppearance: 'brand' };
+// @ts-expect-error The grid must remain controlled by the consumer's record authority.
+const recordSelectionWithDefault: RecordSelectionDataGridProps = { ...recordSelectionContract, defaultSelectedItems: new Set(['one']) };
+const recordSelectionRowContract: RecordSelectionDataGridRowProps<{ id: string }> = { children: () => null, recordId: 'one' };
+// @ts-expect-error The row uses the parent grid's single selection callback.
+const recordSelectionRowWithClick: RecordSelectionDataGridRowProps<{ id: string }> = { ...recordSelectionRowContract, onClick: () => undefined };
+void [recordSelectionContract, recordSelectionWithMode, recordSelectionWithAppearance, recordSelectionWithDefault,
+  recordSelectionRowContract, recordSelectionRowWithClick];
 
 describe('consumer-neutral composite patterns', () => {
   it('declares one record identity layout without owning the surrounding table cell', () => {
@@ -81,6 +104,102 @@ describe('consumer-neutral composite patterns', () => {
     expect(css).toContain('background-color: var(--colorNeutralBackground2)');
     expect(css).toContain('border-bottom: var(--strokeWidthThick) solid var(--colorNeutralStroke1)');
     expect(css).toContain('font-weight: var(--fontWeightSemibold)');
+  });
+
+  it('creates a controlled single-record DataGrid without navigation semantics', () => {
+    const onSelectionChange = () => undefined;
+    const element = RecordSelectionDataGrid({
+      'aria-label': 'Available records',
+      columns: [],
+      getRowId: item => (item as { id: string }).id,
+      items: [],
+      onSelectionChange,
+      selectedItems: new Set(['one']),
+    });
+    const grid = (element.props as { children: ReactElement<Record<string, unknown>> }).children;
+    expect(grid.type).toBe(DataGrid);
+    expect(grid.props.selectionMode).toBe('single');
+    expect(grid.props.selectionAppearance).toBe('neutral');
+    expect(grid.props.focusMode).toBe('composite');
+    expect(grid.props.subtleSelection).toBe(false);
+    expect(grid.props.onSelectionChange).toBe(onSelectionChange);
+    expect(grid.props.className).toBe('nidec-ui-record-selection-grid');
+    expect(() => RecordSelectionDataGrid({ ...recordSelectionContract, 'aria-label': ' ' })).toThrow('non-empty aria-label');
+    expect(() => RecordSelectionDataGrid({ ...recordSelectionContract, selectedItems: new Set(['one', 'two']) })).toThrow('zero or one');
+  });
+
+  it('adds Enter to the same row click path and leaves Space to Fluent selection', () => {
+    let selectedItems = new Set<TableRowId>();
+    const wrapper = RecordSelectionDataGridRow<{ id: string }>({ children: () => null, recordId: 'one' });
+    const renderRow = (wrapper.props as { children: (context: {
+      onSelectionChange: (event: unknown, data: { selectedItems: Set<TableRowId> }) => void;
+    }) => ReactElement<{ className?: string; onKeyDownCapture?: (event: unknown) => void; selectionCell?: unknown }> }).children;
+    const row = renderRow({
+      onSelectionChange: (_event: unknown, data: { selectedItems: Set<TableRowId> }) => { selectedItems = data.selectedItems; },
+    });
+    expect(row.type).toBe(DataGridRow);
+    expect(row.props.selectionCell).toBe(null);
+    expect(row.props.className).toBe('nidec-ui-record-selection-row');
+    let preventCount = 0;
+    const currentTarget = {};
+    row.props.onKeyDownCapture?.({
+      currentTarget,
+      defaultPrevented: false,
+      key: 'Enter',
+      preventDefault: () => { preventCount += 1; },
+      target: currentTarget,
+    } as never);
+    expect([...selectedItems]).toEqual(['one']);
+    expect(preventCount).toBe(1);
+    selectedItems = new Set();
+    row.props.onKeyDownCapture?.({
+      currentTarget,
+      defaultPrevented: true,
+      key: 'Enter',
+      preventDefault: () => { preventCount += 1; },
+      target: currentTarget,
+    });
+    expect([...selectedItems]).toEqual(['one']);
+    expect(preventCount).toBe(2);
+    row.props.onKeyDownCapture?.({
+      currentTarget,
+      defaultPrevented: false,
+      key: 'Enter',
+      preventDefault: () => { preventCount += 1; },
+      target: { closest: () => null },
+    } as never);
+    expect([...selectedItems]).toEqual(['one']);
+    expect(preventCount).toBe(3);
+    row.props.onKeyDownCapture?.({
+      currentTarget,
+      defaultPrevented: false,
+      key: 'Enter',
+      preventDefault: () => { preventCount += 1; },
+      target: { closest: () => ({}) },
+    } as never);
+    expect([...selectedItems]).toEqual(['one']);
+    expect(preventCount).toBe(3);
+    row.props.onKeyDown?.({
+      currentTarget,
+      defaultPrevented: false,
+      key: ' ',
+      preventDefault: () => { preventCount += 1; },
+      target: currentTarget,
+    } as never);
+    expect([...selectedItems]).toEqual(['one']);
+    expect(preventCount).toBe(3);
+  });
+
+  it('governs selection-region spacing and non-color selected/focus indicators', async () => {
+    const region = RecordSelectionRegion({ toolbar: 'Toolbar', children: 'Grid', 'aria-label': 'Record editor directory' });
+    expect(region.type).toBe('section');
+    expect(region.props.className).toBe('nidec-ui-record-selection-region');
+    expect(region.props.children).toEqual(['Toolbar', 'Grid']);
+    const css = await readFile(join(repositoryRoot, 'styles', 'components.css'), 'utf8');
+    expect(css).toMatch(/nidec-ui-record-selection-region[\s\S]*?gap: var\(--spacingVerticalM\)/);
+    expect(css).toMatch(/nidec-ui-record-selection-row\[aria-selected="true"\][\s\S]*?box-shadow/);
+    expect(css).toMatch(/nidec-ui-record-selection-row:is\(:focus-visible, :has\(:focus-visible\)\)[\s\S]*?colorStrokeFocus2/);
+    expect(css).toContain('@media (forced-colors: active)');
   });
 
   it('governs Data Table row actions as small transparent icon-only buttons', () => {

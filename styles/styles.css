@@ -79,6 +79,29 @@
     font-weight: var(--fontWeightSemibold);
   }
 
+  :where([data-nidec-ui]) .nidec-ui-record-selection-region {
+    display: grid;
+    gap: var(--spacingVerticalM);
+    min-width: 0;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-record-selection-grid {
+    min-width: 0;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-record-selection-row {
+    cursor: pointer;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-record-selection-row[aria-selected="true"] {
+    box-shadow: inset var(--strokeWidthThick) 0 0 var(--colorBrandStroke1);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-record-selection-row:is(:focus-visible, :has(:focus-visible)) {
+    outline: var(--strokeWidthThick) solid var(--colorStrokeFocus2);
+    outline-offset: calc(0px - var(--strokeWidthThick));
+  }
+
   :where([data-nidec-ui]) .nidec-ui-card-gallery {
     display: grid;
     gap: var(--spacingHorizontalL);
@@ -339,6 +362,13 @@
       inset-inline-start: calc(var(--spacingHorizontalXS) + 0.75rem + var(--strokeWidthThin) + var(--strokeWidthThin));
       transform: translateX(-50%);
       width: var(--strokeWidthThick);
+    }
+  }
+
+  @media (forced-colors: active) {
+    :where([data-nidec-ui]) .nidec-ui-record-selection-row[aria-selected="true"] {
+      outline: var(--strokeWidthThick) solid currentColor;
+      outline-offset: calc(0px - var(--strokeWidthThick));
     }
   }
 }

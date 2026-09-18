@@ -47,6 +47,7 @@ Use the following presentation rules:
 | `CollectionList` with one record-opening action and no interactive descendants | The complete item is the single primary action. Mouse activation and keyboard activation must have the same result. |
 | `CollectionList` with selection or secondary actions | Keep selection and secondary controls independent. `Space` is reserved for selection and `Enter` for the primary action. Use composite keyboard behavior; do not implement this with a raw `<li onClick>`. |
 | `Table` or `DataGrid` containing records | Use `RecordTableHeader` or `RecordDataGridHeader` to distinguish the header from data rows. Put the navigable record identity in the one primary cell as a semantic `Link`. The row itself is not a hidden navigation target. |
+| Same-surface editor plus a record directory | Use `RecordSelectionRegion`, `RecordSelectionDataGrid` and `RecordSelectionDataGridRow`. The controlled single selected row loads the editor; whole-row pointer, Enter and Space activation are equivalent. The emphasized identity is plain text, not a Link, and there is no duplicate Actions control. |
 | Dialog, drawer or non-navigation command | Use an explicitly labelled button or menu action rather than presenting the command as a link. |
 
 Each record has exactly one primary entry mechanism. In a navigable Data Table/DataGrid, render that mechanism as a theme-governed Fluent `Link` with `inline` in the primary identity cell so it remains visibly underlined and distinct from ordinary data. Do not combine whole-row activation, a duplicate identity link and a duplicate `Open` button on the same record. Row-end buttons and menus are secondary actions only and must not trigger the record-entry action.
@@ -87,6 +88,8 @@ The current shared `CollectionList` is a stable semantic/layout composition rath
 ```
 
 `RecordTableHeader` and `RecordDataGridHeader` preserve their corresponding Fluent header props and add only the shared visual hierarchy: neutral background, semibold labels and a stronger neutral bottom boundary. Data rows retain the upstream Fluent presentation; applications must not reproduce this distinction with page-specific raw colors or typography overrides.
+
+`RecordSelectionDataGrid` is deliberately controlled and single-select. It requires a stable `getRowId`, fixes the stable Fluent composite focus model and neutral selection appearance, and rejects more than one selected ID. `RecordSelectionDataGridRow` removes the redundant visible selection cell and adds Enter to Fluent's pointer/Space selection path. The consumer owns whether a proposed selection may replace the current editor record, including dirty-change confirmation, record loading, errors and persistence. Do not use this variant for URL navigation, multi-selection or rows containing secondary interactive controls.
 
 ## Stage navigation and business-process contract
 

@@ -12,21 +12,24 @@ import { inspectReleaseArchive, RELEASE_PACKAGE_VERSION } from './release-contra
 const root = resolve(import.meta.dirname, '..');
 const runId = process.argv[3] ?? 'fluent-adaptation';
 assert(/^[a-z0-9][a-z0-9-]{0,63}$/.test(runId), 'Invalid run ID');
+const stage = process.argv[2];
+assert(['prepare', 'build-a', 'build-b', 'compare-builds', 'consumer-node22', 'baseline-node22', 'seal'].includes(stage), 'Unknown stage');
 const formBatch = ['fluent-form-batch-1', 'nidec-light-theme-1'].includes(runId);
 const platformSurfacesBatch = runId === 'fluent-platform-surfaces-1';
 const commonContentControlsBatch = ['fluent-common-content-controls-1', 'fluent-common-content-controls-2', 'fluent-common-content-controls-3'].includes(runId);
 const compositePatternsBatch = /^fluent-composite-patterns-[1-9][0-9]*$/.test(runId);
 const expectedReleaseRunId = `release-${RELEASE_PACKAGE_VERSION.replaceAll('.', '-')}`;
 const releaseCandidateBatch = runId === expectedReleaseRunId;
-const inspectCandidateArchive = releaseCandidateBatch ? inspectReleaseArchive : inspectArchive;
 const work = join(root, '.tmp', runId);
 const evidence = join(root, '.qualification', 'runs', runId);
 const cache = join(root, '.tmp', 'fluent-npm-cache');
 const source = join(work, 'source');
 const node24 = join(root, '.tmp/node-24.20.0/node-v24.20.0-win-x64/node.exe');
 const node22 = join(root, '.tmp/node-22.22.0/node-v22.22.0-win-x64/node.exe');
-const stage = process.argv[2];
-assert(['prepare', 'build-a', 'build-b', 'compare-builds', 'consumer-node22', 'baseline-node22', 'seal'].includes(stage), 'Unknown stage');
+const identitySource = stage === 'prepare' ? root : source;
+const sourceManifest = JSON.parse(await readFile(join(identitySource, 'package.json'), 'utf8'));
+const usesReleaseIdentity = sourceManifest.version === RELEASE_PACKAGE_VERSION && sourceManifest.private === false;
+const inspectCandidateArchive = usesReleaseIdentity ? inspectReleaseArchive : inspectArchive;
 assert(stage !== 'baseline-node22' || formBatch, 'Baseline comparison belongs to the form batch');
 const hash = bytes => createHash('sha256').update(bytes).digest('hex');
 async function files(dir) {

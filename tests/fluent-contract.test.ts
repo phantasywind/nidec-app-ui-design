@@ -37,6 +37,7 @@ const compositePatterns = [
   'CollectionList', 'CollectionListItem', 'CardGallery', 'CardGalleryItem',
   'ProcessStageIndicator', 'StageNavigator', 'BusinessProcessFlow',
   'RecordIdentityCellLayout', 'RecordTableHeader', 'RecordDataGridHeader', 'TableActionIconButton',
+  'RecordSelectionRegion', 'RecordSelectionDataGrid', 'RecordSelectionDataGridRow',
 ] as const;
 
 describe('Fluent public boundary', () => {

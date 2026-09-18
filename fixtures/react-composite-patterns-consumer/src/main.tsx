@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { createDOMRenderer, RendererProvider } from '@fluentui/react-components';
+import { createDOMRenderer, createTableColumn, RendererProvider } from '@fluentui/react-components';
 import { MoreHorizontalRegular } from '@fluentui/react-icons';
 import {
   Button, CardGallery, CardGalleryItem, CardHeader, Checkbox, CollectionList, CollectionListItem,
   Badge, BusinessProcessFlow, Link, Menu, MenuItem, MenuList, MenuPopover, MenuTrigger, NidecProvider,
-  StageNavigator, Table, TableBody, TableCell, TableCellActions,
-  RecordIdentityCellLayout, RecordTableHeader, TableHeaderCell, TableRow, Tag, nidecLightTheme,
+  DataGridBody, DataGridCell, DataGridHeaderCell, DataGridRow, StageNavigator, Table, TableBody, TableCell, TableCellActions,
+  RecordDataGridHeader, RecordIdentityCellLayout, RecordSelectionDataGrid, RecordSelectionDataGridRow,
+  RecordSelectionRegion, RecordTableHeader, TableHeaderCell, TableRow, Tag, Toolbar, ToolbarButton, nidecLightTheme,
   TableActionIconButton, Tooltip,
 } from '@phantasywind/nidec-app-ui-design';
 import '@phantasywind/nidec-app-ui-design/styles.css';
@@ -31,6 +32,20 @@ const tableRecords = [
   { id: 'REC-1021', name: 'Example Gamma', owner: 'South engineering team', category: 'Special', status: 'Blocked', tone: 'danger', updated: '3 days ago' },
 ] as const;
 
+type SelectionRecord = { id: string; name: string; detail: string };
+const selectionRecords: SelectionRecord[] = [
+  { id: 'SEL-1001', name: 'Standard definition', detail: 'System-maintained example' },
+  { id: 'SEL-1002', name: 'Extended definition', detail: 'Loads into the editor above' },
+  { id: 'SEL-1003', name: 'Regional definition', detail: 'No navigation or row command' },
+];
+const selectionColumns = [
+  createTableColumn<SelectionRecord>({
+    columnId: 'record',
+    renderHeaderCell: () => 'Definition',
+    renderCell: item => <RecordIdentityCellLayout primary={item.name} secondary={item.detail} />,
+  }),
+];
+
 const stages = [
   { id: 'prepare', label: 'Prepare', description: 'Example completed step', status: 'completed', statusLabel: 'Completed' },
   { id: 'review', label: 'Review', description: 'Example current step', status: 'current', statusLabel: 'Current stage' },
@@ -47,6 +62,7 @@ const businessProcessStages = [
 
 function App() {
   const [selectedItems, setSelectedItems] = useState<(string | number)[]>(['alpha']);
+  const [selectedRecordIds, setSelectedRecordIds] = useState<Set<string | number>>(new Set(['SEL-1001']));
   const [lastAction, setLastAction] = useState('No stage activated');
   return <NidecProvider theme={nidecLightTheme}><div className="composite-fixture">
     <header className="page-header">
@@ -109,6 +125,30 @@ function App() {
           </Table>
         </div>
         <p className="table-note">The consumer designates exactly one record identity per row. Column meaning, sorting, selection, pagination, and data loading remain consumer-owned.</p>
+      </section>
+
+      <section aria-labelledby="selection-heading">
+        <div className="section-heading"><div><h2 id="selection-heading">In-place record selection</h2><p>Selecting a row loads the same-surface editor; it does not navigate or run a row command.</p></div><Tag appearance="outline">Single selection</Tag></div>
+        <RecordSelectionRegion
+          aria-label="Definition editor directory"
+          toolbar={<Toolbar aria-label="Definition tools"><ToolbarButton>Refresh</ToolbarButton></Toolbar>}
+        >
+          <RecordSelectionDataGrid
+            aria-label="Available definitions"
+            columns={selectionColumns}
+            getRowId={item => item.id}
+            items={selectionRecords}
+            onSelectionChange={(_, data) => setSelectedRecordIds(new Set(data.selectedItems))}
+            selectedItems={selectedRecordIds}
+          >
+            <RecordDataGridHeader>
+              <DataGridRow>{({ renderHeaderCell }) => <DataGridHeaderCell>{renderHeaderCell()}</DataGridHeaderCell>}</DataGridRow>
+            </RecordDataGridHeader>
+            <DataGridBody<SelectionRecord>>{({ item, rowId }) => <RecordSelectionDataGridRow<SelectionRecord> key={rowId} recordId={rowId}>
+              {({ renderCell }) => <DataGridCell>{renderCell(item)}</DataGridCell>}
+            </RecordSelectionDataGridRow>}</DataGridBody>
+          </RecordSelectionDataGrid>
+        </RecordSelectionRegion>
       </section>
 
       <section aria-labelledby="gallery-heading">
