@@ -159,7 +159,7 @@ if (distFiles.length > 0) {
     'Accordion', 'AccordionItem', 'AccordionHeader', 'AccordionPanel',
     'CollectionList', 'CollectionListItem', 'CardGallery', 'CardGalleryItem', 'ProcessStageIndicator', 'StageNavigator', 'BusinessProcessFlow',
     'RecordIdentityCellLayout', 'RecordTableHeader', 'RecordDataGridHeader', 'TableActionIconButton',
-    'RecordSelectionRegion', 'RecordSelectionDataGrid', 'RecordSelectionDataGridRow',
+    'RecordSelectionRegion', 'RecordSelectionDataGrid', 'RecordSelectionDataGridRow', 'SegmentedControl',
     'SearchBox', 'SpinButton', 'Slider',
     'ToggleButton', 'MenuButton', 'SplitButton',
     'Label', 'InfoLabel', 'Divider',

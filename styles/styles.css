@@ -10,6 +10,35 @@
     max-block-size: 24px;
   }
 
+  :where([data-nidec-ui]) .nidec-ui-segmented-control {
+    align-items: center;
+    background-color: var(--colorNeutralBackground2);
+    border: var(--strokeWidthThin) solid var(--colorNeutralStroke1);
+    border-radius: var(--borderRadiusMedium);
+    box-sizing: border-box;
+    display: inline-flex;
+    gap: 0;
+    max-width: 100%;
+    overflow-x: auto;
+    padding: var(--spacingVerticalXXS);
+    width: fit-content;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-segmented-control__group {
+    align-items: stretch;
+    display: inline-flex;
+    gap: var(--spacingHorizontalXXS);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-segmented-control__item {
+    border-radius: var(--borderRadiusSmall);
+    color: var(--colorNeutralForeground2);
+    flex: 0 0 auto;
+    font-weight: var(--fontWeightRegular);
+    min-block-size: 32px;
+    white-space: nowrap;
+  }
+
   :where([data-nidec-ui]) .nidec-ui-collection-list,
   :where([data-nidec-ui]) .nidec-ui-card-gallery,
   :where([data-nidec-ui]) .nidec-ui-process-stage {

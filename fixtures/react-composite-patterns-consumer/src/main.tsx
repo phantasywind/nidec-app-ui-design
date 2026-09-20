@@ -8,7 +8,7 @@ import {
   DataGridBody, DataGridCell, DataGridHeaderCell, DataGridRow, StageNavigator, Table, TableBody, TableCell, TableCellActions,
   RecordDataGridHeader, RecordIdentityCellLayout, RecordSelectionDataGrid, RecordSelectionDataGridRow,
   RecordSelectionRegion, RecordTableHeader, TableHeaderCell, TableRow, Tag, Toolbar, ToolbarButton, nidecLightTheme,
-  TableActionIconButton, Tooltip,
+  SegmentedControl, TableActionIconButton, Tooltip,
 } from '@phantasywind/nidec-app-ui-design';
 import '@phantasywind/nidec-app-ui-design/styles.css';
 import './region.css';
@@ -63,6 +63,7 @@ const businessProcessStages = [
 function App() {
   const [selectedItems, setSelectedItems] = useState<(string | number)[]>(['alpha']);
   const [selectedRecordIds, setSelectedRecordIds] = useState<Set<string | number>>(new Set(['SEL-1001']));
+  const [changeMode, setChangeMode] = useState('commercial');
   const [lastAction, setLastAction] = useState('No stage activated');
   return <NidecProvider theme={nidecLightTheme}><div className="composite-fixture">
     <header className="page-header">
@@ -70,6 +71,19 @@ function App() {
       <p>Fluent owns control behavior and states; the shared package governs reusable composition.</p>
     </header>
     <main>
+      <section aria-labelledby="segmented-control-heading">
+        <div className="section-heading"><div><h2 id="segmented-control-heading">Segmented Control</h2><p>Compact, mutually exclusive mode selection with one coherent control boundary.</p></div><Tag appearance="outline">Single choice</Tag></div>
+        <SegmentedControl
+          aria-label="Change type"
+          options={[
+            { value: 'commercial', label: 'Commercial change' },
+            { value: 'engineering', label: 'Engineering change' },
+          ]}
+          value={changeMode}
+          onValueChange={(_, nextValue) => setChangeMode(nextValue)}
+        />
+      </section>
+
       <section aria-labelledby="list-heading">
         <div className="section-heading"><div><h2 id="list-heading">Collection List</h2><p>Selectable Fluent List behavior with neutral content slots.</p></div><Tag appearance="outline">Compact</Tag></div>
         <CollectionList

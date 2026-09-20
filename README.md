@@ -35,6 +35,24 @@ Button remains a text-only native-button interface, defaults to `type="button"`,
 
 `tokens.css`, `styles.css` and `tokens.json` are framework-neutral entrypoints generated from the governed ADR-0006 light-theme input. Nidec static CSS is explicitly imported; Fluent runtime styles are managed by its Provider/Griffel mechanism and do not require `styles.css` to activate. CSP, portal isolation and application acceptance remain separate qualification gates. No custom fonts, icon package contract or global reset is introduced.
 
+## Segmented mode-selection contract
+
+Use `SegmentedControl` only for a compact choice between two or more mutually exclusive peer modes, views or presentation variants when switching is immediate. It is not a workflow stage, persistent multi-select, boolean setting, navigation across unrelated destinations or a substitute for ordinary form radio options with long explanatory text. The application owns the option values, current value and business effect; the shared component owns the Fluent radio-toolbar semantics, geometry, selection hierarchy and focus behavior.
+
+The control requires an accessible group label, at least two unique text-labelled options, a controlled value and `onValueChange`. It deliberately renders one subtle neutral boundary around all segments, uses the shared Nidec light-theme brand roles for the selected segment, and keeps every medium item at the Fluent-governed 32px control height. Applications must not place a legacy selected-button skin over it or restyle individual segments with raw colors.
+
+```tsx
+<SegmentedControl
+  aria-label="Change type"
+  options={[
+    { value: 'commercial', label: 'Commercial change' },
+    { value: 'engineering', label: 'Engineering change' },
+  ]}
+  value={changeType}
+  onValueChange={(_, value) => setChangeType(value)}
+/>
+```
+
 ## Record-entry interaction contract
 
 An adopting application declares the meaning of a record collection; it does not choose raw Fluent navigation modes or invent a page-specific click convention. For every rendered collection, the application must identify whether the content is static, whether opening a record is URL navigation or an application command, whether records are selectable, and whether each item contains secondary actions. Routing, authorization and business effects remain application-owned.

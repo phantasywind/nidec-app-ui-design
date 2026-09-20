@@ -9,12 +9,12 @@ import {
   BusinessProcessFlow, CardGallery, CardGalleryItem, CollectionList, CollectionListItem,
   ProcessStageIndicator, StageNavigator,
   RecordDataGridHeader, RecordIdentityCellLayout, RecordSelectionDataGrid, RecordSelectionDataGridRow,
-  RecordSelectionRegion, RecordTableHeader, TableActionIconButton,
+  RecordSelectionRegion, RecordTableHeader, SegmentedControl, TableActionIconButton,
   DataGrid, DataGridHeader, DataGridRow, TableCellLayout, TableHeader,
 } from '../src/index';
 import type {
   BusinessProcessFlowProps, RecordIdentityCellLayoutProps, RecordSelectionDataGridProps,
-  RecordSelectionDataGridRowProps, StageNavigatorProps, TableActionIconButtonProps,
+  RecordSelectionDataGridRowProps, SegmentedControlProps, StageNavigatorProps, TableActionIconButtonProps,
 } from '../src/index';
 
 const stages = [
@@ -70,8 +70,44 @@ const recordSelectionRowContract: RecordSelectionDataGridRowProps<{ id: string }
 const recordSelectionRowWithClick: RecordSelectionDataGridRowProps<{ id: string }> = { ...recordSelectionRowContract, onClick: () => undefined };
 void [recordSelectionContract, recordSelectionWithMode, recordSelectionWithAppearance, recordSelectionWithDefault,
   recordSelectionRowContract, recordSelectionRowWithClick];
+const segmentedControlContract: SegmentedControlProps = {
+  'aria-label': 'Change type',
+  options: [{ value: 'commercial', label: 'Commercial change' }, { value: 'engineering', label: 'Engineering change' }],
+  value: 'commercial',
+  onValueChange: () => undefined,
+};
+// @ts-expect-error SegmentedControl owns the radiogroup children.
+const segmentedControlWithChildren: SegmentedControlProps = { ...segmentedControlContract, children: 'Invalid' };
+// @ts-expect-error SegmentedControl uses onValueChange rather than an ambiguous DOM onChange.
+const segmentedControlWithOnChange: SegmentedControlProps = { ...segmentedControlContract, onChange: () => undefined };
+void [segmentedControlContract, segmentedControlWithChildren, segmentedControlWithOnChange];
 
 describe('consumer-neutral composite patterns', () => {
+  it('renders a controlled Fluent radio-toolbar as one coherent segmented control', () => {
+    const element = createElement(SegmentedControl, {
+      ...segmentedControlContract,
+      className: 'consumer-class',
+    });
+    const html = renderToStaticMarkup(element);
+    expect(html).toContain('nidec-ui-segmented-control consumer-class');
+    expect(html).toContain('role="toolbar"');
+    expect(html).toContain('role="radiogroup"');
+    expect(html).toContain('role="radio"');
+    expect(html).toContain('aria-checked="true"');
+    expect(html).toContain('Commercial change');
+    expect(html).toContain('Engineering change');
+    expect(() => renderToStaticMarkup(createElement(SegmentedControl, { ...segmentedControlContract, 'aria-label': ' ' }))).toThrow('non-empty aria-label');
+    expect(() => renderToStaticMarkup(createElement(SegmentedControl, { ...segmentedControlContract, options: [segmentedControlContract.options[0]!] }))).toThrow('at least two');
+    expect(() => renderToStaticMarkup(createElement(SegmentedControl, { ...segmentedControlContract, value: 'missing' }))).toThrow('must match an option');
+  });
+
+  it('uses shared theme roles for a balanced segmented-control boundary and selection state', async () => {
+    const css = await readFile(join(repositoryRoot, 'styles', 'components.css'), 'utf8');
+    expect(css).toMatch(/nidec-ui-segmented-control[\s\S]*?colorNeutralBackground2/);
+    expect(css).toMatch(/nidec-ui-segmented-control__item[\s\S]*?min-block-size: 32px/);
+    expect(css).not.toContain('nidec-ui-segmented-control__item[aria-checked="true"]');
+  });
+
   it('declares one record identity layout without owning the surrounding table cell', () => {
     const element = RecordIdentityCellLayout({
       primary: 'Example Alpha',
