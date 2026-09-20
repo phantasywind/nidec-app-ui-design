@@ -53,6 +53,24 @@ The control requires an accessible group label, at least two unique text-labelle
 />
 ```
 
+```tsx
+<InlineModeTabs
+  aria-label="P1 parameter source"
+  options={[
+    { value: 'field', label: 'Field' },
+    { value: 'fixed', label: 'Fixed' },
+  ]}
+  value={parameterSource}
+  onValueChange={(_, value) => setParameterSource(value)}
+/>
+```
+
+## Inline editor mode contract
+
+Use `InlineModeTabs` for a short, repeated choice that changes the mode and visible panel of one nearby editor, such as `Field / Fixed` for a formula parameter. It is a dedicated compact pill rather than the page-level `SegmentedControl`: one circular track contains 20px-high Fluent tabs, with a 2px neutral inset separating the selected tab from the outer boundary. The current mode uses the shared brand background, on-brand text and a light theme shadow. An unselected hover uses a subtle neutral surface with brand text; Fluent pending and selected underlines are deliberately suppressed. The compact geometry keeps repeated data rows light while preserving an unmistakable current value.
+
+The component is controlled and uses Fluent tab-list keyboard behavior. It must remain next to the editor panel it governs, and the consumer must expose that visible content as the corresponding tab panel. Do not use it for record/page navigation, workflow stages, boolean settings, destructive commands, choices requiring explanations, or as a space-saving substitute for the page/section-level segmented pattern.
+
 ## Record-entry interaction contract
 
 An adopting application declares the meaning of a record collection; it does not choose raw Fluent navigation modes or invent a page-specific click convention. For every rendered collection, the application must identify whether the content is static, whether opening a record is URL navigation or an application command, whether records are selectable, and whether each item contains secondary actions. Routing, authorization and business effects remain application-owned.

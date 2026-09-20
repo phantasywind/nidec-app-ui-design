@@ -8,7 +8,7 @@ import {
   DataGridBody, DataGridCell, DataGridHeaderCell, DataGridRow, StageNavigator, Table, TableBody, TableCell, TableCellActions,
   RecordDataGridHeader, RecordIdentityCellLayout, RecordSelectionDataGrid, RecordSelectionDataGridRow,
   RecordSelectionRegion, RecordTableHeader, TableHeaderCell, TableRow, Tag, Toolbar, ToolbarButton, nidecLightTheme,
-  SegmentedControl, TableActionIconButton, Tooltip,
+  InlineModeTabs, SegmentedControl, TableActionIconButton, Tooltip,
 } from '@phantasywind/nidec-app-ui-design';
 import '@phantasywind/nidec-app-ui-design/styles.css';
 import './region.css';
@@ -64,6 +64,7 @@ function App() {
   const [selectedItems, setSelectedItems] = useState<(string | number)[]>(['alpha']);
   const [selectedRecordIds, setSelectedRecordIds] = useState<Set<string | number>>(new Set(['SEL-1001']));
   const [changeMode, setChangeMode] = useState('commercial');
+  const [parameterSources, setParameterSources] = useState<Record<string, string>>({ P1: 'fixed', P2: 'field', P3: 'fixed' });
   const [lastAction, setLastAction] = useState('No stage activated');
   return <NidecProvider theme={nidecLightTheme}><div className="composite-fixture">
     <header className="page-header">
@@ -82,6 +83,17 @@ function App() {
           value={changeMode}
           onValueChange={(_, nextValue) => setChangeMode(nextValue)}
         />
+        <div className="inline-mode-example" aria-label="Formula parameter source examples">
+          {Object.entries(parameterSources).map(([parameter, source]) => <div className="inline-mode-row" key={parameter}>
+            <div><strong>{parameter}</strong><small>Ordered formula parameter</small></div>
+            <InlineModeTabs
+              aria-label={`${parameter} parameter source`}
+              options={[{ value: 'field', label: 'Field' }, { value: 'fixed', label: 'Fixed' }]}
+              value={source}
+              onValueChange={(_, nextValue) => setParameterSources(current => ({ ...current, [parameter]: nextValue }))}
+            />
+          </div>)}
+        </div>
       </section>
 
       <section aria-labelledby="list-heading">

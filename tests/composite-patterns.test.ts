@@ -9,12 +9,12 @@ import {
   BusinessProcessFlow, CardGallery, CardGalleryItem, CollectionList, CollectionListItem,
   ProcessStageIndicator, StageNavigator,
   RecordDataGridHeader, RecordIdentityCellLayout, RecordSelectionDataGrid, RecordSelectionDataGridRow,
-  RecordSelectionRegion, RecordTableHeader, SegmentedControl, TableActionIconButton,
+  InlineModeTabs, RecordSelectionRegion, RecordTableHeader, SegmentedControl, TableActionIconButton,
   DataGrid, DataGridHeader, DataGridRow, TableCellLayout, TableHeader,
 } from '../src/index';
 import type {
   BusinessProcessFlowProps, RecordIdentityCellLayoutProps, RecordSelectionDataGridProps,
-  RecordSelectionDataGridRowProps, SegmentedControlProps, StageNavigatorProps, TableActionIconButtonProps,
+  InlineModeTabsProps, RecordSelectionDataGridRowProps, SegmentedControlProps, StageNavigatorProps, TableActionIconButtonProps,
 } from '../src/index';
 
 const stages = [
@@ -106,6 +106,34 @@ describe('consumer-neutral composite patterns', () => {
     expect(css).toMatch(/nidec-ui-segmented-control[\s\S]*?colorNeutralBackground2/);
     expect(css).toMatch(/nidec-ui-segmented-control__item[\s\S]*?min-block-size: 32px/);
     expect(css).not.toContain('nidec-ui-segmented-control__item[aria-checked="true"]');
+  });
+
+  it('provides a dedicated inline editor mode without segmented-control chrome', async () => {
+    const contract: InlineModeTabsProps = segmentedControlContract;
+    const html = renderToStaticMarkup(createElement(InlineModeTabs, contract));
+    const source = await readFile(join(repositoryRoot, 'src', 'index.ts'), 'utf8');
+    const readme = await readFile(join(repositoryRoot, 'README.md'), 'utf8');
+    expect(html).toContain('nidec-ui-inline-mode-tabs');
+    expect(html).not.toContain('nidec-ui-segmented-control');
+    expect(html).toContain('role="tablist"');
+    expect(html).toContain('role="tab"');
+    expect(html).toContain('aria-selected="true"');
+    expect(source).toContain("height: '20px'");
+    expect(source).toContain('fontSize: tokens.fontSizeBase100');
+    expect(source).toContain("'&& *'");
+    expect(source).toContain('padding: tokens.spacingVerticalXXS');
+    expect(source).toContain("appearance: 'transparent'");
+    expect(source).toContain('borderRadius: tokens.borderRadiusCircular');
+    expect(source).toContain('backgroundColor: tokens.colorBrandBackground');
+    expect(source).toContain('boxShadow: tokens.shadow2');
+    expect(source).toContain('color: tokens.colorNeutralForegroundOnBrand');
+    expect(source).toContain("'&&:enabled:hover::before'");
+    expect(source).toContain("'&&:enabled:hover::after'");
+    expect(source).toContain("'&&:enabled:hover *'");
+    expect(source).toContain("'&&[aria-selected=\"true\"]:hover *'");
+    expect(source).toContain('fluentTabClassNames.content');
+    expect(readme).toContain('## Inline editor mode contract');
+    expect(readme).toContain('dedicated compact pill rather than the page-level `SegmentedControl`');
   });
 
   it('declares one record identity layout without owning the surrounding table cell', () => {

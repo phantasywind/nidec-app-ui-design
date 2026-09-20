@@ -97,6 +97,33 @@
   line-height: var(--lineHeightBase200);
 }
 
+.composite-fixture .inline-mode-example {
+  border-block: var(--strokeWidthThin) solid var(--colorNeutralStroke2);
+}
+
+.composite-fixture .inline-mode-row {
+  align-items: center;
+  border-block-end: var(--strokeWidthThin) solid var(--colorNeutralStroke2);
+  display: grid;
+  gap: var(--spacingHorizontalL);
+  grid-template-columns: minmax(10rem, 1fr) auto;
+  padding-block: var(--spacingVerticalS);
+}
+
+.composite-fixture .inline-mode-row:last-child {
+  border-block-end: 0;
+}
+
+.composite-fixture .inline-mode-row strong,
+.composite-fixture .inline-mode-row small {
+  display: block;
+}
+
+.composite-fixture .inline-mode-row small {
+  color: var(--colorNeutralForeground3);
+  margin-block-start: var(--spacingVerticalXXS);
+}
+
 @media (max-width: 720px) {
   .composite-fixture {
     padding: var(--spacingVerticalL) var(--spacingHorizontalM);
@@ -115,5 +142,10 @@
 
   .composite-fixture section {
     padding: var(--spacingVerticalL) var(--spacingHorizontalM);
+  }
+
+  .composite-fixture .inline-mode-row {
+    align-items: start;
+    grid-template-columns: 1fr;
   }
 }

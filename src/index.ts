@@ -4,16 +4,17 @@ import {
   Button as FluentButton, Card as FluentCard, FluentProvider,
   DataGrid as FluentDataGrid, DataGridHeader as FluentDataGridHeader, DataGridRow as FluentDataGridRow,
   TableCellLayout as FluentTableCellLayout,
-  TableHeader as FluentTableHeader, Toolbar as FluentToolbar,
+  TableHeader as FluentTableHeader, Tab as FluentTab, TabList as FluentTabList, Toolbar as FluentToolbar,
   ToolbarRadioButton as FluentToolbarRadioButton, ToolbarRadioGroup as FluentToolbarRadioGroup,
-  createLightTheme, makeStyles, mergeClasses, tokens,
+  createLightTheme, makeStyles, mergeClasses, tabClassNames as fluentTabClassNames, tokens,
 } from '@fluentui/react-components';
 import type {
   BrandVariants, ButtonProps as FluentButtonProps, CardProps as FluentCardProps,
   DataGridHeaderProps as FluentDataGridHeaderProps, DataGridProps as FluentDataGridProps,
   DataGridRowProps as FluentDataGridRowProps, FluentProviderProps, TableRowId,
+  SelectTabEvent as FluentSelectTabEvent,
   TableCellLayoutProps as FluentTableCellLayoutProps, TableHeaderProps as FluentTableHeaderProps, Theme,
-  ToolbarProps as FluentToolbarProps,
+  TabListProps as FluentTabListProps, ToolbarProps as FluentToolbarProps,
 } from '@fluentui/react-components';
 import { lightPalette as palette } from './internal/light-palette.mjs';
 
@@ -259,6 +260,136 @@ export function SegmentedControl({
     name: segmentedControlName,
     value: option.value,
   }, option.label))));
+}
+
+export type InlineModeTabsProps = Omit<ComponentPropsWithoutRef<'div'>,
+  'children' | 'onChange' | 'role'> & {
+  'aria-label': string;
+  options: readonly SegmentedControlOption[];
+  value: string;
+  onValueChange: (event: FluentSelectTabEvent, value: string) => void;
+  disabled?: boolean;
+};
+
+const useInlineModeSelectorStyles = makeStyles({
+  root: {
+    alignItems: 'center',
+    backgroundColor: tokens.colorNeutralBackground3,
+    border: `${tokens.strokeWidthThin} solid ${tokens.colorNeutralStroke1}`,
+    borderRadius: tokens.borderRadiusCircular,
+    display: 'inline-flex',
+    gap: tokens.strokeWidthThin,
+    padding: tokens.spacingVerticalXXS,
+  },
+  item: {
+    borderRadius: tokens.borderRadiusCircular,
+    color: tokens.colorNeutralForeground2,
+    fontSize: tokens.fontSizeBase100,
+    fontWeight: tokens.fontWeightRegular,
+    height: '20px',
+    lineHeight: tokens.lineHeightBase100,
+    minHeight: '20px',
+    paddingLeft: tokens.spacingHorizontalXS,
+    paddingRight: tokens.spacingHorizontalXS,
+    transitionDuration: tokens.durationFaster,
+    transitionProperty: 'background-color, box-shadow, color',
+    transitionTimingFunction: tokens.curveEasyEase,
+    '&& *': {
+      fontSize: tokens.fontSizeBase100,
+      lineHeight: tokens.lineHeightBase100,
+    },
+    '&&::before': {
+      display: 'none',
+    },
+    '&&::after': {
+      display: 'none',
+    },
+    '&&:enabled:hover::before': {
+      display: 'none',
+    },
+    '&&:enabled:hover::after': {
+      display: 'none',
+    },
+    '&&:enabled:active::before': {
+      display: 'none',
+    },
+    '&&:enabled:active::after': {
+      display: 'none',
+    },
+    '&&:enabled:hover': {
+      backgroundColor: tokens.colorNeutralBackground1Hover,
+      color: tokens.colorBrandForeground1,
+    },
+    '&&:enabled:hover *': {
+      color: tokens.colorBrandForeground1,
+    },
+    [`&&&&:enabled:hover .${fluentTabClassNames.content}`]: {
+      color: tokens.colorBrandForeground1,
+    },
+    '&&[aria-selected="true"]': {
+      backgroundColor: tokens.colorBrandBackground,
+      boxShadow: tokens.shadow2,
+      color: tokens.colorNeutralForegroundOnBrand,
+      fontWeight: tokens.fontWeightSemibold,
+    },
+    '&&[aria-selected="true"] *': {
+      color: tokens.colorNeutralForegroundOnBrand,
+    },
+    '&&[aria-selected="true"]:hover': {
+      backgroundColor: tokens.colorBrandBackgroundHover,
+      boxShadow: tokens.shadow2,
+      color: tokens.colorNeutralForegroundOnBrand,
+    },
+    '&&[aria-selected="true"]:hover *': {
+      color: tokens.colorNeutralForegroundOnBrand,
+    },
+    [`&&&&[aria-selected="true"]:hover .${fluentTabClassNames.content}`]: {
+      color: tokens.colorNeutralForegroundOnBrand,
+    },
+    '&&[aria-selected="true"]:active': {
+      backgroundColor: tokens.colorBrandBackgroundPressed,
+      boxShadow: tokens.shadow2,
+      color: tokens.colorNeutralForegroundOnBrand,
+    },
+  },
+});
+
+/** Compact tabs for switching the mode and panel of one nearby inline editor. */
+export function InlineModeTabs({
+  'aria-label': ariaLabel,
+  options,
+  value,
+  onValueChange,
+  disabled = false,
+  className,
+  ...props
+}: InlineModeTabsProps): ReactElement<FluentTabListProps> {
+  const styles = useInlineModeSelectorStyles();
+  if (!ariaLabel.trim()) throw new Error('InlineModeTabs requires a non-empty aria-label.');
+  if (options.length < 2) throw new Error('InlineModeTabs requires at least two options.');
+  if (new Set(options.map(option => option.value)).size !== options.length) throw new Error('InlineModeTabs option values must be unique.');
+  if (options.some(option => !option.value.trim() || !option.label.trim())) throw new Error('InlineModeTabs options require non-empty values and labels.');
+  if (!options.some(option => option.value === value)) throw new Error('InlineModeTabs value must match an option.');
+
+  return createElement(FluentTabList, {
+    ...props,
+    'aria-label': ariaLabel,
+    appearance: 'transparent',
+    className: mergeClasses('nidec-ui-inline-mode-tabs', styles.root, className),
+    onTabSelect: (event, data) => {
+      const nextValue = data.value;
+      if (typeof nextValue === 'string' && nextValue !== value) {
+        onValueChange(event, nextValue);
+      }
+    },
+    selectedValue: value,
+    size: 'small',
+  }, options.map(option => createElement(FluentTab, {
+    className: mergeClasses('nidec-ui-inline-mode-tabs__item', styles.item),
+    ...((disabled || option.disabled) ? { disabled: true } : {}),
+    key: option.value,
+    value: option.value,
+  }, option.label)));
 }
 
 export type CollectionListProps = Omit<ComponentPropsWithoutRef<'ul'>, 'children'> & {
