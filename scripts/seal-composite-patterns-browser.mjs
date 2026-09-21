@@ -15,7 +15,7 @@ assert(paths.length > 0 && paths.every(path => /^browser-[1-9][0-9]*$/.test(path
 const run = join(root, '.qualification/runs', runId);
 const viewports = new Map();
 const limitations = new Set();
-const interactions = {selected: false, cleared: false, confirm: false, review: false, keyboard: false};
+const interactions = {selected: false, cleared: false, definition: false, review: false, keyboard: false};
 
 for (const path of paths) {
   const directory = join(run, path);
@@ -25,8 +25,8 @@ for (const path of paths) {
     if (audit.kind?.startsWith('interaction:')) {
       interactions.selected ||= audit.selectedItems.some(item => item.includes('Example Beta'));
       interactions.cleared ||= audit.selectedItems.length === 0;
-      interactions.confirm ||= audit.lastAction === 'Activated Confirm';
-      interactions.review ||= audit.lastAction === 'Activated Review';
+      interactions.definition ||= audit.currentWorkspace?.includes('Definition') ?? false;
+      interactions.review ||= audit.currentWorkspace?.includes('Review') ?? false;
       interactions.keyboard ||= audit.kind === 'interaction:keydown';
     }
     if (!audit.axe || audit.collectionItems !== 3) continue;
@@ -38,7 +38,7 @@ for (const path of paths) {
       assert(audit.dataTableRegionScrollable, `${path}/${name} data table lacks bounded horizontal overflow`);
     }
     assert.equal(audit.currentStages, 1, `${path}/${name} current stage count`);
-    assert.equal(audit.disabledStages, 1, `${path}/${name} disabled stage count`);
+    assert.equal(audit.disabledStages, 0, `${path}/${name} disabled stage count`);
     if (requiresStageSplit) {
       assert.equal(audit.businessProcessItems, 4, `${path}/${name} business-process item count`);
       assert.equal(audit.businessProcessCurrentStages, 1, `${path}/${name} business-process current stage count`);

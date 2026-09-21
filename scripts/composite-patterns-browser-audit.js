@@ -79,10 +79,10 @@
       dataTableRows: document.querySelectorAll('table[aria-label="Example data records"] tbody tr').length,
       dataTableHeaders: document.querySelectorAll('table[aria-label="Example data records"] th').length,
       dataTableRegionScrollable: (() => {
-        const region = document.querySelector('.data-table-scroll');
+        const region = document.querySelector('.table-scroll');
         return region ? getComputedStyle(region).overflowX === 'auto' && region.scrollWidth >= region.clientWidth : false;
       })(),
-      lastAction: document.querySelector('.stage-result')?.textContent?.trim() ?? null,
+      currentWorkspace: document.querySelector('.nidec-ui-process-stage [aria-current="step"]')?.textContent?.trim() ?? null,
       activeElement: document.activeElement?.textContent?.trim() || document.activeElement?.getAttribute('aria-label') || document.activeElement?.tagName,
       contrastPairs: [...document.querySelectorAll('.nidec-ui-process-stage__marker, .nidec-ui-process-stage__description, .nidec-ui-business-process-flow__copy strong, .nidec-ui-business-process-flow__copy small')].map(contrast),
       injectedStyles: [...document.querySelectorAll('style')].map(node => ({
@@ -107,5 +107,15 @@
   document.addEventListener('click', schedule, true);
   document.addEventListener('keydown', schedule, true);
   window.__nidecCompositeAudit = {snapshot, scan, send};
-  scan('initial').catch(console.error);
+  const scanWhenReady = async () => {
+    for (let attempt = 0; attempt < 100; attempt += 1) {
+      if (document.querySelector('.nidec-ui-card-gallery') && document.querySelector('.nidec-ui-process-stage')) {
+        await scan('initial');
+        return;
+      }
+      await new Promise(resolve => setTimeout(resolve, 50));
+    }
+    await send({...snapshot('initial-timeout'), error: 'Preview did not become ready for browser qualification.'});
+  };
+  scanWhenReady().catch(console.error);
 })();
