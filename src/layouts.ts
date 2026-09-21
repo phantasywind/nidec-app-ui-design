@@ -32,6 +32,7 @@ export function ApplicationFrame({
   navigationCloseLabel,
   onNavigationOpenChange,
   className,
+  role = 'application',
   ...props
 }: ApplicationFrameProps) {
   if (!ariaLabel.trim()) throw new Error('ApplicationFrame requires a non-empty aria-label.');
@@ -71,6 +72,7 @@ export function ApplicationFrame({
     ...props,
     'aria-label': ariaLabel,
     className: withClass(`nidec-ui-application-frame${navigationOpen ? ' nidec-ui-application-frame--navigation-open' : ''}`, className),
+    role,
   },
   createElement('header', { className: 'nidec-ui-application-frame__topbar' },
     createElement('span', { className: 'nidec-ui-application-frame__navigation-toggle' },

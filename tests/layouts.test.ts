@@ -26,6 +26,7 @@ describe('page layout public boundary', () => {
       onNavigationOpenChange: () => undefined, children: createElement('h1', {}, 'Records'),
     }));
     expect(html).toContain('nidec-ui-application-frame');
+    expect(html).toContain('role="application"');
     expect(html).toContain('aria-current="page"');
     expect(html.match(/<h1/g)).toHaveLength(1);
   });

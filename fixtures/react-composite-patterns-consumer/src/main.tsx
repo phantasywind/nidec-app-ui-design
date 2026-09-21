@@ -140,7 +140,7 @@ function ElementsPage() {
 
   return <>
     <PageHeader eyebrow="Shared UI / governed inventory" title="UI materials" description="One inspectable page for the reusable controls and compositions available to Nidec applications." actions={<Button appearance="primary">Primary action</Button>} />
-    <div className="foundation-strip" aria-label="Foundation roles">
+    <div className="foundation-strip" aria-label="Foundation roles" role="group">
       <div><span className="swatch swatch--brand" /><strong>Brand</strong><small>Actions and identity</small></div>
       <div><span className="swatch swatch--neutral" /><strong>Neutral</strong><small>Surfaces and hierarchy</small></div>
       <div><span className="swatch swatch--success" /><strong>Success</strong><small>Confirmed status</small></div>

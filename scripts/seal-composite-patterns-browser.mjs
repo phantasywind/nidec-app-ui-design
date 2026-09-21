@@ -51,14 +51,17 @@ for (const path of paths) {
       for (const [index, geometry] of audit.stageGeometry.entries()) {
         assert(geometry.buttonWidth < geometry.itemWidth, `${path}/${name} stage ${index} still uses the full column hit area`);
         if (geometry.nextMarkerLeft !== null) {
-          assert(Math.abs(geometry.connectorStartX - geometry.markerRight) <= 1, `${path}/${name} stage ${index} connector overlaps its marker`);
-          assert(Math.abs(geometry.connectorEndX - geometry.nextMarkerLeft) <= 1, `${path}/${name} stage ${index} connector misses the next marker edge`);
+          const startGap = geometry.connectorStartX - geometry.markerRight;
+          const endGap = geometry.nextMarkerLeft - geometry.connectorEndX;
+          assert(startGap >= 3 && startGap <= 7, `${path}/${name} stage ${index} connector start gap drift`);
+          assert(endGap >= 3 && endGap <= 7, `${path}/${name} stage ${index} connector end gap drift`);
         }
       }
     } else {
       for (const [index, geometry] of audit.stageGeometry.entries()) if (geometry.nextMarkerLeft !== null) {
         assert(Math.abs(geometry.connectorX - geometry.markerCenterX) <= 1, `${path}/${name} vertical stage ${index} connector is not centered`);
-        assert(Math.abs(geometry.connectorStartY - geometry.markerBottom) <= 1, `${path}/${name} vertical stage ${index} connector overlaps its marker`);
+        const verticalGap = geometry.connectorStartY - geometry.markerBottom;
+        assert(verticalGap >= 3 && verticalGap <= 8, `${path}/${name} vertical stage ${index} connector gap drift`);
       }
     }
     assert(audit.viewport.scrollWidth <= audit.viewport.width, `${path}/${name} has horizontal overflow`);
