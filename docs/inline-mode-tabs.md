@@ -1,6 +1,6 @@
 # Inline Mode Tabs Governance
 
-Status: SHARED MAINLINE CONTRACT / NOT INCLUDED IN IMMUTABLE `0.1.0-rc.2`
+Status: `0.1.0-rc.3` RELEASE CANDIDATE / NOT CONSUMABLE UNTIL PUBLICATION COMPLETES
 
 ## Purpose
 
@@ -72,4 +72,4 @@ The local composition should use:
 
 ## Version boundary
 
-The implementation is present on shared mainline but is not part of immutable package `0.1.0-rc.2`. It becomes consumable only after a new exact version is qualified and published; consumer application evidence does not retroactively change prior package contents.
+The implementation is included in the `0.1.0-rc.3` candidate. It becomes consumable only after that exact version is qualified and published; consumer application evidence does not retroactively change prior package contents.

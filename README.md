@@ -12,11 +12,11 @@ CPQ and EPM are the initial reference consumers used to establish and verify the
 - [ADR-0001: Repository and distribution governance](docs/decisions/0001-repository-and-distribution-governance.md)
 - [Gated delivery roadmap](docs/roadmap.md)
 
-The current complete shared surface is published as immutable pre-release `0.1.0-rc.2` through GitHub Packages and the matching [GitHub Release](https://github.com/phantasywind/nidec-app-ui-design/releases/tag/v0.1.0-rc.2). Its qualified archive SHA-256 is `46d3813fcc77d4c6b78f77a80377f3f3e42d505b072507169d7870f6f7780491`. The earlier `0.1.0-rc.1` remains immutable and available for controlled rollback. Neither release is the future stable `0.1.0`, independent application acceptance, deployment approval or Production approval.
+The repository currently targets immutable pre-release `0.1.0-rc.3`. It becomes consumable only after the matching Git tag, GitHub Package, GitHub Release, qualified `.tgz`, checksum and release record have all been published and read back. The earlier `0.1.0-rc.2` and `0.1.0-rc.1` releases remain immutable and available for controlled rollback. No pre-release is the future stable `0.1.0`, independent application acceptance, deployment approval or Production approval.
 
 ## Fluent React package
 
-The finite React surface covers governed forms, dialogs/drawers, feedback, navigation, menus, tables/data grids, cards, status/content controls, and the shared `CollectionList`, `CardGallery`, `StageNavigator`, and `BusinessProcessFlow` compositions. `ProcessStageIndicator` remains only as a deprecated compatibility export. Upstream Fluent contracts are preserved where components are directly exported; consumer business workflows remain outside this package. See [ADR-0003](docs/decisions/0003-fluent-ui-foundation.md), [batch scope](docs/decisions/0005-batched-form-components.md), and the [`0.1.0-rc.2` release record](docs/releases/0.1.0-rc.2.md).
+The finite React surface covers governed forms, dialogs/drawers, feedback, navigation, menus, tables/data grids, cards, status/content controls, shared page layouts, and the `CollectionList`, `CardGallery`, `StageNavigator`, and `BusinessProcessFlow` compositions. `ProcessStageIndicator` remains only as a deprecated compatibility export. Upstream Fluent contracts are preserved where components are directly exported; consumer business workflows remain outside this package. See [ADR-0003](docs/decisions/0003-fluent-ui-foundation.md), [batch scope](docs/decisions/0005-batched-form-components.md), and the most recently completed [`0.1.0-rc.2` release record](docs/releases/0.1.0-rc.2.md).
 
 React consumers explicitly install the exact qualified `@fluentui/react-components@9.74.7` alongside the exact shared-package version. React/React DOM and Fluent are external optional peers; optional means token-only consumers can omit them, not that React consumers can omit them. Commit the application lockfile to freeze transitive dependencies.
 
@@ -105,7 +105,7 @@ Choose the page archetype by user task rather than visual resemblance. The [page
 
 `CardGalleryItem` is display-only. Use `ActionableCardGalleryItem` when one whole Card is the sole link or command entry; do not nest another Link or Button inside it. A Data Table continues to use one green semantic identity Link, while Form + List uses whole-row selection with plain primary text.
 
-This page-layout API is shared-mainline work for the next candidate. It is not present in immutable `0.1.0-rc.2`, has not been published and does not authorize consumer adoption.
+This page-layout API is included in the `0.1.0-rc.3` candidate. It does not authorize consumer adoption until the immutable version and its matching release evidence are published and independently adopted by the consumer.
 
 ## Record-entry interaction contract
 
@@ -210,7 +210,7 @@ save-exact=true
 ```
 
 ```powershell
-npm install --save-exact @phantasywind/nidec-app-ui-design@0.1.0-rc.2 @fluentui/react-components@9.74.7
+npm install --save-exact @phantasywind/nidec-app-ui-design@0.1.0-rc.3 @fluentui/react-components@9.74.7
 ```
 
 The application must already use a qualified exact React/React DOM 19.2.x pair. Do not use `latest`, ranges, Git URLs, or `main`. A built application does not contact GitHub at runtime.
