@@ -6,6 +6,8 @@ This roadmap separates governance, implementation, release qualification, public
 
 ## Stage status
 
+Inline editor mode consumer-feedback checkpoint (2026-09-21): CPQ visual consumption confirmed the shared `InlineModeTabs` direction and returned cross-application requirements. Mainline now explicitly keeps the pill content-sized, binds every Tab to its adjacent panel, demonstrates the standard `spacingVerticalXS` composition and preserves separate draft values across mode visibility changes. Governance distinguishes the local editor mode from higher-level `SegmentedControl`, page/workspace Tabs and explanatory choices without importing CPQ terminology or behavior. This remains unpublished mainline work and is not part of immutable `0.1.0-rc.2`.
+
 Record-selection directory assessment (2026-09-18): a consumer Drawer exposed a reusable master-detail interaction in which selecting a row loads that record into an editor Form on the same surface. This is neither record navigation nor an independent row command. The proposed future contract is a controlled, single-selection `DataGrid`/directory variant with stable IDs, whole-row pointer plus Enter/Space activation, Fluent-owned Hover/Focus/Selected states, plain emphasized identity text, and no duplicate Link or Actions control. A layout-only region owns the standard Toolbar-to-grid gap; the application retains record loading, dirty guards, APIs, permissions and persistence. Technical integration Code visibility is recorded separately as content/form governance and remains application-owned. No public API, package bytes, application source or release changed; see `implementation/record-selection-directory-contract-assessment.md`.
 
 Data-table row-action checkpoint (2026-09-11): unpublished mainline now provides `TableActionIconButton` for direct Table/DataGrid row actions. It fixes the existing accessible icon-button contract to Fluent transparent/small/rounded presentation (24 x 24 target and 20 x 20 icon under the pinned Fluent 9.74.7 baseline), defaults to `type="button"`, and excludes consumer appearance/size/shape overrides. The reusable rule requires placement in `TableCellActions` plus a matching Tooltip; icon choice and all business effects remain consumer-owned. The composite preview replaces its text `Open` button with the governed icon action. Local verification passes 16 test files/82 tests plus lint, types, build, CSS/color, public-boundary and adoption checks; the live browser semantic tree exposes each action as one named button without visible button text. Real-tarball qualification and publication remain pending.
@@ -195,3 +197,29 @@ The next gate is review/commit of this bounded Button validation and a decision 
 The shared mainline now defines a consumer-neutral full-page composition for record-management surfaces: `PageHeader`, `RecordManagementWorkspace` and `WorkspaceSection`. The contract standardizes page identity, action placement, primary content hierarchy, Data List placement, context-rail/Card use and 900/720 responsive reflow while leaving the global application shell and all business behavior with the consumer. The durable usage rules are in `docs/record-management-workspace.md`.
 
 This checkpoint is local mainline implementation only. It is not included in immutable `0.1.0-rc.2`, has not been packaged or published, and does not authorize application adoption.
+
+## Authentication entry composition (mainline, not released)
+
+The unified local showcase now records a consumer-neutral authentication entry pattern: quiet themed background, bounded centered panel, consumer-supplied brand slot, persistent field labels and one full-width primary submit action. The durable boundary is in `docs/authentication-entry-pattern.md`. Authentication protocols, SSO, MFA, password policy, recovery, sessions, APIs and RBAC remain consumer-owned.
+
+This checkpoint is local presentation guidance and synthetic preview only. It is not a new public authentication component, does not validate any real login service, is not included in immutable `0.1.0-rc.2`, and has not been committed or published.
+
+## Application shell and white-module layout (mainline, not released)
+
+The shared mainline now records the authenticated application shell presentation observed in the accepted reference: white left navigation and top utility bar, grouped destinations without filled navigation tiles or shadows, restrained current-item treatment, and right-side pages composed from separate white modules with light borders and rounded corners. `PageHeader` and `WorkspaceSection` now supply that module boundary; nested `CardGalleryItem` surfaces stay flat without a second border or elevation shadow, and the unified showcase uses a white canvas rather than a gray page background. Durable rules are in `docs/application-shell-and-module-layout.md`.
+
+Navigation destinations, icons, grouping, routes, environment identity, accounts and RBAC remain consumer-owned. This is local shared-mainline work, not included in immutable `0.1.0-rc.2`, and has not been committed or published.
+
+## List/Card view toggle (mainline, not released)
+
+The shared mainline now includes `ViewModeToggle`, a controlled presentation-only switch matching the accepted compact directory treatment: two 32px icon buttons, 4px internal gap, explicit Tooltips and pressed state, plus a documented 12px toolbar separation from adjacent controls. The application supplies icons and owns the active rendering, query, filters, sort, selection and data state. Durable rules are in `docs/view-mode-toggle.md`.
+
+This capability is implemented and locally verified only. It is not included in immutable `0.1.0-rc.2`, has not been committed or published, and does not authorize application adoption.
+
+## Common page archetypes and layouts (mainline, not released)
+
+The shared mainline now separates element governance from page composition through a dedicated `/layouts` entry. The first bounded API covers the application frame and navigation, authentication entry, directory/work queue region order and versioned governance structure; the existing record workspace and row-selection patterns form the Record Workspace and Master Data/Form + List recipes.
+
+The unified preview is organized into `UI Materials` plus five business-neutral `Page Templates`. Directory Cards use one whole-card entry through `ActionableCardGalleryItem`; Data Tables retain one identity Link; same-surface Form + List pages retain whole-row selection. The durable selection and usage boundaries are recorded in `docs/page-archetypes.md` and the four linked layout contracts.
+
+Focused type, build, CSS-boundary and interaction verification is required before the visual review gate. This work remains outside immutable `0.1.0-rc.2`; it is not committed, published, adopted or independently accepted.

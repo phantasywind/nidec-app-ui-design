@@ -56,7 +56,7 @@ describe('record-management workspace composition', () => {
     }))).toThrow('requires contextRailLabel');
   });
 
-  it('establishes section hierarchy without forcing a Card surface', () => {
+  it('establishes a governed module surface without forcing nested Fluent Card markup', () => {
     const html = renderToStaticMarkup(createElement(WorkspaceSection, {
       actions: createElement('button', { type: 'button' }, 'Add'),
       description: 'Consumer-owned records.',
@@ -76,8 +76,20 @@ describe('record-management workspace composition', () => {
     expect(css).toContain('@media (max-width: 900px)');
     expect(css).toContain('grid-template-areas: "rail" "primary"');
     expect(css).toContain('grid-template-columns: minmax(0, 1fr) minmax(16rem, 20rem)');
+    expect(css).toMatch(/nidec-ui-page-header[\s\S]*?background-color: var\(--colorNeutralBackground1\)[\s\S]*?border: var\(--strokeWidthThin\) solid var\(--colorNeutralStroke2\)[\s\S]*?border-radius: var\(--borderRadiusLarge\)/);
+    expect(css).toMatch(/nidec-ui-workspace-section[\s\S]*?background-color: var\(--colorNeutralBackground1\)[\s\S]*?border: var\(--strokeWidthThin\) solid var\(--colorNeutralStroke2\)[\s\S]*?border-radius: var\(--borderRadiusLarge\)/);
     expect(contract).toContain('## Data List placement');
     expect(contract).toContain('## Context rail and Card placement');
-    expect(contract).toContain('Do not wrap the entire page or every section in nested Cards.');
+    expect(contract).toContain('Do not wrap these modules again in decorative outer Cards');
+  });
+
+  it('records the white shell and module rule without taking consumer navigation authority', async () => {
+    const shellContract = await readFile(join(repositoryRoot, 'docs', 'application-shell-and-module-layout.md'), 'utf8');
+    expect(shellContract).toContain('Use a white application background.');
+    expect(shellContract).toContain('short, uppercase group labels followed by icon-and-text navigation items');
+    expect(shellContract).toContain('without persistent filled tiles or shadows');
+    expect(shellContract).toContain('no second border and no elevation shadow');
+    expect(shellContract).toContain('Every module uses a white background');
+    expect(shellContract).toContain('Routes, labels, grouping, ordering, visibility and RBAC remain application-owned.');
   });
 });

@@ -6,15 +6,15 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import type { TableRowId } from '@fluentui/react-components';
 import { describe, expect, it } from 'vitest';
 import {
-  BusinessProcessFlow, CardGallery, CardGalleryItem, CollectionList, CollectionListItem,
+  ActionableCardGalleryItem, BusinessProcessFlow, CardGallery, CardGalleryItem, CollectionList, CollectionListItem,
   ProcessStageIndicator, StageNavigator,
   RecordDataGridHeader, RecordIdentityCellLayout, RecordSelectionDataGrid, RecordSelectionDataGridRow,
-  InlineModeTabs, RecordSelectionRegion, RecordTableHeader, SegmentedControl, TableActionIconButton,
+  InlineModeTabs, RecordSelectionRegion, RecordTableHeader, SegmentedControl, TableActionIconButton, ViewModeToggle,
   DataGrid, DataGridHeader, DataGridRow, TableCellLayout, TableHeader,
 } from '../src/index';
 import type {
   BusinessProcessFlowProps, RecordIdentityCellLayoutProps, RecordSelectionDataGridProps,
-  InlineModeTabsProps, RecordSelectionDataGridRowProps, SegmentedControlProps, StageNavigatorProps, TableActionIconButtonProps,
+  InlineModeTabsProps, RecordSelectionDataGridRowProps, SegmentedControlProps, StageNavigatorProps, TableActionIconButtonProps, ViewModeToggleProps,
 } from '../src/index';
 
 const stages = [
@@ -81,8 +81,56 @@ const segmentedControlWithChildren: SegmentedControlProps = { ...segmentedContro
 // @ts-expect-error SegmentedControl uses onValueChange rather than an ambiguous DOM onChange.
 const segmentedControlWithOnChange: SegmentedControlProps = { ...segmentedControlContract, onChange: () => undefined };
 void [segmentedControlContract, segmentedControlWithChildren, segmentedControlWithOnChange];
+const viewModeToggleContract: ViewModeToggleProps = {
+  'aria-label': 'Directory view',
+  value: 'list',
+  onValueChange: () => undefined,
+  listIcon: createElement('span'),
+  cardIcon: createElement('span'),
+};
+// @ts-expect-error ViewModeToggle owns both icon-button children.
+const viewModeToggleWithChildren: ViewModeToggleProps = { ...viewModeToggleContract, children: 'Invalid' };
+void [viewModeToggleContract, viewModeToggleWithChildren];
+const inlineModeTabsContract: InlineModeTabsProps = {
+  'aria-label': 'Editor mode',
+  options: [
+    { value: 'reference', label: 'Reference', tabId: 'mode-tab-reference', panelId: 'mode-panel-reference' },
+    { value: 'manual', label: 'Manual', tabId: 'mode-tab-manual', panelId: 'mode-panel-manual' },
+  ],
+  value: 'reference',
+  onValueChange: () => undefined,
+};
 
 describe('consumer-neutral composite patterns', () => {
+  it('presents one governed materials page and five composed synthetic templates', async () => {
+    const fixture = await readFile(join(repositoryRoot, 'fixtures', 'react-composite-patterns-consumer', 'src', 'main.tsx'), 'utf8');
+    const fixtureCss = await readFile(join(repositoryRoot, 'fixtures', 'react-composite-patterns-consumer', 'src', 'region.css'), 'utf8');
+    expect(fixture).toContain("type ShowcaseView = 'elements' | 'authentication' | 'directory' | 'record' | 'master-data' | 'governance'");
+    expect(fixture).toContain("label: 'UI materials'");
+    expect(fixture).toContain("label: 'Authentication sample'");
+    expect(fixture).toContain("label: 'Directory sample'");
+    expect(fixture).toContain("label: 'Record workspace'");
+    expect(fixture).toContain("label: 'Master data / Form + List'");
+    expect(fixture).toContain("label: 'Governance sample'");
+    expect(fixture).toContain('Template usage contract');
+    expect(fixture).toContain('Business meaning remains with the adopting application.');
+    expect(fixtureCss).toMatch(/showcase-content[\s\S]*?align-content: start/);
+  });
+
+  it('records authentication entry as a presentation pattern without owning authentication policy', async () => {
+    const fixture = await readFile(join(repositoryRoot, 'fixtures', 'react-composite-patterns-consumer', 'src', 'main.tsx'), 'utf8');
+    const governance = await readFile(join(repositoryRoot, 'docs', 'authentication-entry-pattern.md'), 'utf8');
+    const readme = await readFile(join(repositoryRoot, 'README.md'), 'utf8');
+    expect(fixture).toContain('<AuthenticationLayout aria-label="Authentication entry"');
+    expect(fixture).toContain('autoComplete="username"');
+    expect(fixture).toContain('autoComplete="current-password"');
+    expect(fixture).toContain('Consumer-supplied identity');
+    expect(governance).toContain('The shared package does not embed, reconstruct or recolor an application logo.');
+    expect(governance).toContain('SSO, MFA, password policy, account recovery');
+    expect(governance).toContain('not a new public authentication component or protocol');
+    expect(readme).toContain('[Authentication entry pattern](docs/authentication-entry-pattern.md)');
+  });
+
   it('renders a controlled Fluent radio-toolbar as one coherent segmented control', () => {
     const element = createElement(SegmentedControl, {
       ...segmentedControlContract,
@@ -101,6 +149,23 @@ describe('consumer-neutral composite patterns', () => {
     expect(() => renderToStaticMarkup(createElement(SegmentedControl, { ...segmentedControlContract, value: 'missing' }))).toThrow('must match an option');
   });
 
+  it('renders a compact controlled List/Card view switch with governed spacing', async () => {
+    const html = renderToStaticMarkup(createElement(ViewModeToggle, viewModeToggleContract));
+    const css = await readFile(join(repositoryRoot, 'styles', 'components.css'), 'utf8');
+    const governance = await readFile(join(repositoryRoot, 'docs', 'view-mode-toggle.md'), 'utf8');
+    expect(html).toContain('role="group"');
+    expect(html).toContain('aria-label="Directory view"');
+    expect(html).toContain('aria-label="List view"');
+    expect(html).toContain('aria-label="Card view"');
+    expect(html).toContain('aria-pressed="true"');
+    expect(html).toContain('aria-pressed="false"');
+    expect(css).toMatch(/nidec-ui-view-mode-toggle[\s\S]*?gap: var\(--spacingHorizontalXS\)/);
+    expect(css).toMatch(/nidec-ui-view-mode-toggle__button[\s\S]*?inline-size: 32px[\s\S]*?block-size: 32px/);
+    expect(governance).toContain('4 CSS pixels');
+    expect(governance).toContain('12 CSS pixels');
+    expect(() => renderToStaticMarkup(createElement(ViewModeToggle, { ...viewModeToggleContract, 'aria-label': ' ' }))).toThrow('non-empty aria-label');
+  });
+
   it('uses shared theme roles for a balanced segmented-control boundary and selection state', async () => {
     const css = await readFile(join(repositoryRoot, 'styles', 'components.css'), 'utf8');
     expect(css).toMatch(/nidec-ui-segmented-control[\s\S]*?colorNeutralBackground2/);
@@ -109,16 +174,24 @@ describe('consumer-neutral composite patterns', () => {
   });
 
   it('provides a dedicated inline editor mode without segmented-control chrome', async () => {
-    const contract: InlineModeTabsProps = segmentedControlContract;
-    const html = renderToStaticMarkup(createElement(InlineModeTabs, contract));
+    const html = renderToStaticMarkup(createElement(InlineModeTabs, inlineModeTabsContract));
     const source = await readFile(join(repositoryRoot, 'src', 'index.ts'), 'utf8');
     const readme = await readFile(join(repositoryRoot, 'README.md'), 'utf8');
+    const governance = await readFile(join(repositoryRoot, 'docs', 'inline-mode-tabs.md'), 'utf8');
+    const fixture = await readFile(join(repositoryRoot, 'fixtures', 'react-composite-patterns-consumer', 'src', 'main.tsx'), 'utf8');
+    const fixtureCss = await readFile(join(repositoryRoot, 'fixtures', 'react-composite-patterns-consumer', 'src', 'region.css'), 'utf8');
     expect(html).toContain('nidec-ui-inline-mode-tabs');
     expect(html).not.toContain('nidec-ui-segmented-control');
     expect(html).toContain('role="tablist"');
     expect(html).toContain('role="tab"');
     expect(html).toContain('aria-selected="true"');
+    expect(html).toContain('aria-controls="mode-panel-reference"');
+    expect(html).toContain('id="mode-tab-reference"');
+    expect(html).toContain('type="button"');
     expect(source).toContain("height: '20px'");
+    expect(source).toContain("width: 'fit-content'");
+    expect(source).toContain("maxWidth: '100%'");
+    expect(source).toContain("whiteSpace: 'nowrap'");
     expect(source).toContain('fontSize: tokens.fontSizeBase100');
     expect(source).toContain("'&& *'");
     expect(source).toContain('padding: tokens.spacingVerticalXXS');
@@ -133,7 +206,23 @@ describe('consumer-neutral composite patterns', () => {
     expect(source).toContain("'&&[aria-selected=\"true\"]:hover *'");
     expect(source).toContain('fluentTabClassNames.content');
     expect(readme).toContain('## Inline editor mode contract');
-    expect(readme).toContain('dedicated compact pill rather than the page-level `SegmentedControl`');
+    expect(readme).toContain('dedicated compact pill rather than the higher-level `SegmentedControl`');
+    expect(readme).toContain('does not claim a separate `WorkspaceTabs` public component');
+    expect(governance).toContain('Switching visibility must not clear inactive-mode input');
+    expect(fixture).toContain('role="tabpanel"');
+    expect(fixture).toContain('const [mode, setMode]');
+    expect(fixture).toContain("active === 'reference' ? 'Shared field' : '42'");
+    expect(fixtureCss).toMatch(/parameter-editor[\s\S]*?gap: var\(--spacingVerticalXS\)/);
+    expect(fixtureCss).toContain('grid-template-columns: minmax(10rem, 1fr) 16rem');
+    expect(fixtureCss).toMatch(/parameter-editor > \[role="tabpanel"\], \.parameter-editor input[\s\S]*?width: 100%/);
+    expect(governance).toContain('switching modes or changing panel type must not move the pill');
+    expect(() => renderToStaticMarkup(createElement(InlineModeTabs, {
+      ...inlineModeTabsContract,
+      options: [
+        inlineModeTabsContract.options[0]!,
+        { ...inlineModeTabsContract.options[1]!, tabId: 'mode-tab-reference' },
+      ],
+    }))).toThrow('tab IDs and panel IDs must be unique');
   });
 
   it('declares one record identity layout without owning the surrounding table cell', () => {
@@ -153,6 +242,15 @@ describe('consumer-neutral composite patterns', () => {
     expect(html).toContain('Example Alpha');
     expect(html).toContain('Reference REC-1042');
     expect(html).not.toContain('<td');
+  });
+
+  it('keeps a navigable data-table identity cell to one link without stacked fields', async () => {
+    const fixture = await readFile(join(repositoryRoot, 'fixtures', 'react-composite-patterns-consumer', 'src', 'main.tsx'), 'utf8');
+    const readme = await readFile(join(repositoryRoot, 'README.md'), 'utf8');
+    expect(fixture).toContain('primary={<Link inline href={`#${record.id}`}');
+    expect(fixture).not.toContain('secondary={record.owner}');
+    expect(fixture).toContain('<TableCell>{record.owner}</TableCell>');
+    expect(readme).toContain('do not stack an owner, description, status or other field beneath it');
   });
 
   it('applies one governed visual hierarchy to Table and DataGrid headers', async () => {
@@ -197,7 +295,7 @@ describe('consumer-neutral composite patterns', () => {
     const wrapper = RecordSelectionDataGridRow<{ id: string }>({ children: () => null, recordId: 'one' });
     const renderRow = (wrapper.props as { children: (context: {
       onSelectionChange: (event: unknown, data: { selectedItems: Set<TableRowId> }) => void;
-    }) => ReactElement<{ className?: string; onKeyDownCapture?: (event: unknown) => void; selectionCell?: unknown }> }).children;
+    }) => ReactElement<{ className?: string; onKeyDown?: (event: unknown) => void; onKeyDownCapture?: (event: unknown) => void; selectionCell?: unknown }> }).children;
     const row = renderRow({
       onSelectionChange: (_event: unknown, data: { selectedItems: Set<TableRowId> }) => { selectedItems = data.selectedItems; },
     });
@@ -254,16 +352,21 @@ describe('consumer-neutral composite patterns', () => {
     expect(preventCount).toBe(3);
   });
 
-  it('governs selection-region spacing and non-color selected/focus indicators', async () => {
+  it('governs selection-region spacing without a branded leading selection bar', async () => {
     const region = RecordSelectionRegion({ toolbar: 'Toolbar', children: 'Grid', 'aria-label': 'Record editor directory' });
     expect(region.type).toBe('section');
     expect(region.props.className).toBe('nidec-ui-record-selection-region');
     expect(region.props.children).toEqual(['Toolbar', 'Grid']);
     const css = await readFile(join(repositoryRoot, 'styles', 'components.css'), 'utf8');
     expect(css).toMatch(/nidec-ui-record-selection-region[\s\S]*?gap: var\(--spacingVerticalM\)/);
-    expect(css).toMatch(/nidec-ui-record-selection-row\[aria-selected="true"\][\s\S]*?box-shadow/);
+    expect(css).not.toMatch(/nidec-ui-record-selection-row\[aria-selected="true"\][^{]*\{[^}]*box-shadow/);
     expect(css).toMatch(/nidec-ui-record-selection-row:is\(:focus-visible, :has\(:focus-visible\)\)[\s\S]*?colorStrokeFocus2/);
     expect(css).toContain('@media (forced-colors: active)');
+    expect(css).toContain('.fui-TableCellActions');
+    expect(css).toContain('margin-inline-end: var(--spacingHorizontalM)');
+    const fixture = await readFile(join(repositoryRoot, 'fixtures', 'react-composite-patterns-consumer', 'src', 'main.tsx'), 'utf8');
+    expect(fixture).toContain("type SelectionItem = { id: string; name: string }");
+    expect(fixture).not.toContain('primary={item.name} secondary={item.detail}');
   });
 
   it('governs Data Table row actions as small transparent icon-only buttons', () => {
@@ -321,21 +424,37 @@ describe('consumer-neutral composite patterns', () => {
     expect(readme).toContain('24 x 24 CSS pixel target');
     expect(readme).toContain('Every icon action requires both a non-empty `aria-label` and a visible-on-hover/focus `Tooltip`');
     expect(readme).toContain('does not retroactively add an interaction API to immutable `0.1.0-rc.1`');
-    expect(fixture).toContain('<NidecProvider theme={nidecLightTheme}><div className="composite-fixture">');
-    expect(fixture).not.toContain('<NidecProvider theme={nidecLightTheme} className="composite-fixture">');
-    expect(fixture).toContain('primary={<Link inline href={`#record-${record.id}`}>{record.name}</Link>}');
-    expect(fixture).toContain('aria-label={`More actions for ${record.name}`}');
-    expect(fixture).not.toContain('aria-label={`Open ${record.name}`}');
+    expect(fixture).toContain('<NidecProvider theme={nidecLightTheme}><ApplicationFrame');
+    expect(fixture).toContain('primary={<Link inline href={`#${record.id}`}');
+    expect(fixture).toContain('aria-label={`More actions for ${name}`}');
+    expect(fixture).toContain('aria-label={`Open ${record.name}`}');
+    expect(fixture).not.toMatch(/<CardGalleryItem[^>]*>\s*<Card>/);
   });
 
-  it('renders a responsive semantic gallery with Fluent Cards', () => {
+  it('renders a responsive semantic gallery with flat nested Fluent Cards', async () => {
+    const source = await readFile(join(repositoryRoot, 'src', 'index.ts'), 'utf8');
     const html = renderToStaticMarkup(createElement(CardGallery, { minimumItemWidth: 'large', 'aria-label': 'Examples' },
-      createElement(CardGalleryItem, { cardProps: { appearance: 'outline' } }, createElement('h3', {}, 'Example card'))));
+      createElement(CardGalleryItem, {}, createElement('h3', {}, 'Example card'))));
     expect(html).toContain('<ul');
     expect(html).toContain('<li');
     expect(html).toContain('nidec-ui-card-gallery--large');
     expect(html).toContain('fui-Card');
     expect(html).toContain('Example card');
+    expect(source).toContain("appearance: remainingCardProps.appearance ?? 'subtle'");
+    expect(source).toContain("boxShadow: 'none'");
+  });
+
+  it('renders navigation and command cards as one whole-card entry', () => {
+    const navigation = renderToStaticMarkup(createElement(ActionableCardGalleryItem, {
+      'aria-label': 'Open example', href: '/example', children: createElement('strong', {}, 'Example'),
+    }));
+    const command = renderToStaticMarkup(createElement(ActionableCardGalleryItem, {
+      'aria-label': 'Choose example', onActivate: () => undefined, children: createElement('strong', {}, 'Example'),
+    }));
+    expect(navigation).toContain('<a aria-label="Open example"');
+    expect(navigation).toContain('href="/example"');
+    expect(command).toContain('role="button"');
+    expect(command).toContain('tabindex="0"');
   });
 
   it('renders one current process step and consumer-supplied localized status labels', () => {
@@ -363,6 +482,7 @@ describe('consumer-neutral composite patterns', () => {
       onStageSelect: () => undefined,
     }));
     expect(html).toContain('<button');
+    expect(html).toContain('nidec-ui-stage-navigator');
     expect(html).toContain('aria-current="step"');
     expect(html).toContain('type="button"');
   });
@@ -420,10 +540,12 @@ describe('consumer-neutral composite patterns', () => {
     expect(source).toContain("className: 'nidec-ui-process-stage__layout'");
     expect(css).toContain('width: fit-content');
     expect(css).toContain('max-width: calc(100% - var(--spacingHorizontalXS))');
+    expect(css).toContain('.nidec-ui-stage-navigator .nidec-ui-process-stage__item:not(:last-child)::after');
+    expect(css).toContain('height: var(--strokeWidthThin)');
     expect(sealSource).toContain('axe-color-contrast-incomplete:scrollable-table-clipping-at-720');
     expect(sealSource).toContain('axe-color-contrast-incomplete:truncated-record-identity-at-narrow-viewports');
-    expect(css).toContain('inset-inline-start: calc(var(--spacingHorizontalXS) + 1.5rem + var(--strokeWidthThin) + var(--strokeWidthThin) + var(--strokeWidthThin))');
-    expect(css).toContain('inset-block-start: calc(var(--spacingVerticalXS) + 1.5rem + var(--strokeWidthThin) + var(--strokeWidthThin) + var(--strokeWidthThin))');
+    expect(css).toContain('inset-inline-start: calc(var(--spacingHorizontalXS) + 1.5rem + var(--strokeWidthThin) + var(--strokeWidthThin) + var(--spacingHorizontalXS))');
+    expect(css).toContain('inset-block-start: calc(var(--spacingVerticalXS) + 1.5rem + var(--strokeWidthThin) + var(--strokeWidthThin) + var(--spacingVerticalXS))');
     expect(css).not.toContain('inset-inline: calc(50% + 1.25rem)');
   });
 

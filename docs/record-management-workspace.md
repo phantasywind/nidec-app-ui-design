@@ -6,13 +6,13 @@ Status: SHARED MAINLINE CONTRACT / NOT YET PUBLISHED OR ADOPTED
 
 This contract governs reusable record-management pages that combine a page header, one primary work area, an optional contextual record selector or summary rail, and a Data List. It standardizes information hierarchy and placement without importing an application's routing, API, lifecycle, authorization, selection, persistence or business state.
 
-The application shell remains application-owned. Global navigation, environment indicators, account controls and sign-out do not belong to this composition.
+The application owns navigation destinations, environment identity, account controls and sign-out behavior. Their shared presentation follows `docs/application-shell-and-module-layout.md`; those semantics do not belong to this record composition.
 
 ## Required page hierarchy
 
 1. Use one `PageHeader` as the page identity. It contains one `h1`, an optional short purpose statement and an optional action area.
 2. Use one `RecordManagementWorkspace` for the primary record-management region. Supply a non-empty accessible name.
-3. Use `WorkspaceSection` for each meaningful region inside the primary area. A section may contain status, metadata, tabs, a local Toolbar and a Data List, but it is not automatically a Card.
+3. Use `WorkspaceSection` for each meaningful region inside the primary area. It is the governed white module surface with a light border and rounded corners. A section may contain status, metadata, tabs, a local Toolbar and a Data List.
 4. Add a context rail only when its content selects, summarizes or directly supports the record shown in the primary area.
 
 Do not reproduce the application title in multiple visible heading levels. Breadcrumbs describe location; the page title identifies the current page; section titles identify local content.
@@ -29,7 +29,8 @@ The consumer owns command availability, confirmation, RBAC, effects and errors.
 ## Primary content and surface use
 
 - The primary work area is the page's dominant region and receives the flexible width.
-- Do not wrap the entire page or every section in nested Cards. Spacing, headings and neutral dividers establish page hierarchy.
+- Keep the page background white. `PageHeader` and each `WorkspaceSection` establish hierarchy as separate white modules with light borders, shared radius and consistent spacing.
+- Do not wrap these modules again in decorative outer Cards or add gray page bands behind them.
 - Use a Card only when the content represents an independently identifiable, selectable or actionable object, or when it must be visually separable from adjacent objects.
 - Status, version, metadata, Tabs and local actions should appear in the same section as the content they govern.
 

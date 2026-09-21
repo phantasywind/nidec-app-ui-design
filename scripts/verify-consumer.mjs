@@ -93,6 +93,8 @@ async function verifyInstalledPackage(consumerRoot) {
     'README.md',
     'dist/index.d.ts',
     'dist/index.js',
+    'dist/layouts.d.ts',
+    'dist/layouts.js',
     'dist/styles.css',
     'dist/styles.css.d.ts',
     'dist/tokens.css',

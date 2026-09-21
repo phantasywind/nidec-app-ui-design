@@ -5,6 +5,7 @@ import {
   DataGrid as FluentDataGrid, DataGridHeader as FluentDataGridHeader, DataGridRow as FluentDataGridRow,
   TableCellLayout as FluentTableCellLayout,
   TableHeader as FluentTableHeader, Tab as FluentTab, TabList as FluentTabList, Toolbar as FluentToolbar,
+  Tooltip as FluentTooltip,
   ToolbarRadioButton as FluentToolbarRadioButton, ToolbarRadioGroup as FluentToolbarRadioGroup,
   createLightTheme, makeStyles, mergeClasses, tabClassNames as fluentTabClassNames, tokens,
 } from '@fluentui/react-components';
@@ -182,6 +183,74 @@ export function TableActionIconButton({ icon, 'aria-label': label, className, ..
   });
 }
 
+export type ViewMode = 'list' | 'card';
+
+export type ViewModeToggleProps = Omit<ComponentPropsWithoutRef<'div'>,
+  'children' | 'onChange' | 'role'> & {
+  'aria-label': string;
+  value: ViewMode;
+  onValueChange: (event: MouseEvent<HTMLButtonElement>, value: ViewMode) => void;
+  listIcon: ReactElement;
+  cardIcon: ReactElement;
+  listLabel?: string;
+  cardLabel?: string;
+  disabled?: boolean;
+};
+
+const useViewModeToggleStyles = makeStyles({
+  selected: {
+    backgroundColor: tokens.colorNeutralBackground3,
+    color: tokens.colorBrandForeground1,
+    '&:hover': {
+      backgroundColor: tokens.colorNeutralBackground3Hover,
+      color: tokens.colorBrandForeground1,
+    },
+    '&:active': {
+      backgroundColor: tokens.colorNeutralBackground3Pressed,
+      color: tokens.colorBrandForeground1,
+    },
+  },
+});
+
+/** Compact mutually exclusive List/Card presentation switch; data semantics stay consumer-owned. */
+export function ViewModeToggle({
+  'aria-label': ariaLabel,
+  value,
+  onValueChange,
+  listIcon,
+  cardIcon,
+  listLabel = 'List view',
+  cardLabel = 'Card view',
+  disabled = false,
+  className,
+  ...props
+}: ViewModeToggleProps) {
+  const styles = useViewModeToggleStyles();
+  if (!ariaLabel.trim()) throw new Error('ViewModeToggle requires a non-empty aria-label.');
+  if (!listLabel.trim() || !cardLabel.trim()) throw new Error('ViewModeToggle requires non-empty view labels.');
+  if (value !== 'list' && value !== 'card') throw new Error('ViewModeToggle value must be list or card.');
+  const option = (mode: ViewMode, label: string, icon: ReactElement) => createElement(FluentTooltip, {
+    content: label,
+    relationship: 'label',
+  }, IconButton({
+    'aria-label': label,
+    'aria-pressed': value === mode,
+    appearance: 'secondary',
+    className: mergeClasses('nidec-ui-view-mode-toggle__button', value === mode && styles.selected),
+    disabled,
+    icon,
+    onClick: event => { if (mode !== value) onValueChange(event, mode); },
+    shape: 'rounded',
+    size: 'medium',
+  }));
+  return createElement('div', {
+    ...props,
+    'aria-label': ariaLabel,
+    className: withClass('nidec-ui-view-mode-toggle', className),
+    role: 'group',
+  }, option('list', listLabel, listIcon), option('card', cardLabel, cardIcon));
+}
+
 const withClass = (base: string, className?: string) => className ? `${base} ${className}` : base;
 
 export type SegmentedControlOption = Readonly<{
@@ -262,10 +331,18 @@ export function SegmentedControl({
   }, option.label))));
 }
 
+export type InlineModeTabOption = Readonly<{
+  value: string;
+  label: string;
+  tabId: string;
+  panelId: string;
+  disabled?: boolean;
+}>;
+
 export type InlineModeTabsProps = Omit<ComponentPropsWithoutRef<'div'>,
   'children' | 'onChange' | 'role'> & {
   'aria-label': string;
-  options: readonly SegmentedControlOption[];
+  options: readonly InlineModeTabOption[];
   value: string;
   onValueChange: (event: FluentSelectTabEvent, value: string) => void;
   disabled?: boolean;
@@ -279,7 +356,9 @@ const useInlineModeSelectorStyles = makeStyles({
     borderRadius: tokens.borderRadiusCircular,
     display: 'inline-flex',
     gap: tokens.strokeWidthThin,
+    maxWidth: '100%',
     padding: tokens.spacingVerticalXXS,
+    width: 'fit-content',
   },
   item: {
     borderRadius: tokens.borderRadiusCircular,
@@ -289,11 +368,13 @@ const useInlineModeSelectorStyles = makeStyles({
     height: '20px',
     lineHeight: tokens.lineHeightBase100,
     minHeight: '20px',
+    flex: '0 0 auto',
     paddingLeft: tokens.spacingHorizontalXS,
     paddingRight: tokens.spacingHorizontalXS,
     transitionDuration: tokens.durationFaster,
     transitionProperty: 'background-color, box-shadow, color',
     transitionTimingFunction: tokens.curveEasyEase,
+    whiteSpace: 'nowrap',
     '&& *': {
       fontSize: tokens.fontSizeBase100,
       lineHeight: tokens.lineHeightBase100,
@@ -368,7 +449,13 @@ export function InlineModeTabs({
   if (!ariaLabel.trim()) throw new Error('InlineModeTabs requires a non-empty aria-label.');
   if (options.length < 2) throw new Error('InlineModeTabs requires at least two options.');
   if (new Set(options.map(option => option.value)).size !== options.length) throw new Error('InlineModeTabs option values must be unique.');
-  if (options.some(option => !option.value.trim() || !option.label.trim())) throw new Error('InlineModeTabs options require non-empty values and labels.');
+  if (options.some(option => !option.value.trim() || !option.label.trim() || !option.tabId.trim() || !option.panelId.trim())) {
+    throw new Error('InlineModeTabs options require non-empty values, labels, tab IDs and panel IDs.');
+  }
+  if (new Set(options.map(option => option.tabId)).size !== options.length ||
+    new Set(options.map(option => option.panelId)).size !== options.length) {
+    throw new Error('InlineModeTabs tab IDs and panel IDs must be unique.');
+  }
   if (!options.some(option => option.value === value)) throw new Error('InlineModeTabs value must match an option.');
 
   return createElement(FluentTabList, {
@@ -385,8 +472,10 @@ export function InlineModeTabs({
     selectedValue: value,
     size: 'small',
   }, options.map(option => createElement(FluentTab, {
+    'aria-controls': option.panelId,
     className: mergeClasses('nidec-ui-inline-mode-tabs__item', styles.item),
     ...((disabled || option.disabled) ? { disabled: true } : {}),
+    id: option.tabId,
     key: option.value,
     value: option.value,
   }, option.label)));
@@ -457,7 +546,7 @@ export type WorkspaceSectionProps = Omit<ComponentPropsWithoutRef<'section'>, 'c
   children: ReactNode;
 };
 
-/** Content hierarchy for one workspace region; it deliberately adds no Card surface. */
+/** Standard white bordered module for one workspace region; nested content must not add a redundant surface. */
 export function WorkspaceSection({ title, description, actions, children, className, ...props }: WorkspaceSectionProps) {
   return createElement('section', { ...props, className: withClass('nidec-ui-workspace-section', className) },
     createElement('header', { className: 'nidec-ui-workspace-section__header' },
@@ -513,6 +602,7 @@ export function RecordIdentityCellLayout({ primary, secondary, ...props }: Recor
   return createElement(FluentTableCellLayout, {
     ...props,
     appearance: 'primary',
+    className: withClass('nidec-ui-record-identity-cell', props.className),
     ...(secondary === undefined ? {} : { description: { children: secondary } }),
   }, primary);
 }
@@ -639,10 +729,73 @@ export type CardGalleryItemProps = Omit<ComponentPropsWithoutRef<'li'>, 'childre
   cardProps?: Omit<FluentCardProps, 'children'>;
 };
 
+const useCardGalleryItemStyles = makeStyles({
+  card: {
+    borderBottomWidth: 0,
+    borderLeftWidth: 0,
+    borderRightWidth: 0,
+    borderTopWidth: 0,
+    boxShadow: 'none',
+  },
+});
+
 export function CardGalleryItem({ children, cardProps, className, ...props }: CardGalleryItemProps) {
+  const styles = useCardGalleryItemStyles();
   const { className: cardClassName, ...remainingCardProps } = cardProps ?? {};
   return createElement('li', { ...props, className: withClass('nidec-ui-card-gallery__item', className) },
-    createElement(FluentCard, { ...remainingCardProps, className: withClass('nidec-ui-card-gallery__card', cardClassName) }, children));
+    createElement(FluentCard, {
+      ...remainingCardProps,
+      appearance: remainingCardProps.appearance ?? 'subtle',
+      className: mergeClasses('nidec-ui-card-gallery__card', styles.card, cardClassName),
+    }, children));
+}
+
+type ActionableCardGalleryItemBaseProps = Omit<ComponentPropsWithoutRef<'li'>, 'children' | 'onClick'> & {
+  'aria-label': string;
+  children?: ReactNode;
+  cardProps?: Omit<FluentCardProps, 'children' | 'onClick' | 'onKeyDown' | 'role' | 'tabIndex'>;
+};
+
+export type ActionableCardGalleryItemProps = ActionableCardGalleryItemBaseProps & (
+  | { href: string; onActivate?: never }
+  | { href?: never; onActivate: () => void }
+);
+
+/** One whole-card primary entry. Do not place a second link or button inside it. */
+export function ActionableCardGalleryItem({
+  'aria-label': ariaLabel,
+  children,
+  cardProps,
+  href,
+  onActivate,
+  className,
+  ...props
+}: ActionableCardGalleryItemProps) {
+  if (!ariaLabel.trim()) throw new Error('ActionableCardGalleryItem requires a non-empty aria-label.');
+  if (href !== undefined && !href.trim()) throw new Error('ActionableCardGalleryItem requires a non-empty href.');
+  const styles = useCardGalleryItemStyles();
+  const { className: cardClassName, ...remainingCardProps } = cardProps ?? {};
+  const card = createElement(FluentCard, {
+    ...remainingCardProps,
+    appearance: remainingCardProps.appearance ?? 'subtle',
+    className: mergeClasses('nidec-ui-card-gallery__card nidec-ui-card-gallery__card--actionable', styles.card, cardClassName),
+  }, children);
+
+  return createElement('li', { ...props, className: withClass('nidec-ui-card-gallery__item', className) },
+    href !== undefined
+      ? createElement('a', { 'aria-label': ariaLabel, className: 'nidec-ui-card-gallery__entry', href }, card)
+      : createElement('div', {
+        'aria-label': ariaLabel,
+        className: 'nidec-ui-card-gallery__entry',
+        onClick: onActivate,
+        onKeyDown: (event: KeyboardEvent<HTMLDivElement>) => {
+          if (event.key !== 'Enter' && event.key !== ' ') return;
+          event.preventDefault();
+          onActivate();
+        },
+        role: 'button',
+        tabIndex: 0,
+      }, card));
 }
 
 export type ProcessStageStatus = 'completed' | 'current' | 'upcoming' | 'error';
@@ -691,7 +844,7 @@ export function ProcessStageIndicator({ 'aria-label': ariaLabel, stages, orienta
 
 /** Interactive navigation between sibling workspaces; it does not represent automatic lifecycle progression. */
 export function StageNavigator(props: StageNavigatorProps) {
-  return ProcessStageIndicator(props);
+  return ProcessStageIndicator({ ...props, className: withClass('nidec-ui-stage-navigator', props.className) });
 }
 
 export type BusinessProcessStageDefinition = Readonly<{

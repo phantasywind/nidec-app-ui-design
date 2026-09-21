@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "paths": {
+      "@phantasywind/nidec-app-ui-design": ["../../src/index.ts"],
+      "@phantasywind/nidec-app-ui-design/layouts": ["../../src/layouts.ts"]
+    }
+  }
+}

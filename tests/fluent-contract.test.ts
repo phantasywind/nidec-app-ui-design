@@ -34,10 +34,10 @@ const commonContentControls = [
   'Tag', 'TagGroup', 'Popover', 'PopoverTrigger', 'PopoverSurface',
 ] as const;
 const compositePatterns = [
-  'CollectionList', 'CollectionListItem', 'CardGallery', 'CardGalleryItem',
+  'CollectionList', 'CollectionListItem', 'CardGallery', 'CardGalleryItem', 'ActionableCardGalleryItem',
   'ProcessStageIndicator', 'StageNavigator', 'BusinessProcessFlow',
   'RecordIdentityCellLayout', 'RecordTableHeader', 'RecordDataGridHeader', 'TableActionIconButton',
-  'RecordSelectionRegion', 'RecordSelectionDataGrid', 'RecordSelectionDataGridRow', 'SegmentedControl', 'InlineModeTabs',
+  'RecordSelectionRegion', 'RecordSelectionDataGrid', 'RecordSelectionDataGridRow', 'SegmentedControl', 'InlineModeTabs', 'ViewModeToggle',
   'PageHeader', 'RecordManagementWorkspace', 'WorkspaceSection',
 ] as const;
 

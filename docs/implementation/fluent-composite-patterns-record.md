@@ -99,6 +99,10 @@ README消费合同由自动测试固定；加入该检查后，完整`npm run ve
 
 2026-09-11经Locke以既有Enquiry效果图复核，Data Table/DataGrid的记录入口恢复为更明确的主列超链接式呈现。共享合同不恢复整行点击：消费者仍指定唯一record identity，并在`RecordIdentityCellLayout.primary`中提供主题化Fluent `Link inline`，以Fluent支持的常驻下划线清楚区别普通字段；Link的目标、路由、权限和业务效果归消费者。右侧行操作不得重复“打开同一记录”，示例改为始终可见的More actions图标及Fluent Menu，维持主入口与次级命令分离。
 
+2026-09-21经预览复核，导航型Data Table/DataGrid的主列进一步收敛为单一记录标识：主单元格只显示绿色record identity Link，不在其下方叠放Owner、说明、状态或其他字段。需要呈现的支持字段应使用独立列，以保持扫描节奏、列语义和每行高度一致。`RecordIdentityCellLayout.secondary`仍保留给同页编辑器目录等非导航型选择场景，不得据此在导航主列恢复第二行内容。
+
+同轮预览复核进一步统一两个细节：`TableCellActions`与表格右边界保留一个Fluent XS间距，不得让三点或直接图标操作贴边；紧凑型同页记录选择目录每行只显示一个主字段，并移除共享CSS添加的左侧品牌色选中条，保留Fluent中性整行selected状态、`aria-selected`语义、键盘交互及独立焦点轮廓。
+
 同一整改将`TableActionIconButton`的共享命名空间尺寸明确固定为实际24 x 24 CSS像素，修正仅依赖Fluent small Button时实测高度约23.33px、与文档目标不一致的问题。颜色、字重、hover、focus、pressed和disabled状态继续由Fluent主题与组件机制负责，不写入Data Table页面级颜色。
 
 ## 下一道门

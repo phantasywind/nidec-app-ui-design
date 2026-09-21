@@ -67,6 +67,10 @@ assert(
       types: './dist/index.d.ts',
       import: './dist/index.js',
     },
+    './layouts': {
+      types: './dist/layouts.d.ts',
+      import: './dist/layouts.js',
+    },
     './tokens.css': {
       types: './dist/tokens.css.d.ts',
       default: './dist/tokens.css',
@@ -77,7 +81,7 @@ assert(
     },
     './tokens.json': './dist/tokens.json',
   }),
-  'Only the approved Stage 3D public subpaths are allowed.',
+  'Only the approved public subpaths are allowed.',
 );
 assert(packageJson.dependencies === undefined, 'Runtime foundations must remain external optional peers.');
 assert(packageJson.publishConfig?.registry === 'https://npm.pkg.github.com' && packageJson.publishConfig?.access === 'restricted', 'GitHub Packages publish configuration required.');
@@ -111,8 +115,8 @@ const sourceFiles = await listFiles(join(repositoryRoot, 'src'));
 const publicSourceFiles = sourceFiles.filter((path) => !path.includes(`${sep}internal${sep}`));
 const publicSourcePaths = publicSourceFiles.map((path) => relative(repositoryRoot, path).replaceAll('\\', '/'));
 assert(
-  JSON.stringify(publicSourcePaths) === JSON.stringify(['src/index.ts']),
-  'The governed Fluent surface may expose only src/index.ts outside the internal directory.',
+  JSON.stringify(publicSourcePaths.sort()) === JSON.stringify(['src/index.ts', 'src/layouts.ts']),
+  'The governed Fluent surface may expose only the approved root and layouts entries outside the internal directory.',
 );
 
 const forbiddenBusinessTerms = /\b(cpq|epm|quote|pricing|bom|configuration|approval|rbac)\b/i;
@@ -126,6 +130,8 @@ if (distFiles.length > 0) {
   const allowedDistFiles = [
     'index.d.ts',
     'index.js',
+    'layouts.d.ts',
+    'layouts.js',
     'styles.css',
     'styles.css.d.ts',
     'tokens.css',
@@ -157,9 +163,9 @@ if (distFiles.length > 0) {
     'AppItem', 'AppItemStatic', 'Hamburger',
     'Tree', 'TreeItem', 'TreeItemLayout',
     'Accordion', 'AccordionItem', 'AccordionHeader', 'AccordionPanel',
-    'CollectionList', 'CollectionListItem', 'CardGallery', 'CardGalleryItem', 'ProcessStageIndicator', 'StageNavigator', 'BusinessProcessFlow',
+    'CollectionList', 'CollectionListItem', 'CardGallery', 'CardGalleryItem', 'ActionableCardGalleryItem', 'ProcessStageIndicator', 'StageNavigator', 'BusinessProcessFlow',
     'RecordIdentityCellLayout', 'RecordTableHeader', 'RecordDataGridHeader', 'TableActionIconButton',
-    'RecordSelectionRegion', 'RecordSelectionDataGrid', 'RecordSelectionDataGridRow', 'SegmentedControl', 'InlineModeTabs',
+    'RecordSelectionRegion', 'RecordSelectionDataGrid', 'RecordSelectionDataGridRow', 'SegmentedControl', 'InlineModeTabs', 'ViewModeToggle',
     'PageHeader', 'RecordManagementWorkspace', 'WorkspaceSection',
     'SearchBox', 'SpinButton', 'Slider',
     'ToggleButton', 'MenuButton', 'SplitButton',
@@ -167,6 +173,16 @@ if (distFiles.length > 0) {
     'Avatar', 'AvatarGroup', 'AvatarGroupItem', 'AvatarGroupPopover', 'Persona',
     'Tag', 'TagGroup', 'Popover', 'PopoverTrigger', 'PopoverSurface'].sort();
   assert(JSON.stringify(Object.keys(runtimeExports).sort()) === JSON.stringify(approvedExports), 'Only the explicitly listed governed runtime exports are allowed.');
+
+  const layoutsJavaScript = await readFile(join(distPath, 'layouts.js'), 'utf8');
+  assert(/from\s+['"]react['"]/.test(layoutsJavaScript), 'Layouts must import React as an external peer.');
+  assert(/from\s+['"]@fluentui\/react-components['"]/.test(layoutsJavaScript), 'Layouts must keep Fluent external.');
+  const layoutExports = await import(pathToFileURL(join(distPath, 'layouts.js')).href);
+  const approvedLayoutExports = [
+    'ApplicationFrame', 'ApplicationTopBar', 'ApplicationNavigation', 'ApplicationNavigationGroup',
+    'ApplicationNavigationItem', 'AuthenticationLayout', 'DirectoryWorkspace', 'VersionedWorkspaceLayout',
+  ].sort();
+  assert(JSON.stringify(Object.keys(layoutExports).sort()) === JSON.stringify(approvedLayoutExports), 'Only approved layout runtime exports are allowed.');
 
   const declaration = await readFile(join(distPath, 'index.d.ts'), 'utf8');
   assert(declaration.includes('ButtonProps') && declaration.includes('function Button('), 'Button declaration is required.');

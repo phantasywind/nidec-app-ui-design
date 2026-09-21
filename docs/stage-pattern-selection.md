@@ -35,6 +35,8 @@ Nidec 应用中存在两种外观相近但业务含义不同的“阶段”呈�
 - 决定哪些工作区禁用，以及切换前是否需要处理未保存内容。
 - 保证鼠标、Enter 和 Space 最终执行相同的导航结果。
 
+连接线是工作区之间的结构关系，不是业务流程进度条。因此，`StageNavigator`的全部连接线固定使用品牌色，不随`completed`、`current`、`upcoming`或`error`状态变化；状态只控制圆形节点。连接线使用细线，并与两端圆形节点保留间隙，避免产生进度填充或穿过节点的错觉。应用不得用页面级CSS重写连接线颜色、粗细或端点位置。
+
 ```tsx
 <StageNavigator
   aria-label="Configuration workspaces"

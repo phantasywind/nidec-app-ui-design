@@ -53,6 +53,10 @@ The control requires an accessible group label, at least two unique text-labelle
 />
 ```
 
+## List and Card view toggle
+
+Use `ViewModeToggle` for a compact presentation-only switch between the List/Table and Card/Gallery renderings of the same collection. It uses two separate 32px icon buttons with a 4px internal gap, accessible labels, Tooltips and controlled `aria-pressed` state; it deliberately avoids the larger text-labelled `SegmentedControl` treatment. Keep the group 12px from an adjacent count, sort or filter control. See the complete [List and Card view toggle governance](docs/view-mode-toggle.md).
+
 ```tsx
 <InlineModeTabs
   aria-label="P1 parameter source"
@@ -67,15 +71,19 @@ The control requires an accessible group label, at least two unique text-labelle
 
 ## Inline editor mode contract
 
-Use `InlineModeTabs` for a short, repeated choice that changes the mode and visible panel of one nearby editor, such as `Field / Fixed` for a formula parameter. It is a dedicated compact pill rather than the page-level `SegmentedControl`: one circular track contains 20px-high Fluent tabs, with a 2px neutral inset separating the selected tab from the outer boundary. The current mode uses the shared brand background, on-brand text and a light theme shadow. An unselected hover uses a subtle neutral surface with brand text; Fluent pending and selected underlines are deliberately suppressed. The compact geometry keeps repeated data rows light while preserving an unmistakable current value.
+Use `InlineModeTabs` for a short, repeated choice that changes the mode and visible panel of one nearby editor. It is a dedicated compact pill rather than the higher-level `SegmentedControl`: one content-sized circular track contains 20px-high Fluent tabs, with a 2px neutral inset separating the selected tab from the outer boundary. The current mode uses the shared brand background, on-brand text and a light theme shadow. An unselected hover uses a subtle neutral surface with brand text; Fluent pending and selected underlines are deliberately suppressed. The compact geometry keeps repeated data rows light while preserving an unmistakable current value.
 
-The component is controlled and uses Fluent tab-list keyboard behavior. It must remain next to the editor panel it governs, and the consumer must expose that visible content as the corresponding tab panel. Do not use it for record/page navigation, workflow stages, boolean settings, destructive commands, choices requiring explanations, or as a space-saving substitute for the page/section-level segmented pattern.
+The component is controlled and uses Fluent tab-list keyboard behavior. Every option declares a unique `tabId` and `panelId`; the consumer renders the visible adjacent `tabpanel` with the matching `id` and `aria-labelledby`. A compact composition uses the Fluent `spacingVerticalXS` token between the pill and panel, aligns their inline starts, and keeps inactive-mode draft values in consumer state. Repeated editor rows must use one stable constrained editor-column width so different panel controls cannot move the pill. The pill owns no external margin, validation, saving or side effect.
+
+Use application/page Tabs for record, page or workspace navigation. Use `SegmentedControl` for a more prominent mutually exclusive business mode, and `RadioGroup` or another qualified choice composition when options need explanations or become numerous. Do not use `InlineModeTabs` for navigation, workflow stages, boolean settings, destructive commands, permissions, immediate submission or as a compact substitute for those patterns. The package currently exports Fluent `TabList`/`Tab`; it does not claim a separate `WorkspaceTabs` public component.
+
+See the complete [Inline Mode Tabs governance](docs/inline-mode-tabs.md), including layout, panel association, value preservation and prohibited uses.
 
 ## Record-management workspace contract
 
 Use `PageHeader`, `RecordManagementWorkspace` and `WorkspaceSection` together for a record-management page with one page identity, one primary work area and an optional contextual selector or summary rail. The global application shell, routing, selection authority, commands, APIs and business states remain application-owned.
 
-The context rail is visually placed on the right at wide widths but precedes the primary content in DOM order. At 900 CSS pixels and below it moves above the primary content. `WorkspaceSection` establishes heading, explanation, local-action and content hierarchy without adding a decorative Card. Data Lists follow the record-entry rules below; `CardGallery` is for peer cards in primary content, not for a one-column context selector.
+The context rail is visually placed on the right at wide widths but precedes the primary content in DOM order. At 900 CSS pixels and below it moves above the primary content. `WorkspaceSection` establishes the standard white bordered module with heading, explanation, local actions and content hierarchy. Data Lists follow the record-entry rules below; `CardGallery` is for peer cards in primary content, not for a one-column context selector.
 
 The complete Header, Data List, Card-placement and responsive rules are in the [Record Management Workspace Governance](docs/record-management-workspace.md) contract.
 
@@ -88,6 +96,16 @@ The complete Header, Data List, Card-placement and responsive rules are in the [
   primary={<WorkspaceSection title="Current record"><RecordTable /></WorkspaceSection>}
 />
 ```
+
+## Page layouts and template selection (mainline, not released)
+
+Import page-level structure from the dedicated `@phantasywind/nidec-app-ui-design/layouts` subpath. It contains `ApplicationFrame`, `ApplicationTopBar`, `ApplicationNavigation`, `ApplicationNavigationGroup`, `ApplicationNavigationItem`, `AuthenticationLayout`, `DirectoryWorkspace` and `VersionedWorkspaceLayout`. These layouts own region order, responsive relationships and accessible structure; consumers continue to own routes, permissions, data, commands, loading, errors and business state.
+
+Choose the page archetype by user task rather than visual resemblance. The [page archetype matrix](docs/page-archetypes.md) distinguishes Authentication, Directory/Work Queue, Record Workspace, Master Data/Form + List and Versioned Governance. The supporting contracts cover the [application frame](docs/application-frame-layout.md), [Directory and Work Queue](docs/directory-and-work-queue-layout.md), [Master Data/Form + List](docs/master-data-form-list-layout.md) and [Versioned Governance](docs/versioned-governance-layout.md).
+
+`CardGalleryItem` is display-only. Use `ActionableCardGalleryItem` when one whole Card is the sole link or command entry; do not nest another Link or Button inside it. A Data Table continues to use one green semantic identity Link, while Form + List uses whole-row selection with plain primary text.
+
+This page-layout API is shared-mainline work for the next candidate. It is not present in immutable `0.1.0-rc.2`, has not been published and does not authorize consumer adoption.
 
 ## Record-entry interaction contract
 
@@ -104,11 +122,11 @@ Use the following presentation rules:
 | Same-surface editor plus a record directory | Use `RecordSelectionRegion`, `RecordSelectionDataGrid` and `RecordSelectionDataGridRow`. The controlled single selected row loads the editor; whole-row pointer, Enter and Space activation are equivalent. The emphasized identity is plain text, not a Link, and there is no duplicate Actions control. |
 | Dialog, drawer or non-navigation command | Use an explicitly labelled button or menu action rather than presenting the command as a link. |
 
-Each record has exactly one primary entry mechanism. In a navigable Data Table/DataGrid, render that mechanism as a theme-governed Fluent `Link` with `inline` in the primary identity cell so it remains visibly underlined and distinct from ordinary data. Do not combine whole-row activation, a duplicate identity link and a duplicate `Open` button on the same record. Row-end buttons and menus are secondary actions only and must not trigger the record-entry action.
+Each record has exactly one primary entry mechanism. In a navigable Data Table/DataGrid, render that mechanism as a theme-governed Fluent `Link` with `inline` in the primary identity cell so it remains visibly underlined and distinct from ordinary data. That navigable primary cell contains the single record-identity link only: do not stack an owner, description, status or other field beneath it. Put supporting fields in their own governed columns. Do not combine whole-row activation, a duplicate identity link and a duplicate `Open` button on the same record. Row-end buttons and menus are secondary actions only and must not trigger the record-entry action.
 
 Data Table and DataGrid direct row actions use `TableActionIconButton` inside Fluent `TableCellActions`; they do not use the text-labelled `Button`. `TableActionIconButton` fixes each direct row action to Fluent `appearance="transparent"`, `size="small"` and the standard rounded shape. With the pinned Fluent `9.74.7` baseline, this is a 24 x 24 CSS pixel target with a 20 x 20 icon: there is no persistent border, text label or filled backplate, while Fluent retains its hover, pressed, focus-visible and disabled states. Applications must not recreate the control with raw CSS or layer a legacy button skin over it.
 
-Every icon action requires both a non-empty `aria-label` and a visible-on-hover/focus `Tooltip` carrying the same plain-language action wording. The icon itself and the action meaning remain application-owned. `type="button"` remains the default, so a row action cannot submit a surrounding form unless the application explicitly declares that behavior. Keep direct row actions visibly present by setting `TableCellActions visible`; do not make discovery depend on pointer hover. If several actions are present, keep them within `TableCellActions` and move lower-priority actions into an overflow `Menu`; action priority, authorization, confirmation and destructive business effects remain consumer responsibilities.
+Every icon action requires both a non-empty `aria-label` and a visible-on-hover/focus `Tooltip` carrying the same plain-language action wording. The icon itself and the action meaning remain application-owned. `type="button"` remains the default, so a row action cannot submit a surrounding form unless the application explicitly declares that behavior. Keep direct row actions visibly present by setting `TableCellActions visible`; do not make discovery depend on pointer hover. Shared styling keeps the action group one XS spacing role away from the table's inline-end boundary, so consumers must not position the icon flush against the border. If several actions are present, keep them within `TableCellActions` and move lower-priority actions into an overflow `Menu`; action priority, authorization, confirmation and destructive business effects remain consumer responsibilities.
 
 The current shared `CollectionList` is a stable semantic/layout composition rather than a re-export of Fluent List. The Fluent List dependency resolved by the pinned Fluent `9.74.7` baseline still carries an upstream non-production-ready notice, so consumers must not import it through internal package paths or recreate its behavior with ungoverned click handlers. Until a qualified shared actionable-list API is published, use the semantic identity `Link` for record navigation and treat the surrounding `CollectionListItem` as non-actionable. This section governs the next package version; it does not retroactively add an interaction API to immutable `0.1.0-rc.1`.
 
@@ -126,7 +144,6 @@ The current shared `CollectionList` is a stable semantic/layout composition rath
       <TableCell>
         <RecordIdentityCellLayout
           primary={<Link inline href="/records/REC-1042">Example record</Link>}
-          secondary="Supporting metadata"
         />
       </TableCell>
       <TableCell>
@@ -172,6 +189,16 @@ Both components accept only consumer-provided labels, descriptions and explicit 
   stages={serverReportedStages}
 />
 ```
+
+## Authentication entry pattern
+
+A dedicated sign-in surface uses the governed [Authentication entry pattern](docs/authentication-entry-pattern.md): one quiet themed background, one bounded centered panel, a consumer-supplied brand area, labelled Fluent credential fields and one full-width primary submit action. The shared system governs presentation and accessibility structure only. SSO, MFA, password policy, recovery, sessions, APIs, RBAC and security messages remain application-owned.
+
+The unified local showcase includes an `Authentication sample`. It uses synthetic, non-submitting values and does not claim a reusable authentication protocol or successful application acceptance.
+
+## Application shell and module layout
+
+Authenticated desktop pages follow the governed [application shell and module layout](docs/application-shell-and-module-layout.md): white left navigation and top utility bar, grouped icon-and-text destinations without filled navigation tiles or shadows, a restrained active marker, and a white right-side page composed from bordered rounded modules. `PageHeader` and `WorkspaceSection` provide the standard module surfaces. Cards nested inside those modules stay flat without another border or elevation shadow. Applications retain route structure, labels, permissions, runtime identity and account behavior.
 
 ## Exact-version consumption
 

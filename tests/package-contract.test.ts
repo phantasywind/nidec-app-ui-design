@@ -21,6 +21,10 @@ describe('package contract', () => {
         types: './dist/index.d.ts',
         import: './dist/index.js',
       },
+      './layouts': {
+        types: './dist/layouts.d.ts',
+        import: './dist/layouts.js',
+      },
       './tokens.css': {
         types: './dist/tokens.css.d.ts',
         default: './dist/tokens.css',

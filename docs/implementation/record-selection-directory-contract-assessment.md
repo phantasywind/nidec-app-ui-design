@@ -73,9 +73,10 @@ The implementation must use only stable public Fluent exports. In particular, it
 
 - Toolbar-to-grid separation uses the shared Fluent medium vertical spacing role.
 - Rows use Fluent/theme-owned Hover, Focus, Pressed and Selected states; consumers do not layer legacy row skins over them.
-- The selected row remains distinguishable without relying on color alone.
+- The selected row uses Fluent's neutral full-row selected state without an additional brand-colored leading bar.
 - The primary record field may use the governed primary-cell semibold hierarchy.
 - The primary field is plain text: no green link color, underline or pointer-only link affordance.
+- Each row presents that one primary field only; supporting fields are not stacked beneath it in this compact selection directory.
 - The row may use a pointer cursor only because the complete row is the declared selection target.
 - No redundant `Open`, `Select` or Actions control is rendered when selection is the only operation.
 - Header hierarchy continues to use `RecordDataGridHeader`.
@@ -136,4 +137,3 @@ Before adding the public API:
 6. publish only as a new immutable version after the normal qualification and explicit release authorization.
 
 The CPQ local adaptation is useful consumer evidence, but its tests do not qualify the future shared component and must not be copied into the package with CPQ business names or behavior.
-
