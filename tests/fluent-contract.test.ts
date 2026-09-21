@@ -38,6 +38,7 @@ const compositePatterns = [
   'ProcessStageIndicator', 'StageNavigator', 'BusinessProcessFlow',
   'RecordIdentityCellLayout', 'RecordTableHeader', 'RecordDataGridHeader', 'TableActionIconButton',
   'RecordSelectionRegion', 'RecordSelectionDataGrid', 'RecordSelectionDataGridRow', 'SegmentedControl', 'InlineModeTabs',
+  'PageHeader', 'RecordManagementWorkspace', 'WorkspaceSection',
 ] as const;
 
 describe('Fluent public boundary', () => {

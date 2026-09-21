@@ -71,6 +71,24 @@ Use `InlineModeTabs` for a short, repeated choice that changes the mode and visi
 
 The component is controlled and uses Fluent tab-list keyboard behavior. It must remain next to the editor panel it governs, and the consumer must expose that visible content as the corresponding tab panel. Do not use it for record/page navigation, workflow stages, boolean settings, destructive commands, choices requiring explanations, or as a space-saving substitute for the page/section-level segmented pattern.
 
+## Record-management workspace contract
+
+Use `PageHeader`, `RecordManagementWorkspace` and `WorkspaceSection` together for a record-management page with one page identity, one primary work area and an optional contextual selector or summary rail. The global application shell, routing, selection authority, commands, APIs and business states remain application-owned.
+
+The context rail is visually placed on the right at wide widths but precedes the primary content in DOM order. At 900 CSS pixels and below it moves above the primary content. `WorkspaceSection` establishes heading, explanation, local-action and content hierarchy without adding a decorative Card. Data Lists follow the record-entry rules below; `CardGallery` is for peer cards in primary content, not for a one-column context selector.
+
+The complete Header, Data List, Card-placement and responsive rules are in the [Record Management Workspace Governance](docs/record-management-workspace.md) contract.
+
+```tsx
+<RecordManagementWorkspace
+  aria-label="Record management"
+  header={<PageHeader title="Records" description="Maintain governed records." actions={<PageActions />} />}
+  contextRailLabel="Available records"
+  contextRail={<RecordSelector />}
+  primary={<WorkspaceSection title="Current record"><RecordTable /></WorkspaceSection>}
+/>
+```
+
 ## Record-entry interaction contract
 
 An adopting application declares the meaning of a record collection; it does not choose raw Fluent navigation modes or invent a page-specific click convention. For every rendered collection, the application must identify whether the content is static, whether opening a record is URL navigation or an application command, whether records are selectable, and whether each item contains secondary actions. Routing, authorization and business effects remain application-owned.
