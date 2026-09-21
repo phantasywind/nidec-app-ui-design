@@ -875,7 +875,7 @@
     inset-block-end: calc(0px - var(--spacingVerticalXS));
     inset-block-start: calc(var(--spacingVerticalXS) + 1.5rem + var(--strokeWidthThin) + var(--strokeWidthThin) + var(--spacingVerticalXS));
     inset-inline-end: auto;
-    inset-inline-start: calc(var(--spacingHorizontalXS) + 0.75rem + var(--strokeWidthThin) + var(--strokeWidthThin));
+    inset-inline-start: calc(var(--spacingHorizontalXS) + 0.75rem + var(--strokeWidthThin));
     transform: translateX(-50%);
     width: var(--strokeWidthThin);
   }
@@ -916,7 +916,7 @@
       inset-block-end: calc(0px - var(--spacingVerticalXS));
       inset-block-start: calc(var(--spacingVerticalXS) + 1.5rem + var(--strokeWidthThin) + var(--strokeWidthThin) + var(--spacingVerticalXS));
       inset-inline-end: auto;
-      inset-inline-start: calc(var(--spacingHorizontalXS) + 0.75rem + var(--strokeWidthThin) + var(--strokeWidthThin));
+      inset-inline-start: calc(var(--spacingHorizontalXS) + 0.75rem + var(--strokeWidthThin));
       transform: translateX(-50%);
       width: var(--strokeWidthThin);
     }

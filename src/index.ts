@@ -871,6 +871,7 @@ export function BusinessProcessFlow({ 'aria-label': ariaLabel, stages, className
     ...props,
     'aria-label': ariaLabel,
     className: withClass('nidec-ui-business-process-flow', className),
+    tabIndex: props.tabIndex ?? 0,
   }, createElement('ol', { className: 'nidec-ui-business-process-flow__track' },
     stages.map((stage, index) => createElement('li', {
       key: stage.id,

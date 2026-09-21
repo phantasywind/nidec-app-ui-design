@@ -505,10 +505,10 @@ describe('consumer-neutral composite patterns', () => {
     }));
     expect(html).toContain('<section');
     expect(html).toContain('nidec-ui-business-process-flow__track');
+    expect(html).toContain('tabindex="0"');
     expect(html).toContain('aria-current="step"');
     expect(html).toContain('Pending Approval');
     expect(html).not.toContain('<button');
-    expect(html).not.toContain('tabindex');
   });
 
   it('keeps the BusinessProcessFlow arrows at the governed compact density', async () => {
