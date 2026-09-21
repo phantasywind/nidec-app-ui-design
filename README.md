@@ -97,11 +97,13 @@ The complete Header, Data List, Card-placement and responsive rules are in the [
 />
 ```
 
-## Page layouts and template selection (mainline, not released)
+## Page layouts and template selection (`0.1.0-rc.3` candidate)
 
 Import page-level structure from the dedicated `@phantasywind/nidec-app-ui-design/layouts` subpath. It contains `ApplicationFrame`, `ApplicationTopBar`, `ApplicationNavigation`, `ApplicationNavigationGroup`, `ApplicationNavigationItem`, `AuthenticationLayout`, `DirectoryWorkspace` and `VersionedWorkspaceLayout`. These layouts own region order, responsive relationships and accessible structure; consumers continue to own routes, permissions, data, commands, loading, errors and business state.
 
 Choose the page archetype by user task rather than visual resemblance. The [page archetype matrix](docs/page-archetypes.md) distinguishes Authentication, Directory/Work Queue, Record Workspace, Master Data/Form + List and Versioned Governance. The supporting contracts cover the [application frame](docs/application-frame-layout.md), [Directory and Work Queue](docs/directory-and-work-queue-layout.md), [Master Data/Form + List](docs/master-data-form-list-layout.md) and [Versioned Governance](docs/versioned-governance-layout.md).
+
+The packaged composite consumer exercises the shared UI-material inventory and all five business-neutral template recipes. Release qualification binds its exact production build to the candidate archive; these demonstrations are structural examples rather than application routes, data contracts or business workflows.
 
 `CardGalleryItem` is display-only. Use `ActionableCardGalleryItem` when one whole Card is the sole link or command entry; do not nest another Link or Button inside it. A Data Table continues to use one green semantic identity Link, while Form + List uses whole-row selection with plain primary text.
 
