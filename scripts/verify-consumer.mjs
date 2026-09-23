@@ -91,6 +91,8 @@ async function verifyInstalledPackage(consumerRoot) {
 
   const expectedFiles = [
     'README.md',
+    'dist/date-picker.d.ts',
+    'dist/date-picker.js',
     'dist/index.d.ts',
     'dist/index.js',
     'dist/layouts.d.ts',

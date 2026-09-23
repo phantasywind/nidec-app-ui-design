@@ -13,9 +13,12 @@ export default defineConfig({
     alias: [
       ...(useLocalPreview ? [
         { find: '@phantasywind/nidec-app-ui-design/styles.css', replacement: resolve(repositoryRoot, 'dist/styles.css') },
+        { find: '@phantasywind/nidec-app-ui-design/date-picker', replacement: resolve(repositoryRoot, 'dist/date-picker.js') },
         { find: '@phantasywind/nidec-app-ui-design/layouts', replacement: resolve(repositoryRoot, 'dist/layouts.js') },
         { find: '@phantasywind/nidec-app-ui-design', replacement: resolve(repositoryRoot, 'dist/index.js') },
       ] : []),
+      { find: /^@fluentui\/react-icons\/lib\/(.*)$/, replacement: `${resolve(fixtureRoot, 'node_modules/@fluentui/react-icons/lib')}/$1` },
+      { find: /^@fluentui\/react-icons$/, replacement: resolve(fixtureRoot, 'node_modules/@fluentui/react-icons/lib/index.js') },
       { find: 'react', replacement: resolve(fixtureRoot, 'node_modules/react') },
       { find: 'react-dom', replacement: resolve(fixtureRoot, 'node_modules/react-dom') },
     ],

@@ -31,6 +31,10 @@
       "types": "./dist/layouts.d.ts",
       "import": "./dist/layouts.js"
     },
+    "./date-picker": {
+      "types": "./dist/date-picker.d.ts",
+      "import": "./dist/date-picker.js"
+    },
     "./tokens.css": {
       "types": "./dist/tokens.css.d.ts",
       "default": "./dist/tokens.css"
@@ -68,11 +72,15 @@
   },
   "peerDependencies": {
     "@fluentui/react-components": "9.74.7",
+    "@fluentui/react-datepicker-compat": "0.6.39",
     "react": ">=19.2.0 <20",
     "react-dom": ">=19.2.0 <20"
   },
   "peerDependenciesMeta": {
     "@fluentui/react-components": {
+      "optional": true
+    },
+    "@fluentui/react-datepicker-compat": {
       "optional": true
     },
     "react": {
@@ -84,6 +92,7 @@
   },
   "devDependencies": {
     "@fluentui/react-components": "9.74.7",
+    "@fluentui/react-datepicker-compat": "0.6.39",
     "@types/node": "24.13.3",
     "@types/react": "19.2.18",
     "@types/react-dom": "19.2.7",

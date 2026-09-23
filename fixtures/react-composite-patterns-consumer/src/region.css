@@ -82,6 +82,7 @@ body { margin: 0; }
 .specimen__body, .form-stack, .workspace-stack, .context-stack { display: grid; gap: var(--spacingVerticalM); min-width: 0; }
 .specimen__body > *, .specimen__body .fui-MessageBar { max-width: 100%; min-width: 0; }
 .specimen__body .fui-MessageBar { overflow: hidden; }
+.date-preview-grid { align-items: start; display: grid; gap: var(--spacingHorizontalL); grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .button-cluster, .link-row, .status-row, .loading-row, .field-pair, .fact-row, .card-facts, .action-band { align-items: center; display: flex; flex-wrap: wrap; gap: var(--spacingHorizontalM); }
 .field-pair > * { display: grid; flex: 1 1 12rem; gap: var(--spacingVerticalXS); }
 .loading-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -147,7 +148,7 @@ body { margin: 0; }
 @media (max-width: 720px) {
   .showcase-topbar { padding-inline: var(--spacingHorizontalM); }
   .showcase-content { padding: var(--spacingVerticalL) var(--spacingHorizontalM); }
-  .specimen-grid, .form-grid, .foundation-strip, .metric-grid, .template-contract { grid-template-columns: 1fr; }
+  .specimen-grid, .form-grid, .foundation-strip, .metric-grid, .template-contract, .date-preview-grid { grid-template-columns: 1fr; }
   .specimen--wide, .form-grid__wide { grid-column: auto; }
   .specimen { padding: var(--spacingVerticalL) var(--spacingHorizontalM); }
   .parameter-row { align-items: start; grid-template-columns: 1fr; }

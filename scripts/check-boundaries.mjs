@@ -71,6 +71,10 @@ assert(
       types: './dist/layouts.d.ts',
       import: './dist/layouts.js',
     },
+    './date-picker': {
+      types: './dist/date-picker.d.ts',
+      import: './dist/date-picker.js',
+    },
     './tokens.css': {
       types: './dist/tokens.css.d.ts',
       default: './dist/tokens.css',
@@ -88,6 +92,9 @@ assert(packageJson.publishConfig?.registry === 'https://npm.pkg.github.com' && p
 assert(packageJson.peerDependencies?.['@fluentui/react-components'] === '9.74.7', 'Exact Fluent peer required.');
 assert(packageJson.peerDependenciesMeta?.['@fluentui/react-components']?.optional === true, 'Fluent must remain optional for token-only consumers.');
 assert(packageJson.devDependencies?.['@fluentui/react-components'] === '9.74.7', 'Exact Fluent development dependency required.');
+assert(packageJson.peerDependencies?.['@fluentui/react-datepicker-compat'] === '0.6.39', 'Exact Fluent DatePicker peer required.');
+assert(packageJson.peerDependenciesMeta?.['@fluentui/react-datepicker-compat']?.optional === true, 'Fluent DatePicker must remain optional for consumers that do not import its subpath.');
+assert(packageJson.devDependencies?.['@fluentui/react-datepicker-compat'] === '0.6.39', 'Exact Fluent DatePicker development dependency required.');
 assert(packageJson.peerDependencies?.react === '>=19.2.0 <20', 'Unexpected React peer range.');
 assert(packageJson.peerDependencies?.['react-dom'] === '>=19.2.0 <20', 'Unexpected React DOM peer range.');
 assert(packageJson.peerDependenciesMeta?.react?.optional === true, 'React peer must remain optional for token-only consumers.');
@@ -115,8 +122,8 @@ const sourceFiles = await listFiles(join(repositoryRoot, 'src'));
 const publicSourceFiles = sourceFiles.filter((path) => !path.includes(`${sep}internal${sep}`));
 const publicSourcePaths = publicSourceFiles.map((path) => relative(repositoryRoot, path).replaceAll('\\', '/'));
 assert(
-  JSON.stringify(publicSourcePaths.sort()) === JSON.stringify(['src/index.ts', 'src/layouts.ts']),
-  'The governed Fluent surface may expose only the approved root and layouts entries outside the internal directory.',
+  JSON.stringify(publicSourcePaths.sort()) === JSON.stringify(['src/date-picker.ts', 'src/index.ts', 'src/layouts.ts']),
+  'The governed Fluent surface may expose only the approved root, layouts and date-picker entries outside the internal directory.',
 );
 
 const forbiddenBusinessTerms = /\b(cpq|epm|quote|pricing|bom|configuration|approval|rbac)\b/i;
@@ -128,6 +135,8 @@ for (const sourcePath of sourceFiles.filter((path) => ['.ts', '.tsx'].includes(e
 const distFiles = (await listFiles(distPath)).map((path) => relative(distPath, path).replaceAll('\\', '/')).sort();
 if (distFiles.length > 0) {
   const allowedDistFiles = [
+    'date-picker.d.ts',
+    'date-picker.js',
     'index.d.ts',
     'index.js',
     'layouts.d.ts',
@@ -183,6 +192,14 @@ if (distFiles.length > 0) {
     'ApplicationNavigationItem', 'AuthenticationLayout', 'DirectoryWorkspace', 'VersionedWorkspaceLayout',
   ].sort();
   assert(JSON.stringify(Object.keys(layoutExports).sort()) === JSON.stringify(approvedLayoutExports), 'Only approved layout runtime exports are allowed.');
+
+  const datePickerJavaScript = await readFile(join(distPath, 'date-picker.js'), 'utf8');
+  assert(/from\s+['"]@fluentui\/react-datepicker-compat['"]/.test(datePickerJavaScript), 'DatePicker must remain an external optional peer.');
+  const datePickerExports = await import(pathToFileURL(join(distPath, 'date-picker.js')).href);
+  const approvedDatePickerExports = [
+    'DatePicker', 'datePickerClassNames', 'defaultDatePickerErrorStrings', 'defaultDatePickerStrings',
+  ].sort();
+  assert(JSON.stringify(Object.keys(datePickerExports).sort()) === JSON.stringify(approvedDatePickerExports), 'Only approved DatePicker runtime exports are allowed.');
 
   const declaration = await readFile(join(distPath, 'index.d.ts'), 'utf8');
   assert(declaration.includes('ButtonProps') && declaration.includes('function Button('), 'Button declaration is required.');

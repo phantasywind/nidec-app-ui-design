@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState, type ComponentProps, type ReactElement, type ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { createDOMRenderer, createTableColumn, RendererProvider } from '@fluentui/react-components';
+import { DatePicker } from '@phantasywind/nidec-app-ui-design/date-picker';
 import { ArrowClockwiseRegular, ChevronLeftRegular, ChevronRightRegular, GridRegular, ListRegular, MoreHorizontalRegular } from '@fluentui/react-icons';
 import {
   Accordion, AccordionHeader, AccordionItem, AccordionPanel, ActionableCardGalleryItem, Badge, Body1, Breadcrumb, BreadcrumbButton,
@@ -74,6 +75,21 @@ const lifecycleStages = [
   { id: 'released', label: 'Released', description: 'Not released', status: 'upcoming' as const, statusLabel: 'Upcoming' },
 ];
 
+function formatDateOnly(date?: Date): string {
+  if (!date) return '';
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+function parseDateOnly(value: string): Date | null {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value.trim());
+  if (!match) return null;
+  const date = new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+  return formatDateOnly(date) === value.trim() ? date : null;
+}
+
 function useShowcaseView(): [ShowcaseView, (next: ShowcaseView) => void] {
   const readView = (): ShowcaseView => {
     const candidate = new URLSearchParams(location.search).get('view');
@@ -130,6 +146,8 @@ function ElementsPage() {
   const [tab, setTab] = useState<string | number>('overview');
   const [enabled, setEnabled] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(new Date(2026, 8, 23));
+  const [boundedDate, setBoundedDate] = useState<Date | null>(new Date(2026, 5, 15));
   const [selected, setSelected] = useState<string[]>(['REC-1042']);
   const [stageId, setStageId] = useState('parameters');
   const navigatorStages = workspaceStages.map(stage => ({
@@ -149,6 +167,19 @@ function ElementsPage() {
     <div className="specimen-grid">
       <Specimen title="Text input" description="Labels, hints, validation and read-only state.">
         <div className="form-stack"><Field label="Record name" hint="Concise supporting guidance"><Input defaultValue="Example Alpha" /></Field><Field label="Description"><Textarea rows={3} defaultValue="Business-neutral multiline content." /></Field><Field label="Reference" validationState="error" validationMessage="Example validation message"><Input defaultValue="Needs review" /></Field></div>
+      </Specimen>
+      <Specimen title="Date selection" description="Fluent calendar entry for date-only values; business date rules remain consumer-owned." wide>
+        <div className="date-preview-grid">
+          <Field label="Effective date" hint="Choose from the calendar or type YYYY-MM-DD.">
+            <DatePicker aria-label="Effective date" allowTextInput formatDate={formatDateOnly} parseDateFromString={parseDateOnly} placeholder="YYYY-MM-DD" showGoToToday value={selectedDate} onSelectDate={date => setSelectedDate(date ?? null)} />
+          </Field>
+          <Field label="Date with allowed range" hint="Example boundary only: 2026 calendar year.">
+            <DatePicker aria-label="Date with allowed range" allowTextInput value={boundedDate} onSelectDate={date => setBoundedDate(date ?? null)} formatDate={formatDateOnly} parseDateFromString={parseDateOnly} minDate={new Date(2026, 0, 1)} maxDate={new Date(2026, 11, 31)} showGoToToday />
+          </Field>
+          <Field label="Unavailable date" hint="Disabled state is explicit and non-interactive.">
+            <DatePicker aria-label="Unavailable date" disabled value={new Date(2026, 8, 23)} formatDate={formatDateOnly} />
+          </Field>
+        </div>
       </Specimen>
       <Specimen title="Choice controls" description="Use the control that matches the decision grain.">
         <div className="form-stack"><Field label="Display density"><Select value={density} onChange={(_, data) => setDensity(data.value)}><option value="comfortable">Comfortable</option><option value="compact">Compact</option></Select></Field><Checkbox label="Show supporting details" defaultChecked /><Switch label="Enable governed option" checked={enabled} onChange={(_, data) => setEnabled(data.checked)} /><RadioGroup value={choice} onChange={(_, data) => setChoice(data.value)} layout="horizontal"><Radio value="standard" label="Standard" /><Radio value="extended" label="Extended" /></RadioGroup></div>

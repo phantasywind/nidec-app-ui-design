@@ -33,6 +33,8 @@ The light-theme palette basis is approved in [ADR-0006](docs/decisions/0006-colo
 
 Button remains a text-only native-button interface, defaults to `type="button"`, preserves disabled/form/ref behavior and composes the `nidec-ui-button` class. There is no polymorphic link or new business behavior. Input/Field/Dialog preserve their upstream public protocols. NidecProvider requires a complete explicit theme and excludes upstream unstable styling options.
 
+The post-`0.1.0-rc.3` mainline also governs Fluent DatePicker through the isolated `@phantasywind/nidec-app-ui-design/date-picker` subpath. Its exact compat peer is required only when that subpath is consumed. See the [Date Picker usage contract](docs/date-picker.md) for date-only semantics, formatting/parsing, boundaries and consumer-owned business rules. This source capability is not part of immutable `0.1.0-rc.3` and is not consumable until a future version is separately qualified and published.
+
 `tokens.css`, `styles.css` and `tokens.json` are framework-neutral entrypoints generated from the governed ADR-0006 light-theme input. Nidec static CSS is explicitly imported; Fluent runtime styles are managed by its Provider/Griffel mechanism and do not require `styles.css` to activate. CSP, portal isolation and application acceptance remain separate qualification gates. No custom fonts, icon package contract or global reset is introduced.
 
 ## Segmented mode-selection contract

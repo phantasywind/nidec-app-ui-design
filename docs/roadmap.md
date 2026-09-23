@@ -225,3 +225,9 @@ The shared mainline now separates element governance from page composition throu
 The unified preview is organized into `UI Materials` plus five business-neutral `Page Templates`. Directory Cards use one whole-card entry through `ActionableCardGalleryItem`; Data Tables retain one identity Link; same-surface Form + List pages retain whole-row selection. The durable selection and usage boundaries are recorded in `docs/page-archetypes.md` and the four linked layout contracts.
 
 Focused type, build, CSS-boundary and interaction verification plus visual review are complete for the candidate source. The work is not consumable, adopted or independently accepted until the exact `0.1.0-rc.3` release chain is published and each consumer completes its own gates.
+
+## Date Picker governance (post-`0.1.0-rc.3` mainline)
+
+Locke accepted the Fluent DatePicker preview on 2026-09-23. The mainline now exposes the qualified upstream control through the isolated `/date-picker` subpath, keeping its compat dependency optional for consumers that do not import that entry. The durable contract in `docs/date-picker.md` governs date-only use, explicit formatting/parsing, boundaries, labels and disabled behavior while leaving timezone, holidays, persistence, permissions and business validation with each application.
+
+This checkpoint is committed-source capability for a future immutable version. It does not modify, republish or supersede `0.1.0-rc.3`, and it is not authorization for any consumer installation or deployment.

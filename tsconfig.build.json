@@ -10,6 +10,7 @@
   },
   "include": [
     "src/index.ts",
-    "src/layouts.ts"
+    "src/layouts.ts",
+    "src/date-picker.ts"
   ]
 }

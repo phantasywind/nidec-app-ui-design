@@ -25,6 +25,10 @@ describe('package contract', () => {
         types: './dist/layouts.d.ts',
         import: './dist/layouts.js',
       },
+      './date-picker': {
+        types: './dist/date-picker.d.ts',
+        import: './dist/date-picker.js',
+      },
       './tokens.css': {
         types: './dist/tokens.css.d.ts',
         default: './dist/tokens.css',
@@ -36,5 +40,7 @@ describe('package contract', () => {
       './tokens.json': './dist/tokens.json',
     });
     expect(packageJson.dependencies).toBeUndefined();
+    expect(packageJson.peerDependencies?.['@fluentui/react-datepicker-compat']).toBe('0.6.39');
+    expect(packageJson.peerDependenciesMeta?.['@fluentui/react-datepicker-compat']).toEqual({ optional: true });
   });
 });
