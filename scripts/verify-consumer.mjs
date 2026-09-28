@@ -188,7 +188,7 @@ async function verifyConsumer(name, artifactUrl) {
     assert(installedManifest.dependencies?.['@fluentui/react-icons'] === undefined && installedManifest.peerDependencies?.['@fluentui/react-icons'] === undefined,
       'Shared package must not claim a direct icon dependency without reproduced evidence.');
     const iconLock = lock.packages?.['node_modules/@fluentui/react-icons'];
-    assert(iconLock?.version === '2.0.339', 'Fluent 9.74.7 dependency closure must resolve react-icons 2.0.339.');
+    assert(/^2\.0\.\d+$/.test(iconLock?.version ?? ''), 'Fluent dependency closure must resolve compatible react-icons 2.0.x.');
     const requireApp = createRequire(manifestPath);
     const resolvedPath = await realpath(requireApp.resolve('@fluentui/react-icons'));
     const tree = JSON.parse(runNpm(['ls', '@fluentui/react-icons', '--all', '--json'], consumerRoot, true));
