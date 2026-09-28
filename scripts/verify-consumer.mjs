@@ -126,7 +126,13 @@ async function verifyNoRuntimeGitHubDependency(consumerRoot) {
 async function verifyConsumer(name, artifactUrl) {
   const templateRoot = join(fixturesRoot, name);
   const consumerRoot = join(temporaryRoot, name);
-  await cp(templateRoot, consumerRoot, { recursive: true });
+  await cp(templateRoot, consumerRoot, {
+    recursive: true,
+    filter: (source) => {
+      const firstSegment = relative(templateRoot, source).split(sep)[0];
+      return !['node_modules', 'dist'].includes(firstSegment);
+    },
+  });
 
   const manifestPath = join(consumerRoot, 'package.json');
   const manifest = JSON.parse(await readFile(manifestPath, 'utf8'));
