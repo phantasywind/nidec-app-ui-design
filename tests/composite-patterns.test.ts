@@ -102,13 +102,15 @@ const inlineModeTabsContract: InlineModeTabsProps = {
 };
 
 describe('consumer-neutral composite patterns', () => {
-  it('presents one governed materials page and five composed synthetic templates', async () => {
+  it('presents governed materials, two grid patterns and five synthetic page templates', async () => {
     const fixture = await readFile(join(repositoryRoot, 'fixtures', 'react-composite-patterns-consumer', 'src', 'main.tsx'), 'utf8');
     const fixtureCss = await readFile(join(repositoryRoot, 'fixtures', 'react-composite-patterns-consumer', 'src', 'region.css'), 'utf8');
-    expect(fixture).toContain("type ShowcaseView = 'elements' | 'authentication' | 'directory' | 'record' | 'master-data' | 'governance'");
+    expect(fixture).toContain("type ShowcaseView = 'elements' | 'authentication' | 'directory' | 'editable-grid' | 'grouped-table' | 'record' | 'master-data' | 'governance'");
     expect(fixture).toContain("label: 'UI materials'");
     expect(fixture).toContain("label: 'Authentication sample'");
     expect(fixture).toContain("label: 'Directory sample'");
+    expect(fixture).toContain("label: 'Editable grid'");
+    expect(fixture).toContain("label: 'Grouped table'");
     expect(fixture).toContain("label: 'Record workspace'");
     expect(fixture).toContain("label: 'Master data / Form + List'");
     expect(fixture).toContain("label: 'Governance sample'");
