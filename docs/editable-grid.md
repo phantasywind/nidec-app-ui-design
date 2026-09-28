@@ -34,7 +34,7 @@ The governed default is a compact browse grid with one active edit row:
 
 - `EditableGrid` provides title, description, status, toolbar, scrollable grid viewport and footer slots.
 - The viewport owns horizontal overflow. The application page must not grow wider than its content module.
-- Keep the row action cell padded from the right boundary.
+- Place Actions in the final table column and mark each leaf-row action `TableCell` with `nidec-ui-editable-grid__action-column`. The shared style keeps that cell and the final header cell visible at the viewport's right edge during horizontal scrolling, with themed opaque surfaces and right padding. This applies equally to plain and grouped Editable Grid; a group disclosure row spans columns and must not be treated as an action cell.
 - Rows-per-page belongs in the center area of the footer; previous/next use governed icon buttons.
 - Freeze identity columns and use a sticky header when the chosen grid implementation supports them.
 - For large datasets, consumers own server paging or virtualization and must preserve stable row identity.

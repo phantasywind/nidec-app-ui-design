@@ -261,18 +261,14 @@
     border-radius: 0;
     box-sizing: border-box;
     color: var(--colorNeutralForeground1);
-    font-weight: var(--fontWeightSemibold);
     justify-content: flex-start;
     min-block-size: 32px;
     padding-inline: var(--spacingHorizontalM);
     width: 100%;
   }
 
-  :where([data-nidec-ui]) .nidec-ui-grouped-table__section-row--level-1 .nidec-ui-grouped-table__section-button {
-    font-weight: var(--fontWeightMedium);
-  }
-
   :where([data-nidec-ui]) .nidec-ui-grouped-table__section-label {
+    font-weight: var(--fontWeightSemibold);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -285,10 +281,21 @@
   }
 
   :where([data-nidec-ui]) .nidec-ui-grouped-table__section-count {
-    color: var(--colorNeutralForeground2);
+    align-items: center;
+    background: var(--colorBrandBackground);
+    border-radius: var(--borderRadiusCircular);
+    color: var(--colorNeutralForegroundOnBrand);
+    display: inline-flex;
+    font-size: var(--fontSizeBase100);
     font-variant-numeric: tabular-nums;
+    justify-content: center;
+    min-block-size: 20px;
+    min-inline-size: 20px;
     margin-inline-start: auto;
-    padding-inline-start: var(--spacingHorizontalL);
+    padding-inline: var(--spacingHorizontalXXS);
+    position: sticky;
+    inset-inline-end: var(--spacingHorizontalM);
+    flex-shrink: 0;
   }
 
   :where([data-nidec-ui]) .nidec-ui-editable-grid {
@@ -1104,4 +1111,28 @@
       outline-offset: calc(0px - var(--strokeWidthThick));
     }
   }
+}
+
+/* Fluent TableCell sets position in an unlayered rule; this scoped layout
+   override must share that cascade level to keep actions visible on scroll. */
+:where([data-nidec-ui]) .nidec-ui-editable-grid__viewport td.nidec-ui-editable-grid__action-column {
+  background: var(--colorNeutralBackground1);
+  border-inline-start: var(--strokeWidthThin) solid var(--colorNeutralStroke2);
+  inset-inline-end: 0;
+  padding-inline-end: var(--spacingHorizontalS);
+  position: sticky;
+  z-index: 1;
+}
+
+:where([data-nidec-ui]) .nidec-ui-editable-grid__viewport th:last-child {
+  background: var(--colorNeutralBackground2);
+  border-inline-start: var(--strokeWidthThin) solid var(--colorNeutralStroke2);
+  inset-inline-end: 0;
+  padding-inline-end: var(--spacingHorizontalS);
+  position: sticky;
+  z-index: 2;
+}
+
+:where([data-nidec-ui]) tr[data-editing="true"] td.nidec-ui-editable-grid__action-column {
+  background: var(--colorBrandBackground2);
 }

@@ -22,6 +22,6 @@ export default defineConfig({
       { find: 'react', replacement: resolve(fixtureRoot, 'node_modules/react') },
       { find: 'react-dom', replacement: resolve(fixtureRoot, 'node_modules/react-dom') },
     ],
-    dedupe: ['react', 'react-dom'],
+    dedupe: ['react', 'react-dom', '@fluentui/react-shared-contexts'],
   },
 });

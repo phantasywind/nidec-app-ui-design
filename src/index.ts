@@ -214,7 +214,7 @@ export function GroupedTableSectionRow({
   const accessibleCount = countLabel?.trim() || `${count} ${count === 1 ? 'row' : 'rows'}`;
   return createElement(FluentTableRow, {
     className: `nidec-ui-grouped-table__section-row nidec-ui-grouped-table__section-row--level-${level}`,
-  }, createElement(FluentTableCell, { colSpan: columnSpan },
+  }, createElement(FluentTableCell, { colSpan: columnSpan, style: { overflow: 'visible' } },
     createElement(FluentButton, {
       'aria-label': `${label}, ${accessibleCount}${summary ? `, ${summary}` : ''}`,
       'aria-expanded': expanded,
@@ -224,7 +224,11 @@ export function GroupedTableSectionRow({
       icon,
       onClick: onToggle,
       size: 'small',
-      style: level === 1 ? { paddingInlineStart: 'var(--spacingHorizontalXXL)' } : undefined,
+      style: {
+        justifyContent: 'flex-start',
+        overflow: 'visible',
+        ...(level === 1 ? { paddingInlineStart: 'var(--spacingHorizontalXXL)' } : {}),
+      },
       type: 'button',
     },
     createElement('span', { className: 'nidec-ui-grouped-table__section-label' }, label),

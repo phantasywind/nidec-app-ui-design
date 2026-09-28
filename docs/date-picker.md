@@ -39,6 +39,7 @@ import '@phantasywind/nidec-app-ui-design/styles.css';
 - `disabled` 表示不可交互，不等同于只读；不可用原因应在必要时用邻近文字说明。
 - 日期范围错误、必填、冲突、权限、并发和服务器拒绝均由应用处理并反馈。
 - 日历弹层必须保留 Fluent 的键盘、焦点和门户行为；不要用全局 CSS 重写其内部结构。
+- Fluent 的 Portal 必须与 `NidecProvider` 使用同一份 `@fluentui/react-shared-contexts` 实例，才能把主题变量带到弹层。采用工作区链接或本地源码预览的消费构建应去重该依赖；若弹层出现透明背景，应先检查 Portal 上的主题变量与依赖实例，而不是给日历内部硬编码颜色。
 
 ## 责任边界
 

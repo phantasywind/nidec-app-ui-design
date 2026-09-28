@@ -1,4 +1,7 @@
 import { createElement } from 'react';
+import { readFile } from 'node:fs/promises';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 import * as upstream from '@fluentui/react-datepicker-compat';
@@ -8,6 +11,7 @@ import type * as Shared from '../src/date-picker';
 type Equal<A, B> = (<T>() => T extends A ? 1 : 2) extends (<T>() => T extends B ? 1 : 2) ? true : false;
 const exactProps: Equal<Shared.DatePickerProps, upstream.DatePickerProps> = true;
 void exactProps;
+const repositoryRoot = join(dirname(fileURLToPath(import.meta.url)), '..');
 
 describe('DatePicker public subpath', () => {
   it('preserves the qualified Fluent implementation identity', () => {
@@ -24,5 +28,10 @@ describe('DatePicker public subpath', () => {
     expect(html).toContain('aria-label="Effective date"');
     expect(html).toContain('value="2026-09-23"');
     expect(html).toContain('disabled=""');
+  });
+
+  it('keeps the local preview portal on the provider shared-context instance', async () => {
+    const config = await readFile(join(repositoryRoot, 'fixtures', 'react-composite-patterns-consumer', 'vite.config.ts'), 'utf8');
+    expect(config).toContain("dedupe: ['react', 'react-dom', '@fluentui/react-shared-contexts']");
   });
 });

@@ -18,6 +18,7 @@ The current shared slice supports a top-level section and one indented subsectio
 4. A collapsed group with modified, invalid or actively edited descendants exposes a concise text summary on its section row. Do not communicate these states by color alone. In the preview, search temporarily reveals matching groups without overwriting the stored expansion preferences.
 5. The header checkbox's selection scope must be named. The preview selects all filtered leaf rows, including those in collapsed groups; each consumer must document and test its own scope before adoption.
 6. Group rows, ordinary data rows and active edit rows must preserve table column alignment. Horizontal overflow stays inside the table/grid viewport, not the page.
+7. When the editable variant reserves a leading checkbox column, the read-only variant aligns its Line header and values to the same inset. Group labels use semibold text at both supported depths; the compact brand-colored circular count badge sits at the end of the disclosure row in both variants, after any state summary, and remains visible during horizontal scrolling. The full count remains in the accessible button label.
 
 ## Public API
 
@@ -25,10 +26,12 @@ The current shared slice supports a top-level section and one indented subsectio
 
 For frequent batch editing, compose it with `EditableGrid` and the [Editable Grid contract](editable-grid.md). Confirm/cancel remain the governed transparent 24 × 24 icon actions on the active **leaf** row. The application owns editable fields, calculations, validation, persistence, authorization, concurrency, paging and virtualization.
 
+The grouped editable variant inherits the plain grid's final Actions-column contract: its leaf-row action cells remain visible at the right edge during horizontal scrolling. Group rows add disclosure and optional summary only; they do not receive an Actions cell or change the leaf-row edit model.
+
 ## Consumer decisions pending
 
 `Business Rule Pending` for each adopting application: whether group counts mean total or filtered rows; which bulk commands may include hidden selected rows; what happens when a user closes a group containing an unconfirmed edit; and how to handle hidden validation issues at save time. The preview demonstrates one reversible local behavior, not an application decision.
 
 ## Evidence boundary
 
-The reference CPQ page was quote-controlled and read-only. Browser interaction confirmed the two-level disclosure and unchanged sibling groups, not any CPQ editing or saving behavior. The editable presentation is a shared, business-neutral proposal pending visual review and separate consumer acceptance.
+The reference CPQ page was quote-controlled and read-only. Browser interaction confirmed the two-level disclosure and unchanged sibling groups, not any CPQ editing or saving behavior. Locke accepted the shared, business-neutral preview on 2026-09-28; that visual decision does not establish CPQ editing behavior or separate consumer acceptance.
