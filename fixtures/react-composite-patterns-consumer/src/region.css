@@ -92,6 +92,55 @@ body { margin: 0; }
 .table-scroll table { min-width: 48rem; }
 .card-facts { justify-content: space-between; }
 
+.editable-grid-preview { min-width: 72rem; table-layout: fixed; width: 100%; }
+.editable-grid-preview :is(th, td) { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.editable-grid-preview :is(th, td):nth-child(1) { width: 2.5rem; }
+.editable-grid-preview :is(th, td):nth-child(2) { width: 3.5rem; }
+.editable-grid-preview :is(th, td):nth-child(3) { width: 6.25rem; }
+.editable-grid-preview :is(th, td):nth-child(4) { width: 14rem; }
+.editable-grid-preview :is(th, td):nth-child(5) { width: 8.25rem; }
+.editable-grid-preview :is(th, td):nth-child(6) { width: 6.25rem; }
+.editable-grid-preview :is(th, td):nth-child(7) { width: 5rem; }
+.editable-grid-preview :is(th, td):nth-child(8) { width: 7.5rem; }
+.editable-grid-preview :is(th, td):nth-child(9) { width: 7.5rem; }
+.editable-grid-preview :is(th, td):nth-child(10) { width: 6.5rem; }
+.editable-grid-preview :is(th, td):nth-child(11) { width: 5.5rem; }
+.editable-grid-preview :is(th, td):last-child {
+  background: var(--colorNeutralBackground1);
+  border-inline-start: var(--strokeWidthThin) solid var(--colorNeutralStroke2);
+  inset-inline-end: 0;
+  position: sticky;
+  z-index: 1;
+}
+.editable-grid-preview th:last-child { background: var(--colorNeutralBackground2); z-index: 2; }
+.editable-grid-preview tr[data-editing="true"] td:last-child { background: var(--colorBrandBackground2); }
+.editable-grid-preview .fui-Input,
+.editable-grid-preview .fui-Select { min-width: 0; width: 100%; }
+.editable-grid-preview__status { align-items: center; display: flex; flex-wrap: wrap; gap: var(--spacingHorizontalM); }
+.editable-grid-preview__status > span { color: var(--colorNeutralForeground2); white-space: nowrap; }
+.editable-grid-preview__status .editable-grid-preview__issue { color: var(--colorStatusDangerForeground1); }
+.editable-grid-preview__page-size { align-items: center; color: var(--colorNeutralForeground3); display: inline-flex; gap: var(--spacingHorizontalXS); }
+.editable-grid-preview__page-size .fui-Select { min-width: 4.5rem; }
+.editable-grid-preview__paging { align-items: center; display: inline-flex; gap: var(--spacingHorizontalXS); }
+.editable-grid-preview__paging strong { align-items: center; background: var(--colorBrandBackground); border-radius: var(--borderRadiusMedium); color: var(--colorNeutralForegroundOnBrand); display: inline-flex; height: 1.75rem; justify-content: center; width: 1.75rem; }
+
+.grouped-table-preview { min-width: 48rem; width: 100%; }
+.grouped-table-preview__empty { color: var(--colorNeutralForeground3); padding-block: var(--spacingVerticalM); padding-inline-start: var(--spacingHorizontalXXL); }
+.grouped-editable-grid-preview { min-width: 64rem; table-layout: fixed; width: 100%; }
+.grouped-editable-grid-preview :is(th, td) { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.grouped-editable-grid-preview :is(th, td):nth-child(1) { width: 2.5rem; }
+.grouped-editable-grid-preview :is(th, td):nth-child(2) { width: 3.5rem; }
+.grouped-editable-grid-preview :is(th, td):nth-child(3) { width: 7rem; }
+.grouped-editable-grid-preview :is(th, td):nth-child(4) { width: 16rem; }
+.grouped-editable-grid-preview :is(th, td):nth-child(5) { width: 8rem; }
+.grouped-editable-grid-preview :is(th, td):nth-child(6) { width: 6rem; }
+.grouped-editable-grid-preview :is(th, td):nth-child(7) { width: 7rem; }
+.grouped-editable-grid-preview :is(th, td):nth-child(8) { width: 6rem; }
+.grouped-editable-grid-preview :is(th, td):nth-child(9) { width: 5rem; }
+.grouped-editable-grid-preview tr:not(.nidec-ui-grouped-table__section-row) td:last-child { padding-inline-end: var(--spacingHorizontalS); }
+.grouped-editable-grid-preview .fui-Input,
+.grouped-editable-grid-preview .fui-Select { min-width: 0; width: 100%; }
+
 .form-grid { display: grid; gap: var(--spacingVerticalM) var(--spacingHorizontalL); grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .form-grid__wide { grid-column: 1 / -1; }
 .parameter-list { border-block-start: var(--strokeWidthThin) solid var(--colorNeutralStroke2); }

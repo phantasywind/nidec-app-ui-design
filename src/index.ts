@@ -4,6 +4,7 @@ import {
   Button as FluentButton, Card as FluentCard, FluentProvider,
   DataGrid as FluentDataGrid, DataGridHeader as FluentDataGridHeader, DataGridRow as FluentDataGridRow,
   TableCellLayout as FluentTableCellLayout,
+  TableCell as FluentTableCell, TableRow as FluentTableRow,
   TableHeader as FluentTableHeader, Tab as FluentTab, TabList as FluentTabList, Toolbar as FluentToolbar,
   Tooltip as FluentTooltip,
   ToolbarRadioButton as FluentToolbarRadioButton, ToolbarRadioGroup as FluentToolbarRadioGroup,
@@ -181,6 +182,150 @@ export function TableActionIconButton({ icon, 'aria-label': label, className, ..
     size: 'small',
     shape: 'rounded',
   });
+}
+
+export type GroupedTableSectionRowProps = {
+  label: string;
+  count: number;
+  columnSpan: number;
+  level: 0 | 1;
+  expanded: boolean;
+  icon: ReactElement;
+  onToggle: (event: MouseEvent<HTMLButtonElement>) => void;
+  summary?: string;
+  countLabel?: string;
+};
+
+/** One full-width disclosure row within a Fluent Table, never an editable data row. */
+export function GroupedTableSectionRow({
+  label,
+  count,
+  columnSpan,
+  level,
+  expanded,
+  icon,
+  onToggle,
+  summary,
+  countLabel,
+}: GroupedTableSectionRowProps) {
+  if (!label.trim() || !Number.isInteger(count) || count < 0 || !Number.isInteger(columnSpan) || columnSpan < 1) {
+    throw new Error('GroupedTableSectionRow requires a label, non-negative count and positive columnSpan.');
+  }
+  const accessibleCount = countLabel?.trim() || `${count} ${count === 1 ? 'row' : 'rows'}`;
+  return createElement(FluentTableRow, {
+    className: `nidec-ui-grouped-table__section-row nidec-ui-grouped-table__section-row--level-${level}`,
+  }, createElement(FluentTableCell, { colSpan: columnSpan },
+    createElement(FluentButton, {
+      'aria-label': `${label}, ${accessibleCount}${summary ? `, ${summary}` : ''}`,
+      'aria-expanded': expanded,
+      appearance: 'transparent',
+      as: 'button',
+      className: 'nidec-ui-grouped-table__section-button',
+      icon,
+      onClick: onToggle,
+      size: 'small',
+      style: level === 1 ? { paddingInlineStart: 'var(--spacingHorizontalXXL)' } : undefined,
+      type: 'button',
+    },
+    createElement('span', { className: 'nidec-ui-grouped-table__section-label' }, label),
+    summary ? createElement('span', { className: 'nidec-ui-grouped-table__section-summary' }, summary) : null,
+    createElement('span', { className: 'nidec-ui-grouped-table__section-count', 'aria-hidden': 'true' }, count))));
+}
+
+export type EditableGridProps = Omit<ComponentPropsWithoutRef<'section'>,
+  'children' | 'title'> & {
+  'aria-label': string;
+  title: ReactNode;
+  description?: ReactNode;
+  status?: ReactNode;
+  toolbar: ReactNode;
+  children: ReactNode;
+  footer?: ReactNode;
+};
+
+/**
+ * High-density batch-editing frame for many frequently changed rows. It owns
+ * layout and state presentation only; columns, data, validation, persistence,
+ * authorization, calculations and concurrency remain consumer-owned.
+ */
+export function EditableGrid({
+  'aria-label': ariaLabel,
+  title,
+  description,
+  status,
+  toolbar,
+  children,
+  footer,
+  className,
+  ...props
+}: EditableGridProps) {
+  if (!ariaLabel.trim()) throw new Error('EditableGrid requires a non-empty aria-label.');
+  return createElement('section', {
+    ...props,
+    'aria-label': ariaLabel,
+    className: withClass('nidec-ui-editable-grid', className),
+  },
+  createElement('header', { className: 'nidec-ui-editable-grid__header' },
+    createElement('div', { className: 'nidec-ui-editable-grid__copy' },
+      createElement('h2', { className: 'nidec-ui-editable-grid__title' }, title),
+      description === undefined ? null : createElement('div', { className: 'nidec-ui-editable-grid__description' }, description)),
+    status === undefined ? null : createElement('div', { className: 'nidec-ui-editable-grid__status' }, status)),
+  createElement('div', { className: 'nidec-ui-editable-grid__toolbar' }, toolbar),
+  createElement('div', {
+    'aria-label': `${ariaLabel} rows`,
+    className: 'nidec-ui-editable-grid__viewport',
+    role: 'region',
+    tabIndex: 0,
+  }, children),
+  footer === undefined ? null : createElement('footer', { className: 'nidec-ui-editable-grid__footer' }, footer));
+}
+
+export type EditableGridRowActionGroupProps = Omit<ComponentPropsWithoutRef<'div'>, 'children'> & {
+  confirmIcon: ReactElement;
+  confirmLabel: string;
+  cancelIcon: ReactElement;
+  cancelLabel: string;
+  onConfirm: NonNullable<TableActionIconButtonProps['onClick']>;
+  onCancel: NonNullable<TableActionIconButtonProps['onClick']>;
+  confirmDisabled?: boolean;
+  cancelDisabled?: boolean;
+};
+
+/** Governed transparent icon actions for accepting or abandoning one active edit row. */
+export function EditableGridRowActionGroup({
+  confirmIcon,
+  confirmLabel,
+  cancelIcon,
+  cancelLabel,
+  onConfirm,
+  onCancel,
+  confirmDisabled = false,
+  cancelDisabled = false,
+  className,
+  ...props
+}: EditableGridRowActionGroupProps) {
+  if (!confirmLabel.trim() || !cancelLabel.trim()) {
+    throw new Error('EditableGridRowActionGroup requires non-empty action labels.');
+  }
+  return createElement('div', {
+    ...props,
+    className: withClass('nidec-ui-editable-grid__row-actions', className),
+  },
+  createElement(FluentTooltip, { content: confirmLabel, relationship: 'label' },
+    createElement(TableActionIconButton, {
+      'aria-label': confirmLabel,
+      className: 'nidec-ui-editable-grid__confirm-action',
+      disabled: confirmDisabled,
+      icon: confirmIcon,
+      onClick: onConfirm,
+    })),
+  createElement(FluentTooltip, { content: cancelLabel, relationship: 'label' },
+    createElement(TableActionIconButton, {
+      'aria-label': cancelLabel,
+      disabled: cancelDisabled,
+      icon: cancelIcon,
+      onClick: onCancel,
+    })));
 }
 
 export type ViewMode = 'list' | 'card';

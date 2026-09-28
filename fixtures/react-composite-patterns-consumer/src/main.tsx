@@ -1,14 +1,19 @@
-import { useEffect, useMemo, useState, type ComponentProps, type ReactElement, type ReactNode } from 'react';
+import { Fragment, useEffect, useMemo, useState, type ComponentProps, type ReactElement, type ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { createDOMRenderer, createTableColumn, RendererProvider } from '@fluentui/react-components';
 import { DatePicker } from '@phantasywind/nidec-app-ui-design/date-picker';
-import { ArrowClockwiseRegular, ChevronLeftRegular, ChevronRightRegular, GridRegular, ListRegular, MoreHorizontalRegular } from '@fluentui/react-icons';
+import {
+  AddRegular, ArrowClockwiseRegular, ArrowRedoRegular, ArrowUndoRegular, CheckmarkRegular,
+  ChevronDownRegular, ChevronLeftRegular, ChevronRightRegular, DeleteRegular, DismissRegular, EditRegular,
+  GridRegular, ListRegular, MoreHorizontalRegular,
+} from '@fluentui/react-icons';
 import {
   Accordion, AccordionHeader, AccordionItem, AccordionPanel, ActionableCardGalleryItem, Badge, Body1, Breadcrumb, BreadcrumbButton,
   BreadcrumbDivider, BreadcrumbItem, BusinessProcessFlow, Button as SharedButton, Card, CardFooter, CardGallery,
   CardGalleryItem, CardHeader, Caption1, Checkbox, CollectionList, CollectionListItem, Combobox,
   Dialog, DialogActions, DialogBody, DialogContent, DialogSurface, DialogTitle, DialogTrigger, Divider,
   DrawerBody, DrawerFooter, DrawerHeader, DrawerHeaderTitle, Field, InfoLabel, InlineModeTabs, Input,
+  EditableGrid, EditableGridRowActionGroup, GroupedTableSectionRow,
   Label, Link, Menu, MenuItem, MenuList, MenuPopover, MenuTrigger, MessageBar, MessageBarBody,
   MessageBarTitle, Nav, NavItem, NidecProvider, Option, OverlayDrawer, PageHeader, Persona, Popover,
   PopoverSurface, PopoverTrigger, ProgressBar, Radio, RadioGroup, RecordIdentityCellLayout,
@@ -26,12 +31,14 @@ import {
 import '@phantasywind/nidec-app-ui-design/styles.css';
 import './region.css';
 
-type ShowcaseView = 'elements' | 'authentication' | 'directory' | 'record' | 'master-data' | 'governance';
+type ShowcaseView = 'elements' | 'authentication' | 'directory' | 'editable-grid' | 'grouped-table' | 'record' | 'master-data' | 'governance';
 
 const views: ReadonlyArray<{ value: ShowcaseView; label: string; description: string }> = [
   { value: 'elements', label: 'UI materials', description: 'Shared elements and patterns' },
   { value: 'authentication', label: 'Authentication sample', description: 'Brand, credentials and primary entry' },
   { value: 'directory', label: 'Directory sample', description: 'Search, table, cards and Sheet' },
+  { value: 'editable-grid', label: 'Editable grid', description: 'High-volume batch line editing' },
+  { value: 'grouped-table', label: 'Grouped table', description: 'Collapsible sections and grouped editing' },
   { value: 'record', label: 'Record workspace', description: 'Stages, tabs and governed form' },
   { value: 'master-data', label: 'Master data / Form + List', description: 'Same-surface editing and row selection' },
   { value: 'governance', label: 'Governance sample', description: 'Versions, process and rules' },
@@ -231,6 +238,212 @@ function DirectorySamplePage() {
   return <><TemplateContract purpose="Find and enter records or work items." useWhen="A peer collection is the primary page subject." task="Search, compare, filter and open one item." entry="Table identity link or whole-card entry; return preserves directory state." owns="Query, filter, sort, paging, selection, data and commands." avoid="Do not use for simultaneous same-page form editing." /><Breadcrumb aria-label="Location"><BreadcrumbItem><BreadcrumbButton href="#">Home</BreadcrumbButton></BreadcrumbItem><BreadcrumbDivider /><BreadcrumbItem><BreadcrumbButton current>Records</BreadcrumbButton></BreadcrumbItem></Breadcrumb><DirectoryWorkspace aria-label="Record directory" header={header} toolbar={toolbar} results={results} resultsLabel="Directory results" pagination={<div className="pagination-sample"><span>{filtered.length} results</span><Button disabled>Previous</Button><Button>Next</Button></div>} /><OverlayDrawer open={selectedRecord !== null} onOpenChange={(_, data) => { if (!data.open) setSelectedRecord(null); }} position="end" size="medium" modalType="modal" aria-label="Record details"><DrawerHeader><DrawerHeaderTitle action={<Button appearance="subtle" onClick={() => setSelectedRecord(null)}>Close</Button>}>{selectedRecord?.name ?? 'New record'}</DrawerHeaderTitle></DrawerHeader><DrawerBody><div className="form-stack"><MessageBar intent="info"><MessageBarBody><MessageBarTitle>Local preview</MessageBarTitle>Values are not saved.</MessageBarBody></MessageBar><Field label="Record name"><Input value={selectedRecord?.name ?? ''} /></Field><Field label="Category"><Select value={selectedRecord?.category ?? 'Standard'}><option>Standard</option><option>Configured</option><option>Special</option></Select></Field><Field label="Owner"><Input value={selectedRecord?.owner ?? ''} /></Field><Field label="Notes"><Textarea rows={4} /></Field><Switch label="Active" defaultChecked /></div></DrawerBody><DrawerFooter><Button appearance="primary">Save locally</Button><Button onClick={() => setSelectedRecord(null)}>Cancel</Button></DrawerFooter></OverlayDrawer></>;
 }
 
+type EditableLine = {
+  id: string;
+  code: string;
+  description: string;
+  category: string;
+  quantity: string;
+  unit: string;
+  unitPrice: string;
+};
+
+const initialEditableLines: EditableLine[] = [
+  ['001', 'CMP-001', 'Controller cabinet', 'Electrical', '1', 'ea', '5200.00'],
+  ['002', 'DRV-010', 'AC drive 7.5 kW', 'Electrical', '2', 'ea', '1250.00'],
+  ['003', 'MTR-200', 'Traction motor', 'Mechanical', '1', 'ea', '3800.00'],
+  ['004', 'SFT-100', 'Safety gear', 'Mechanical', '1', 'ea', '950.00'],
+  ['005', 'GUI-300', 'Car operating panel', 'Electrical', '1', 'ea', '620.00'],
+  ['006', 'CAB-450', 'Travelling cable 18C', 'Electrical', '120', 'm', '12.50'],
+  ['007', 'BRK-110', 'Brake assembly', 'Mechanical', '1', 'ea', '680.00'],
+  ['008', 'SEN-320', 'Position sensor', 'Electrical', '1', 'ea', '0.00'],
+  ['009', 'LIM-210', 'Limit switch set', 'Electrical', '2', 'ea', '85.00'],
+  ['010', 'RLR-500', 'Guide rail 5 m', 'Mechanical', '4', 'ea', '215.00'],
+  ['011', 'FIX-120', 'Fixing kit', 'Mechanical', '2', 'set', '140.00'],
+  ['012', 'BKT-330', 'Bracket set', 'Mechanical', '4', 'set', '90.00'],
+  ['013', 'WIR-600', 'Wiring duct', 'Electrical', '10', 'm', '8.50'],
+  ['014', 'TRM-410', 'Terminal block', 'Electrical', '5', 'ea', '12.00'],
+].map(([id, code, description, category, quantity, unit, unitPrice]) => ({ id, code, description, category, quantity, unit, unitPrice }));
+
+function EditableGridSamplePage() {
+  const [lines, setLines] = useState(initialEditableLines);
+  const [query, setQuery] = useState('');
+  const [activeId, setActiveId] = useState('006');
+  const [draft, setDraft] = useState<EditableLine>(() => ({ ...initialEditableLines[5] }));
+  const [dirtyIds, setDirtyIds] = useState<Set<string>>(new Set(['003', '006']));
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const filtered = useMemo(() => lines.filter(line => `${line.code} ${line.description} ${line.category}`.toLowerCase().includes(query.toLowerCase())), [lines, query]);
+  const validationCount = lines.filter(line => Number(line.unitPrice) <= 0).length;
+
+  const startEditing = (line: EditableLine) => {
+    setActiveId(line.id);
+    setDraft({ ...line });
+  };
+  const updateDraft = (field: keyof EditableLine, value: string) => setDraft(current => ({ ...current, [field]: value }));
+  const confirmEdit = () => {
+    setLines(current => current.map(line => line.id === draft.id ? draft : line));
+    setDirtyIds(current => new Set(current).add(draft.id));
+    setActiveId('');
+  };
+  const cancelEdit = () => setActiveId('');
+  const addLine = () => {
+    const nextId = String(lines.length + 1).padStart(3, '0');
+    const line = { id: nextId, code: `NEW-${nextId}`, description: 'New line', category: 'Unassigned', quantity: '1', unit: 'ea', unitPrice: '0.00' };
+    setLines(current => [...current, line]);
+    startEditing(line);
+  };
+  const deleteSelected = () => {
+    setLines(current => current.filter(line => !selectedIds.has(line.id)));
+    setSelectedIds(new Set());
+  };
+
+  const status = <div className="editable-grid-preview__status"><span>{dirtyIds.size} unsaved changes</span><span aria-label={`${validationCount} validation issue`} className={validationCount ? 'editable-grid-preview__issue' : undefined}>{validationCount} validation issue</span><Button appearance="primary" onClick={() => setDirtyIds(new Set())}>Save changes</Button></div>;
+  const toolbar = <><SearchBox aria-label="Search lines" placeholder="Search by code, description or category" value={query} onChange={(_, data) => setQuery(data.value)} /><Select aria-label="Category filter" defaultValue="all"><option value="all">All categories</option><option>Electrical</option><option>Mechanical</option></Select><Button icon={<AddRegular />} onClick={addLine}>Add line</Button><Button disabled={selectedIds.size === 0} icon={<DeleteRegular />} onClick={deleteSelected}>Delete selected</Button><Tooltip content="Undo" relationship="label"><TableActionIconButton aria-label="Undo" disabled icon={<ArrowUndoRegular />} /></Tooltip><Tooltip content="Redo" relationship="label"><TableActionIconButton aria-label="Redo" disabled icon={<ArrowRedoRegular />} /></Tooltip></>;
+  const footer = <><span>{filtered.length} lines</span><label className="editable-grid-preview__page-size">Rows per page<Select aria-label="Rows per page" defaultValue="25"><option>25</option><option>50</option><option>100</option></Select></label><div className="editable-grid-preview__paging"><Tooltip content="Previous page" relationship="label"><TableActionIconButton aria-label="Previous page" disabled icon={<ChevronLeftRegular />} /></Tooltip><strong>1</strong><Tooltip content="Next page" relationship="label"><TableActionIconButton aria-label="Next page" icon={<ChevronRightRegular />} /></Tooltip></div></>;
+
+  return <><TemplateContract purpose="Edit many line records quickly without opening one form per row." useWhen="The primary task is frequent, repetitive changes across a large line collection." task="Scan, select, edit one active row, validate and save a controlled batch." entry="From a record workspace or line-management page; return preserves the owning record context." owns="Columns, calculations, lookup data, validation, permissions, persistence, concurrency and virtualization." avoid="Do not use for a small form, occasional single-record edits or lifecycle decisions." /><PageHeader eyebrow="Page pattern / editable grid" title="Line editing" description="A dense batch-editing surface for high-volume line collections. The active row expands into editors while the remaining rows stay compact." /><EditableGrid aria-label="Example line editor" title="Line editor" description="Edit multiple lines, resolve validation issues, then save one controlled batch." status={status} toolbar={toolbar} footer={footer}><Table aria-label="Editable line records" className="editable-grid-preview" size="small"><RecordTableHeader><TableRow><TableHeaderCell><Checkbox aria-label="Select all lines" checked={selectedIds.size > 0 && selectedIds.size === filtered.length} /></TableHeaderCell><TableHeaderCell>Line</TableHeaderCell><TableHeaderCell>Item code</TableHeaderCell><TableHeaderCell>Description</TableHeaderCell><TableHeaderCell>Category</TableHeaderCell><TableHeaderCell>Quantity</TableHeaderCell><TableHeaderCell>Unit</TableHeaderCell><TableHeaderCell>Unit price</TableHeaderCell><TableHeaderCell>Line total</TableHeaderCell><TableHeaderCell>Status</TableHeaderCell><TableHeaderCell>Actions</TableHeaderCell></TableRow></RecordTableHeader><TableBody>{filtered.map(line => {
+    const editing = line.id === activeId;
+    const value = editing ? draft : line;
+    const invalid = Number(value.unitPrice) <= 0;
+    const total = Number(value.quantity || 0) * Number(value.unitPrice || 0);
+    const dirty = dirtyIds.has(line.id);
+    return <TableRow data-editing={editing || undefined} key={line.id}>
+      <TableCell><Checkbox aria-label={`Select line ${line.id}`} checked={selectedIds.has(line.id)} onChange={(_, data) => setSelectedIds(current => { const next = new Set(current); data.checked ? next.add(line.id) : next.delete(line.id); return next; })} /></TableCell>
+      <TableCell data-dirty={dirty || undefined} aria-label={`Line ${line.id}${dirty ? ', modified' : ''}`}>{line.id}</TableCell>
+      <TableCell>{line.code}</TableCell>
+      <TableCell>{editing ? <Input aria-label={`Description for line ${line.id}`} size="small" value={value.description} onChange={(_, data) => updateDraft('description', data.value)} /> : line.description}</TableCell>
+      <TableCell>{editing ? <Select aria-label={`Category for line ${line.id}`} size="small" value={value.category} onChange={event => updateDraft('category', event.target.value)}><option>Electrical</option><option>Mechanical</option><option>Unassigned</option></Select> : line.category}</TableCell>
+      <TableCell>{editing ? <Input aria-label={`Quantity for line ${line.id}`} size="small" inputMode="decimal" value={value.quantity} onChange={(_, data) => updateDraft('quantity', data.value)} /> : line.quantity}</TableCell>
+      <TableCell>{editing ? <Select aria-label={`Unit for line ${line.id}`} size="small" value={value.unit} onChange={event => updateDraft('unit', event.target.value)}><option>ea</option><option>m</option><option>set</option></Select> : line.unit}</TableCell>
+      <TableCell>{editing ? <Input aria-label={`Unit price for line ${line.id}`} aria-invalid={invalid} size="small" inputMode="decimal" value={value.unitPrice} onChange={(_, data) => updateDraft('unitPrice', data.value)} /> : Number(line.unitPrice).toLocaleString(undefined, { minimumFractionDigits: 2 })}</TableCell>
+      <TableCell>{total.toLocaleString(undefined, { minimumFractionDigits: 2 })}</TableCell>
+      <TableCell><Badge appearance="tint" color={invalid ? 'danger' : dirty ? 'warning' : 'success'}>{invalid ? 'Error' : dirty ? 'Modified' : 'Valid'}</Badge></TableCell>
+      <TableCell>{editing ? <EditableGridRowActionGroup confirmIcon={<CheckmarkRegular />} confirmLabel={`Confirm edits for line ${line.id}`} cancelIcon={<DismissRegular />} cancelLabel={`Cancel edits for line ${line.id}`} onConfirm={confirmEdit} onCancel={cancelEdit} /> : <Tooltip content={`Edit line ${line.id}`} relationship="label"><TableActionIconButton aria-label={`Edit line ${line.id}`} icon={<EditRegular />} onClick={() => startEditing(line)} /></Tooltip>}</TableCell>
+    </TableRow>;
+  })}</TableBody></Table></EditableGrid></>;
+}
+
+const groupedCategories = ['Electrical', 'Mechanical', 'Unassigned'] as const;
+type GroupedLine = EditableLine & { section: 'primary' | 'additional' };
+const initialGroupedLines: GroupedLine[] = initialEditableLines.slice(0, 11).map((line, index) => ({
+  ...line,
+  section: index < 8 ? 'primary' : 'additional',
+}));
+
+function GroupedTableSamplePage() {
+  const [staticExpanded, setStaticExpanded] = useState<Set<string>>(new Set([
+    'primary', 'primary-Electrical', 'primary-Mechanical', 'additional',
+  ]));
+  const [expanded, setExpanded] = useState<Set<string>>(new Set([
+    'primary', 'primary-Electrical', 'primary-Mechanical', 'additional', 'additional-Electrical',
+  ]));
+  const [lines, setLines] = useState(initialGroupedLines);
+  const [query, setQuery] = useState('');
+  const [activeId, setActiveId] = useState('006');
+  const [draft, setDraft] = useState<GroupedLine>({ ...initialGroupedLines[5]! });
+  const [dirtyIds, setDirtyIds] = useState<Set<string>>(new Set(['003', '006']));
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const filtered = lines.filter(line => `${line.code} ${line.description} ${line.category}`.toLowerCase().includes(query.toLowerCase()));
+  const sections = [
+    { id: 'primary' as const, label: 'Primary collection' },
+    { id: 'additional' as const, label: 'Additional collection' },
+  ];
+  const toggle = (id: string) => setExpanded(current => {
+    const next = new Set(current);
+    next.has(id) ? next.delete(id) : next.add(id);
+    return next;
+  });
+  const toggleStatic = (id: string) => setStaticExpanded(current => {
+    const next = new Set(current);
+    next.has(id) ? next.delete(id) : next.add(id);
+    return next;
+  });
+  const isStaticExpanded = (id: string) => staticExpanded.has(id);
+  const staticIconFor = (id: string) => isStaticExpanded(id) ? <ChevronDownRegular /> : <ChevronRightRegular />;
+  const isExpanded = (id: string) => query.trim() !== '' || expanded.has(id);
+  const iconFor = (id: string) => isExpanded(id) ? <ChevronDownRegular /> : <ChevronRightRegular />;
+  const summaryFor = (groupLines: GroupedLine[]) => {
+    const modified = groupLines.filter(line => dirtyIds.has(line.id)).length;
+    const issues = groupLines.filter(line => Number((line.id === activeId ? draft : line).unitPrice) <= 0).length;
+    const editing = groupLines.some(line => line.id === activeId) ? 1 : 0;
+    return [modified && `${modified} modified`, issues && `${issues} issue`, editing && '1 editing'].filter(Boolean).join(' · ');
+  };
+  const startEditing = (line: GroupedLine) => { setActiveId(line.id); setDraft({ ...line }); };
+  const updateDraft = (field: keyof EditableLine, value: string) => setDraft(current => ({ ...current, [field]: value }));
+  const confirmEdit = () => {
+    if (Number(draft.unitPrice) <= 0) return;
+    setLines(current => current.map(line => line.id === draft.id ? draft : line));
+    setDirtyIds(current => new Set(current).add(draft.id));
+    setActiveId('');
+  };
+  const addLine = () => {
+    const nextId = String(Math.max(...lines.map(line => Number(line.id))) + 1).padStart(3, '0');
+    const line: GroupedLine = { id: nextId, code: `NEW-${nextId}`, description: 'New line', category: 'Unassigned', quantity: '1', unit: 'ea', unitPrice: '1.00', section: 'additional' };
+    setLines(current => [...current, line]);
+    setQuery('');
+    setExpanded(current => new Set(current).add('additional').add('additional-Unassigned'));
+    startEditing(line);
+  };
+  const toggleSelected = (id: string, checked: boolean) => setSelectedIds(current => {
+    const next = new Set(current);
+    checked ? next.add(id) : next.delete(id);
+    return next;
+  });
+  const validationCount = lines.filter(line => Number((line.id === activeId ? draft : line).unitPrice) <= 0).length;
+
+  const staticLines = initialGroupedLines.slice(0, 6);
+  const staticTable = <div className="table-scroll"><Table aria-label="Grouped read-only records" className="grouped-table-preview" size="small"><RecordTableHeader><TableRow><TableHeaderCell>Line</TableHeaderCell><TableHeaderCell>Item code</TableHeaderCell><TableHeaderCell>Description</TableHeaderCell><TableHeaderCell>Quantity</TableHeaderCell><TableHeaderCell>Status</TableHeaderCell></TableRow></RecordTableHeader><TableBody>
+    <GroupedTableSectionRow label="Primary collection" count={staticLines.length} columnSpan={5} level={0} expanded={isStaticExpanded('primary')} icon={staticIconFor('primary')} onToggle={() => toggleStatic('primary')} />
+    {isStaticExpanded('primary') && groupedCategories.filter(category => category !== 'Unassigned').map(category => {
+      const members = staticLines.filter(line => line.category === category);
+      const id = `primary-${category}`;
+      return <Fragment key={id}><GroupedTableSectionRow label={category} count={members.length} columnSpan={5} level={1} expanded={isStaticExpanded(id)} icon={staticIconFor(id)} onToggle={() => toggleStatic(id)} />{isStaticExpanded(id) && members.map(line => <TableRow key={line.id}><TableCell>{line.id}</TableCell><TableCell>{line.code}</TableCell><TableCell>{line.description}</TableCell><TableCell>{line.quantity} {line.unit}</TableCell><TableCell><Badge appearance="tint" color="success">Ready</Badge></TableCell></TableRow>)}</Fragment>;
+    })}
+    <GroupedTableSectionRow label="Additional collection" count={0} columnSpan={5} level={0} expanded={isStaticExpanded('additional')} icon={staticIconFor('additional')} onToggle={() => toggleStatic('additional')} />
+    {isStaticExpanded('additional') && <TableRow><TableCell colSpan={5} className="grouped-table-preview__empty">No current lines</TableCell></TableRow>}
+  </TableBody></Table></div>;
+
+  const editableTable = <Table aria-label="Grouped editable lines" className="grouped-editable-grid-preview" size="small"><RecordTableHeader><TableRow><TableHeaderCell><Checkbox aria-label="Select all filtered lines, including collapsed groups" checked={filtered.length > 0 && filtered.every(line => selectedIds.has(line.id))} onChange={(_, data) => setSelectedIds(current => { const next = new Set(current); filtered.forEach(line => data.checked ? next.add(line.id) : next.delete(line.id)); return next; })} /></TableHeaderCell><TableHeaderCell>Line</TableHeaderCell><TableHeaderCell>Item code</TableHeaderCell><TableHeaderCell>Description</TableHeaderCell><TableHeaderCell>Category</TableHeaderCell><TableHeaderCell>Quantity</TableHeaderCell><TableHeaderCell>Unit price</TableHeaderCell><TableHeaderCell>Status</TableHeaderCell><TableHeaderCell>Actions</TableHeaderCell></TableRow></RecordTableHeader><TableBody>
+    {sections.map(section => {
+      const sectionLines = filtered.filter(line => line.section === section.id);
+      return <Fragment key={section.id}><GroupedTableSectionRow label={section.label} count={sectionLines.length} columnSpan={9} level={0} expanded={isExpanded(section.id)} icon={iconFor(section.id)} onToggle={() => toggle(section.id)} summary={summaryFor(sectionLines)} />
+        {isExpanded(section.id) && groupedCategories.map(category => {
+          const members = sectionLines.filter(line => line.category === category);
+          if (members.length === 0) return null;
+          const groupId = `${section.id}-${category}`;
+          return <Fragment key={groupId}><GroupedTableSectionRow label={category} count={members.length} columnSpan={9} level={1} expanded={isExpanded(groupId)} icon={iconFor(groupId)} onToggle={() => toggle(groupId)} summary={summaryFor(members)} />
+            {isExpanded(groupId) && members.map(line => {
+              const editing = line.id === activeId;
+              const value = editing ? draft : line;
+              const invalid = Number(value.unitPrice) <= 0;
+              const dirty = dirtyIds.has(line.id);
+              return <TableRow data-editing={editing || undefined} key={line.id}>
+                <TableCell><Checkbox aria-label={`Select line ${line.id}`} checked={selectedIds.has(line.id)} onChange={(_, data) => toggleSelected(line.id, Boolean(data.checked))} /></TableCell>
+                <TableCell data-dirty={dirty || undefined} aria-label={`Line ${line.id}${dirty ? ', modified' : ''}`}>{line.id}</TableCell>
+                <TableCell>{line.code}</TableCell>
+                <TableCell>{editing ? <Input aria-label={`Description for line ${line.id}`} size="small" value={value.description} onChange={(_, data) => updateDraft('description', data.value)} /> : line.description}</TableCell>
+                <TableCell>{editing ? <Select aria-label={`Category for line ${line.id}`} size="small" value={value.category} onChange={event => updateDraft('category', event.target.value)}><option>Electrical</option><option>Mechanical</option><option>Unassigned</option></Select> : line.category}</TableCell>
+                <TableCell>{editing ? <Input aria-label={`Quantity for line ${line.id}`} size="small" inputMode="decimal" value={value.quantity} onChange={(_, data) => updateDraft('quantity', data.value)} /> : `${line.quantity} ${line.unit}`}</TableCell>
+                <TableCell>{editing ? <Input aria-label={`Unit price for line ${line.id}`} aria-invalid={invalid} size="small" inputMode="decimal" value={value.unitPrice} onChange={(_, data) => updateDraft('unitPrice', data.value)} /> : Number(line.unitPrice).toLocaleString(undefined, { minimumFractionDigits: 2 })}</TableCell>
+                <TableCell><Badge appearance="tint" color={invalid ? 'danger' : dirty ? 'warning' : 'success'}>{invalid ? 'Error' : dirty ? 'Modified' : 'Valid'}</Badge></TableCell>
+                <TableCell>{editing ? <EditableGridRowActionGroup confirmIcon={<CheckmarkRegular />} confirmLabel={`Confirm edits for line ${line.id}`} confirmDisabled={invalid} cancelIcon={<DismissRegular />} cancelLabel={`Cancel edits for line ${line.id}`} onConfirm={confirmEdit} onCancel={() => setActiveId('')} /> : <Tooltip content={`Edit line ${line.id}`} relationship="label"><TableActionIconButton aria-label={`Edit line ${line.id}`} icon={<EditRegular />} onClick={() => startEditing(line)} /></Tooltip>}</TableCell>
+              </TableRow>;
+            })}</Fragment>;
+        })}
+        {isExpanded(section.id) && sectionLines.length === 0 && <TableRow><TableCell colSpan={9} className="grouped-table-preview__empty">No current lines</TableCell></TableRow>}
+      </Fragment>;
+    })}
+  </TableBody></Table>;
+
+  const deleteSelected = () => {
+    setLines(current => current.filter(line => !selectedIds.has(line.id)));
+    setDirtyIds(current => new Set([...current].filter(id => !selectedIds.has(id))));
+    if (selectedIds.has(activeId)) setActiveId('');
+    setSelectedIds(new Set());
+  };
+  return <><TemplateContract purpose="Scan a hierarchical collection and edit many leaf records without losing group context." useWhen="Records are naturally grouped in a table and frequent changes need one batch save." task="Expand a group, select or edit a leaf line, then review unresolved changes across groups." entry="From a record or line workspace; returning preserves the collection context." owns="Group identity and membership, counts, validation, permissions, selection, persistence and conflict handling." avoid="Do not treat a group strip as a record, selection checkbox or editable line." /><PageHeader eyebrow="Page pattern / grouped table" title="Grouped table and grouped editing" description="The same disclosure rows organize a read-only table and an editable line grid. Only leaf rows can be selected or edited." /><WorkspaceSection title="Grouped Table" description="Expand and collapse collections within one table; counts remain visible when rows are hidden.">{staticTable}</WorkspaceSection><EditableGrid aria-label="Grouped line editor" title="Grouped Editable Grid" description="Group disclosure stays independent of selection and the active edit row." status={<div className="editable-grid-preview__status"><span>{dirtyIds.size} unsaved changes</span><span className={validationCount ? 'editable-grid-preview__issue' : undefined}>{validationCount} validation issue</span><Button appearance="primary" disabled={Boolean(activeId) || validationCount > 0 || dirtyIds.size === 0} onClick={() => setDirtyIds(new Set())}>Save changes</Button></div>} toolbar={<><SearchBox aria-label="Search grouped lines" placeholder="Search line code or description" value={query} onChange={(_, data) => setQuery(data.value)} /><Button icon={<AddRegular />} onClick={addLine}>Add line</Button><Button disabled={selectedIds.size === 0} icon={<DeleteRegular />} onClick={deleteSelected}>Delete selected</Button><span>{selectedIds.size} selected</span></>} footer={<><span>{filtered.length} matching lines</span><span>Collapsed groups retain selection, draft and validation state.</span></>}>{editableTable}</EditableGrid></>;
+}
+
 type SelectionItem = { id: string; name: string };
 const selectionItems: SelectionItem[] = [{ id: 'P-1', name: 'Height' }, { id: 'P-2', name: 'Capacity' }, { id: 'P-3', name: 'Openings' }];
 const selectionColumns = [createTableColumn<SelectionItem>({ columnId: 'parameter', renderHeaderCell: () => 'Parameter', renderCell: item => item.name })];
@@ -260,7 +473,7 @@ function ShowcaseApp() {
   const [view, navigate] = useShowcaseView();
   const [navigationOpen, setNavigationOpen] = useState(false);
   const active = views.find(item => item.value === view)!;
-  const page = view === 'elements' ? <ElementsPage /> : view === 'authentication' ? <AuthenticationSamplePage /> : view === 'directory' ? <DirectorySamplePage /> : view === 'record' ? <><TemplateContract purpose="Work deeply on one identified record." useWhen="One record has multiple governed sections and supporting context." task="Review identity, move between sibling work areas and edit details." entry="From a directory identity link; breadcrumb or back returns to the directory." owns="Record data, save semantics, stages, permissions and commands." avoid="Do not use for collection-first work queues or strict lifecycle progress." /><RecordWorkspacePage /></> : view === 'master-data' ? <MasterDataFormListPage /> : <GovernanceSamplePage />;
+  const page = view === 'elements' ? <ElementsPage /> : view === 'authentication' ? <AuthenticationSamplePage /> : view === 'directory' ? <DirectorySamplePage /> : view === 'editable-grid' ? <EditableGridSamplePage /> : view === 'grouped-table' ? <GroupedTableSamplePage /> : view === 'record' ? <><TemplateContract purpose="Work deeply on one identified record." useWhen="One record has multiple governed sections and supporting context." task="Review identity, move between sibling work areas and edit details." entry="From a directory identity link; breadcrumb or back returns to the directory." owns="Record data, save semantics, stages, permissions and commands." avoid="Do not use for collection-first work queues or strict lifecycle progress." /><RecordWorkspacePage /></> : view === 'master-data' ? <MasterDataFormListPage /> : <GovernanceSamplePage />;
   const navigation = <ApplicationNavigation aria-label="Showcase pages"><ApplicationNavigationGroup label="UI Materials"><ApplicationNavigationItem current={view === 'elements'} href="?view=elements" icon={<GridRegular />} label="All components" onClick={event => { event.preventDefault(); navigate('elements'); setNavigationOpen(false); }} /></ApplicationNavigationGroup><ApplicationNavigationGroup label="Page Templates">{views.filter(item => item.value !== 'elements').map(item => <ApplicationNavigationItem current={view === item.value} href={`?view=${item.value}`} icon={<GridRegular />} key={item.value} label={item.label} onClick={event => { event.preventDefault(); navigate(item.value); setNavigationOpen(false); }} />)}</ApplicationNavigationGroup></ApplicationNavigation>;
   return <NidecProvider theme={nidecLightTheme}><ApplicationFrame aria-label="Nidec Design System preview" brand={<div className="showcase-brand"><span aria-hidden="true">N</span><div><strong>Nidec UI</strong><small>Design System preview</small></div></div>} compactBrand={<div className="showcase-brand"><span aria-hidden="true">N</span></div>} topBar={<ApplicationTopBar location={<strong>{active.label}</strong>} utilities={<span>Local governed preview</span>} />} navigation={navigation} navigationOpen={navigationOpen} navigationToggleIcon={<ListRegular />} navigationToggleLabel="Open navigation" navigationCloseLabel="Close navigation" onNavigationOpenChange={setNavigationOpen}><div className="showcase-content">{page}</div></ApplicationFrame></NidecProvider>;
 }

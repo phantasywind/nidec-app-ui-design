@@ -166,6 +166,8 @@ The current shared `CollectionList` is a stable semantic/layout composition rath
 
 `RecordSelectionDataGrid` is deliberately controlled and single-select. It requires a stable `getRowId`, fixes the stable Fluent composite focus model and neutral selection appearance, and rejects more than one selected ID. `RecordSelectionDataGridRow` removes the redundant visible selection cell and adds Enter to Fluent's pointer/Space selection path. The consumer owns whether a proposed selection may replace the current editor record, including dirty-change confirmation, record loading, errors and persistence. Do not use this variant for URL navigation, multi-selection or rows containing secondary interactive controls.
 
+For a hierarchical line collection, compose `GroupedTableSectionRow` with Fluent `Table` for a read-only grouped view or with `EditableGrid` for frequent leaf-row editing. Group rows disclose descendants but are never editable records. Counts and text summaries remain visible when descendants are collapsed; expansion, selection and edit drafts remain separate. See [Grouped Table and Grouped Editable Grid](docs/grouped-table.md).
+
 ## Stage navigation and business-process contract
 
 The package deliberately exposes two different stage presentations. Applications must select the component from the interaction meaning, not from the preferred shape.
