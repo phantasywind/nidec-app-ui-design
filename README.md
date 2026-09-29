@@ -12,11 +12,11 @@ CPQ and EPM are the initial reference consumers used to establish and verify the
 - [ADR-0001: Repository and distribution governance](docs/decisions/0001-repository-and-distribution-governance.md)
 - [Gated delivery roadmap](docs/roadmap.md)
 
-The current immutable pre-release is `0.1.0-rc.3`. Its matching Git tag, GitHub Package, GitHub Release, qualified `.tgz`, checksum and release record have been published and read back. The earlier `0.1.0-rc.2` and `0.1.0-rc.1` releases remain immutable and available for controlled rollback. No pre-release is the future stable `0.1.0`, independent application acceptance, deployment approval or Production approval.
+The current immutable pre-release is `0.1.0-rc.4`. Its matching Git tag, GitHub Package, GitHub Release, `.tgz`, checksum and [release record](docs/releases/0.1.0-rc.4.md) have been published and read back. Earlier releases remain immutable and available for controlled rollback. The `rc.4` tarball's embedded README still names `rc.3` in its install example; that is a documentation error, not a different package identity. Use this updated repository guidance and the `rc.4` release record. No pre-release is the future stable `0.1.0`, independent application acceptance, deployment approval or Production approval.
 
 ## Fluent React package
 
-The finite React surface covers governed forms, dialogs/drawers, feedback, navigation, menus, tables/data grids, cards, status/content controls, shared page layouts, and the `CollectionList`, `CardGallery`, `StageNavigator`, and `BusinessProcessFlow` compositions. `ProcessStageIndicator` remains only as a deprecated compatibility export. Upstream Fluent contracts are preserved where components are directly exported; consumer business workflows remain outside this package. See [ADR-0003](docs/decisions/0003-fluent-ui-foundation.md), [batch scope](docs/decisions/0005-batched-form-components.md), and the most recently completed [`0.1.0-rc.3` release record](docs/releases/0.1.0-rc.3.md).
+The finite React surface covers governed forms, dialogs/drawers, feedback, navigation, menus, tables/data grids, cards, status/content controls, shared page layouts, and the `CollectionList`, `CardGallery`, `StageNavigator`, and `BusinessProcessFlow` compositions. `ProcessStageIndicator` remains only as a deprecated compatibility export. Upstream Fluent contracts are preserved where components are directly exported; consumer business workflows remain outside this package. See [ADR-0003](docs/decisions/0003-fluent-ui-foundation.md), [batch scope](docs/decisions/0005-batched-form-components.md), and the latest [`0.1.0-rc.4` release record](docs/releases/0.1.0-rc.4.md).
 
 React consumers explicitly install the exact qualified `@fluentui/react-components@9.74.7` alongside the exact shared-package version. React/React DOM and Fluent are external optional peers; optional means token-only consumers can omit them, not that React consumers can omit them. Commit the application lockfile to freeze transitive dependencies.
 
@@ -33,7 +33,7 @@ The light-theme palette basis is approved in [ADR-0006](docs/decisions/0006-colo
 
 Button remains a text-only native-button interface, defaults to `type="button"`, preserves disabled/form/ref behavior and composes the `nidec-ui-button` class. There is no polymorphic link or new business behavior. Input/Field/Dialog preserve their upstream public protocols. NidecProvider requires a complete explicit theme and excludes upstream unstable styling options.
 
-The post-`0.1.0-rc.3` mainline also governs Fluent DatePicker through the isolated `@phantasywind/nidec-app-ui-design/date-picker` subpath. Its exact compat peer is required only when that subpath is consumed. See the [Date Picker usage contract](docs/date-picker.md) for date-only semantics, formatting/parsing, boundaries and consumer-owned business rules. This source capability is not part of immutable `0.1.0-rc.3` and is not consumable until a future version is separately qualified and published.
+`0.1.0-rc.4` adds Fluent DatePicker through the isolated `@phantasywind/nidec-app-ui-design/date-picker` subpath. Its exact `@fluentui/react-datepicker-compat@0.6.39` peer is required only when that subpath is consumed. See the [Date Picker usage contract](docs/date-picker.md) for date-only semantics, formatting/parsing, boundaries and consumer-owned business rules.
 
 `tokens.css`, `styles.css` and `tokens.json` are framework-neutral entrypoints generated from the governed ADR-0006 light-theme input. Nidec static CSS is explicitly imported; Fluent runtime styles are managed by its Provider/Griffel mechanism and do not require `styles.css` to activate. CSP, portal isolation and application acceptance remain separate qualification gates. No custom fonts, icon package contract or global reset is introduced.
 
@@ -99,7 +99,7 @@ The complete Header, Data List, Card-placement and responsive rules are in the [
 />
 ```
 
-## Page layouts and template selection (`0.1.0-rc.3` candidate)
+## Page layouts and template selection (introduced in `0.1.0-rc.3`)
 
 Import page-level structure from the dedicated `@phantasywind/nidec-app-ui-design/layouts` subpath. It contains `ApplicationFrame`, `ApplicationTopBar`, `ApplicationNavigation`, `ApplicationNavigationGroup`, `ApplicationNavigationItem`, `AuthenticationLayout`, `DirectoryWorkspace` and `VersionedWorkspaceLayout`. These layouts own region order, responsive relationships and accessible structure; consumers continue to own routes, permissions, data, commands, loading, errors and business state.
 
@@ -109,7 +109,7 @@ The packaged composite consumer exercises the shared UI-material inventory and a
 
 `CardGalleryItem` is display-only. Use `ActionableCardGalleryItem` when one whole Card is the sole link or command entry; do not nest another Link or Button inside it. A Data Table continues to use one green semantic identity Link, while Form + List uses whole-row selection with plain primary text.
 
-This page-layout API is included in the `0.1.0-rc.3` candidate. It does not authorize consumer adoption until the immutable version and its matching release evidence are published and independently adopted by the consumer.
+This page-layout API was published in immutable `0.1.0-rc.3` and remains in `0.1.0-rc.4`. Publication does not replace each consumer's compatibility and acceptance gates.
 
 ## Record-entry interaction contract
 
@@ -219,7 +219,7 @@ save-exact=true
 ```
 
 ```powershell
-npm install --save-exact @phantasywind/nidec-app-ui-design@0.1.0-rc.3 @fluentui/react-components@9.74.7
+npm install --save-exact @phantasywind/nidec-app-ui-design@0.1.0-rc.4 @fluentui/react-components@9.74.7
 ```
 
 The application must already use a qualified exact React/React DOM 19.2.x pair. Do not use `latest`, ranges, Git URLs, or `main`. A built application does not contact GitHub at runtime.
