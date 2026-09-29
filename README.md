@@ -176,10 +176,10 @@ Adopting teams should use the consumer-facing [阶段呈现模式选择规范](d
 
 | Component | Use when | Interaction contract | Application ownership |
 | --- | --- | --- | --- |
-| `StageNavigator` | The numbered stages are sibling workspaces or views that a user may visit directly, similar to a tab set. | Every enabled stage is a real Fluent button. `onStageSelect` is required; pointer, Enter and Space activate the same consumer callback. | Selected/current state, navigation, availability, routing and any unsaved-change guard. It does not imply lifecycle progression. |
-| `BusinessProcessFlow` | The arrows report a true business lifecycle controlled by process state. | Read-only ordered progress. It exposes no stage activation callback and renders no stage button. The component never advances, reverses or skips a stage. | Authoritative state, permitted transitions, commands, validation, RBAC, persistence and APIs. |
+| `StageNavigator` | The numbered stages are sibling workspaces or views that a user may visit directly, including workspaces ahead of the user's preparation. | Every enabled stage is a real Fluent button. `selectedStageId` moves only the outer ring; each marker keeps the fill supplied by its own `status`, including gray upcoming stages. | Selected view, stage statuses, navigation, availability, routing and any unsaved-change guard. It does not imply lifecycle progression. |
+| `BusinessProcessFlow` | The arrows report a true business lifecycle controlled by process state. | Reached stages may be clicked to view their content through `onStageView`; upcoming stages are non-interactive. The viewed-stage indicator is separate from the authoritative current-process fill. Clicking never advances, reverses or skips a stage. | Authoritative state, viewed stage, permitted transitions, commands, validation, RBAC, persistence and APIs. |
 
-`ProcessStageIndicator` is retained temporarily so existing consumers continue to compile, but it is deprecated and must not be used for new work. Existing usages migrate to `StageNavigator` when direct switching is valid, or to `BusinessProcessFlow` when only the business process may move the stage. Do not add click handlers, pointer cursors or hidden links around `BusinessProcessFlow` arrows.
+`ProcessStageIndicator` is retained temporarily so existing consumers continue to compile, but it is deprecated and must not be used for new work. Existing usages migrate to `StageNavigator` when direct switching among peer workspaces is valid, or to `BusinessProcessFlow` when only the business process may move the actual stage. Do not add activation to upcoming BPF arrows or use a view callback to change business state.
 
 Both components accept only consumer-provided labels, descriptions and explicit statuses. They do not infer order or transition rules. `BusinessProcessFlow` uses a bounded horizontal scroll region at narrow widths rather than wrapping or changing the lifecycle order.
 
@@ -187,12 +187,15 @@ Both components accept only consumer-provided labels, descriptions and explicit 
 <StageNavigator
   aria-label="Configuration workspaces"
   stages={workspaceStages}
-  onStageSelect={(_, stage) => navigateToWorkspace(stage.id)}
+  selectedStageId={selectedStageId}
+  onStageSelect={(_, stage) => setSelectedStageId(stage.id)}
 />
 
 <BusinessProcessFlow
   aria-label="Approval process"
   stages={serverReportedStages}
+  viewedStageId={viewedStageId}
+  onStageView={(_, stage) => setViewedStageId(stage.id)}
 />
 ```
 

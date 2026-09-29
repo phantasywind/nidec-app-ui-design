@@ -27,13 +27,15 @@ const businessProcessStages = [
   { id: 'approval', label: 'Pending Approval', description: 'In progress', status: 'current', statusLabel: 'Current stage' },
   { id: 'issued', label: 'Issued', description: 'Not issued', status: 'upcoming', statusLabel: 'Upcoming' },
 ] as const;
-const stageNavigatorContract: StageNavigatorProps = { 'aria-label': 'Workspace navigation', stages, onStageSelect: () => undefined };
+const stageNavigatorContract: StageNavigatorProps = { 'aria-label': 'Workspace navigation', stages, selectedStageId: 'release', onStageSelect: () => undefined };
 // @ts-expect-error StageNavigator always has an activation contract.
-const stageNavigatorWithoutAction: StageNavigatorProps = { 'aria-label': 'Workspace navigation', stages };
-const businessProcessContract: BusinessProcessFlowProps = { 'aria-label': 'Business process', stages: businessProcessStages };
-// @ts-expect-error BusinessProcessFlow never exposes a manual stage-switch callback.
+const stageNavigatorWithoutAction: StageNavigatorProps = { 'aria-label': 'Workspace navigation', stages, selectedStageId: 'release' };
+// @ts-expect-error StageNavigator requires an independently controlled viewed stage.
+const stageNavigatorWithoutSelection: StageNavigatorProps = { 'aria-label': 'Workspace navigation', stages, onStageSelect: () => undefined };
+const businessProcessContract: BusinessProcessFlowProps = { 'aria-label': 'Business process', stages: businessProcessStages, viewedStageId: 'prepare', onStageView: () => undefined };
+// @ts-expect-error BusinessProcessFlow never exposes a business-stage switch callback.
 const businessProcessWithAction: BusinessProcessFlowProps = { ...businessProcessContract, onStageSelect: () => undefined };
-void [stageNavigatorContract, stageNavigatorWithoutAction, businessProcessContract, businessProcessWithAction];
+void [stageNavigatorContract, stageNavigatorWithoutAction, stageNavigatorWithoutSelection, businessProcessContract, businessProcessWithAction];
 const repositoryRoot = resolve(import.meta.dirname, '..');
 const recordIdentityContract: RecordIdentityCellLayoutProps = { primary: 'Example' };
 // @ts-expect-error The shared composition owns the primary appearance.
@@ -477,16 +479,21 @@ describe('consumer-neutral composite patterns', () => {
     expect(html).toContain('disabled=""');
   });
 
-  it('renders StageNavigator as an explicitly interactive workspace navigator', () => {
+  it('renders StageNavigator as an explicitly interactive workspace navigator', async () => {
     const html = renderToStaticMarkup(createElement(StageNavigator, {
-      stages,
+      stages: stages.map(stage => ({ ...stage, disabled: false })),
       'aria-label': 'Workspace navigation',
+      selectedStageId: 'release',
       onStageSelect: () => undefined,
     }));
     expect(html).toContain('<button');
     expect(html).toContain('nidec-ui-stage-navigator');
-    expect(html).toContain('aria-current="step"');
+    expect(html).toContain('aria-current="location"');
     expect(html).toContain('type="button"');
+    expect(html).toMatch(/data-stage-status="upcoming" data-selected="true"[\s\S]*?aria-current="location"/);
+    expect(html).not.toContain('disabled=""');
+    const css = await readFile(join(repositoryRoot, 'styles', 'components.css'), 'utf8');
+    expect(css).toContain('.nidec-ui-stage-navigator .nidec-ui-process-stage__item[data-selected="true"] .nidec-ui-process-stage__marker');
   });
 
   it('ships an explicit consumer decision rule for the two stage patterns', async () => {
@@ -496,31 +503,61 @@ describe('consumer-neutral composite patterns', () => {
     expect(guide).toContain('只改变“用户正在看哪里”');
     expect(guide).toContain('代表“业务现在走到哪里”');
     expect(guide).toContain('记录 `Business Rule Pending`');
-    expect(guide).toContain('箭头仍使用 `BusinessProcessFlow`');
+    expect(guide).toContain('箭头点击不执行此类命令');
+    expect(guide).toContain('尚未到达的未来阶段不渲染按钮');
     expect(guide).toContain('新代码不得使用它');
   });
 
-  it('renders BusinessProcessFlow as a read-only arrow lifecycle with no activation API', () => {
+  it('keeps the authoritative current BPF stage separate from the viewed reached stage', () => {
     const html = renderToStaticMarkup(createElement(BusinessProcessFlow, {
       stages: businessProcessStages,
       'aria-label': 'Quote lifecycle',
+      viewedStageId: 'prepare',
+      onStageView: () => undefined,
     }));
     expect(html).toContain('<section');
     expect(html).toContain('nidec-ui-business-process-flow__track');
     expect(html).toContain('tabindex="0"');
     expect(html).toContain('aria-current="step"');
     expect(html).toContain('Pending Approval');
+    expect(html.match(/<button/g)).toHaveLength(2);
+    expect(html.match(/aria-current="location"/g)).toHaveLength(1);
+    expect(html).toMatch(/data-stage-status="completed" data-viewed="true"[\s\S]*?aria-current="location"/);
+    expect(html).toMatch(/aria-current="step"[\s\S]*?data-stage-status="current"/);
+    expect(html).toMatch(/data-stage-status="upcoming"[\s\S]*?<div class="nidec-ui-business-process-flow__body"/);
+  });
+
+  it('retains a read-only BPF rendering when no view callback is supplied', () => {
+    const html = renderToStaticMarkup(createElement(BusinessProcessFlow, {
+      stages: businessProcessStages,
+      'aria-label': 'Quote lifecycle',
+    }));
     expect(html).not.toContain('<button');
+    expect(html).toContain('data-viewed="true"');
   });
 
   it('keeps the BusinessProcessFlow arrows at the governed compact density', async () => {
     const css = await readFile(join(repositoryRoot, 'styles', 'components.css'), 'utf8');
     expect(css).toContain('min-height: 3.25rem');
+    expect(css).toContain('padding: var(--spacingVerticalM) var(--spacingHorizontalM)');
     expect(css).toContain('padding: var(--spacingVerticalXS) 1.5rem var(--spacingVerticalXS) 1.25rem');
     expect(css).toContain('grid-template-columns: 1.75rem minmax(0, 1fr)');
     expect(css).toContain('height: 1.75rem');
     expect(css).toMatch(/data-stage-status="completed"[\s\S]*?color: var\(--colorNeutralForeground1\)/);
     expect(css).toMatch(/nidec-ui-business-process-flow__copy small[\s\S]*?opacity: 1/);
+    expect(css).toContain('--nidec-bpf-stage-fill: var(--colorBrandBackground2)');
+    expect(css).toContain('background: var(--nidec-bpf-stage-fill)');
+    expect(css).toContain('--nidec-bpf-stage-outline: var(--colorBrandBackground)');
+    expect(css).toContain('--nidec-bpf-arrow-tip: 0.875rem');
+    expect(css).toContain('right: calc(0px - var(--nidec-bpf-ring-offset))');
+    expect(css).toContain('left: calc(0px - var(--nidec-bpf-ring-offset) - var(--nidec-bpf-ring-slant))');
+    expect(css).toContain('--nidec-bpf-ring-offset: var(--spacingHorizontalXS)');
+    expect(css).toContain('--nidec-bpf-ring-offset: var(--spacingVerticalXXS)');
+    expect(css).toContain('--nidec-bpf-ring-slant: var(--spacingVerticalXXS)');
+    expect(css).toContain('--nidec-bpf-ring-slant: var(--strokeWidthThin)');
+    expect(css).toContain('.nidec-ui-business-process-flow__stage:is([data-viewed="true"], :focus-within)::before');
+    expect(css).not.toContain('filter: drop-shadow(0 0 var(--spacingVerticalXXS) var(--nidec-bpf-stage-outline))');
+    expect(css).not.toContain('button.nidec-ui-business-process-flow__body:hover {\n    box-shadow:');
   });
 
   it('rejects ambiguous BusinessProcessFlow structure without interpreting lifecycle rules', () => {
@@ -532,6 +569,9 @@ describe('consumer-neutral composite patterns', () => {
       stages: [businessProcessStages[1], { ...businessProcessStages[1], id: 'second' }], 'aria-label': 'Lifecycle',
     }))).toThrow('Only one');
     expect(() => renderToStaticMarkup(createElement(BusinessProcessFlow, { stages: businessProcessStages, 'aria-label': ' ' }))).toThrow('non-empty');
+    expect(() => renderToStaticMarkup(createElement(BusinessProcessFlow, {
+      stages: businessProcessStages, viewedStageId: 'issued', 'aria-label': 'Lifecycle',
+    }))).toThrow('must be a reached stage');
   });
 
   it('keeps stage hover bounded and connectors outside marker geometry', async () => {

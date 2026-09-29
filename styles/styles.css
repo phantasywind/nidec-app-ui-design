@@ -924,6 +924,12 @@
     color: var(--colorNeutralForegroundOnBrand);
   }
 
+  :where([data-nidec-ui]) .nidec-ui-stage-navigator .nidec-ui-process-stage__item[data-selected="true"] .nidec-ui-process-stage__marker {
+    box-shadow: 0 0 0 var(--strokeWidthThick) var(--colorNeutralBackground1),
+      0 0 0 var(--spacingHorizontalXS) var(--colorBrandBackground),
+      0 0 var(--spacingHorizontalL) var(--strokeWidthThick) var(--colorBrandBackground2);
+  }
+
   :where([data-nidec-ui]) .nidec-ui-process-stage__item[data-stage-status="error"] .nidec-ui-process-stage__marker {
     background: var(--colorStatusDangerBackground3);
     border-color: var(--colorStatusDangerBorderActive);
@@ -938,46 +944,112 @@
   }
 
   :where([data-nidec-ui]) .nidec-ui-business-process-flow__track {
+    box-sizing: border-box;
     display: flex;
     min-width: 42rem;
     margin: 0;
-    padding: 0;
+    padding: var(--spacingVerticalM) var(--spacingHorizontalM);
     list-style: none;
   }
 
   :where([data-nidec-ui]) .nidec-ui-business-process-flow__stage {
-    align-items: center;
-    background: var(--colorNeutralBackground3);
+    --nidec-bpf-arrow-tip: 0.875rem;
+    --nidec-bpf-stage-fill: var(--colorNeutralBackground3);
+    --nidec-bpf-stage-outline: var(--colorBrandBackground);
+    background: transparent;
     box-sizing: border-box;
     color: var(--colorNeutralForeground2);
-    display: grid;
     flex: 1 1 0;
+    margin-inline-start: var(--spacingHorizontalS);
+    min-width: 0;
+    position: relative;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-business-process-flow__stage::before,
+  :where([data-nidec-ui]) .nidec-ui-business-process-flow__stage::after {
+    clip-path: polygon(0 0, calc(100% - var(--nidec-bpf-arrow-tip) - var(--nidec-bpf-ring-slant)) 0, 100% 50%, calc(100% - var(--nidec-bpf-arrow-tip) - var(--nidec-bpf-ring-slant)) 100%, 0 100%, calc(var(--nidec-bpf-arrow-tip) + var(--nidec-bpf-ring-slant)) 50%);
+    content: "";
+    top: calc(0px - var(--nidec-bpf-ring-offset));
+    right: calc(0px - var(--nidec-bpf-ring-offset));
+    bottom: calc(0px - var(--nidec-bpf-ring-offset));
+    left: calc(0px - var(--nidec-bpf-ring-offset) - var(--nidec-bpf-ring-slant));
+    opacity: 0;
+    pointer-events: none;
+    position: absolute;
+  }
+
+  /* Two parallel arrow layers leave a neutral gap before the stage's own status fill. */
+  :where([data-nidec-ui]) .nidec-ui-business-process-flow__stage::before {
+    --nidec-bpf-ring-offset: var(--spacingHorizontalXS);
+    --nidec-bpf-ring-slant: var(--spacingVerticalXXS);
+    background: var(--nidec-bpf-stage-outline);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-business-process-flow__stage::after {
+    --nidec-bpf-ring-offset: var(--spacingVerticalXXS);
+    --nidec-bpf-ring-slant: var(--strokeWidthThin);
+    background: var(--colorNeutralBackground1);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-business-process-flow__body {
+    align-items: center;
+    background: var(--nidec-bpf-stage-fill);
+    border: 0;
+    box-sizing: border-box;
+    clip-path: polygon(0 0, calc(100% - var(--nidec-bpf-arrow-tip)) 0, 100% 50%, calc(100% - var(--nidec-bpf-arrow-tip)) 100%, 0 100%, var(--nidec-bpf-arrow-tip) 50%);
+    color: inherit;
+    display: grid;
+    font: inherit;
     gap: var(--spacingHorizontalS);
     grid-template-columns: 1.75rem minmax(0, 1fr);
-    margin-inline-start: var(--strokeWidthThick);
     min-height: 3.25rem;
     min-width: 0;
     padding: var(--spacingVerticalXS) 1.5rem var(--spacingVerticalXS) 1.25rem;
-    clip-path: polygon(0 0, calc(100% - 0.875rem) 0, 100% 50%, calc(100% - 0.875rem) 100%, 0 100%, 0.875rem 50%);
+    position: relative;
+    text-align: start;
+    width: 100%;
+    z-index: 1;
+  }
+
+  :where([data-nidec-ui]) button.nidec-ui-business-process-flow__body {
+    cursor: pointer;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-business-process-flow__stage:is([data-viewed="true"], :focus-within) {
+    z-index: 1;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-business-process-flow__stage:is([data-viewed="true"], :focus-within)::before,
+  :where([data-nidec-ui]) .nidec-ui-business-process-flow__stage:is([data-viewed="true"], :focus-within)::after {
+    opacity: 1;
   }
 
   :where([data-nidec-ui]) .nidec-ui-business-process-flow__stage:first-child {
     margin-inline-start: 0;
-    clip-path: polygon(0 0, calc(100% - 0.875rem) 0, 100% 50%, calc(100% - 0.875rem) 100%, 0 100%);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-business-process-flow__stage:first-child .nidec-ui-business-process-flow__body {
+    clip-path: polygon(0 0, calc(100% - var(--nidec-bpf-arrow-tip)) 0, 100% 50%, calc(100% - var(--nidec-bpf-arrow-tip)) 100%, 0 100%);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-business-process-flow__stage:first-child::before,
+  :where([data-nidec-ui]) .nidec-ui-business-process-flow__stage:first-child::after {
+    clip-path: polygon(0 0, calc(100% - var(--nidec-bpf-arrow-tip) - var(--nidec-bpf-ring-slant)) 0, 100% 50%, calc(100% - var(--nidec-bpf-arrow-tip) - var(--nidec-bpf-ring-slant)) 100%, 0 100%);
+    left: calc(0px - var(--nidec-bpf-ring-offset));
   }
 
   :where([data-nidec-ui]) .nidec-ui-business-process-flow__stage[data-stage-status="completed"] {
-    background: var(--colorBrandBackground2);
+    --nidec-bpf-stage-fill: var(--colorBrandBackground2);
     color: var(--colorNeutralForeground1);
   }
 
   :where([data-nidec-ui]) .nidec-ui-business-process-flow__stage[data-stage-status="current"] {
-    background: var(--colorBrandBackground);
+    --nidec-bpf-stage-fill: var(--colorBrandBackground);
     color: var(--colorNeutralForegroundOnBrand);
   }
 
   :where([data-nidec-ui]) .nidec-ui-business-process-flow__stage[data-stage-status="error"] {
-    background: var(--colorStatusDangerBackground3);
+    --nidec-bpf-stage-fill: var(--colorStatusDangerBackground3);
     color: var(--colorNeutralForegroundOnBrand);
   }
 

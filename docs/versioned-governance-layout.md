@@ -24,7 +24,7 @@ Do not merge stable object identity, editable version identity and current statu
 - Use status badges for concise state recognition; do not use color alone or invent cross-application state meanings.
 - Local Tabs switch peer content for the same authority. They do not represent a lifecycle transition.
 - `StageNavigator` is allowed only when users may directly select peer working stages.
-- A business process indicator is read-only navigation-wise and follows consumer-controlled progression; it is not a substitute for Tabs.
+- A business process indicator follows consumer-controlled progression. Reached stages may be selected to inspect their content, while upcoming stages remain non-interactive; viewing never changes the authoritative process stage and is not a substitute for Tabs.
 
 ## Command contract
 

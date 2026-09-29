@@ -960,22 +960,28 @@ export type ProcessStageIndicatorProps = Omit<ComponentPropsWithoutRef<'ol'>, 'c
   'aria-label': string;
   stages: readonly ProcessStageDefinition[];
   orientation?: 'horizontal' | 'vertical' | 'responsive';
+  selectedStageId?: string;
   onStageSelect?: (event: MouseEvent<HTMLButtonElement>, stage: ProcessStageDefinition) => void;
 };
 
 export type StageNavigatorProps = Omit<ProcessStageIndicatorProps, 'onStageSelect'> & {
+  /** The viewed workspace; independent of each stage's own status and marker fill. */
+  selectedStageId: string;
   onStageSelect: (event: MouseEvent<HTMLButtonElement>, stage: ProcessStageDefinition) => void;
 };
 
-/** @deprecated Use StageNavigator for navigation or BusinessProcessFlow for read-only lifecycle state. */
-export function ProcessStageIndicator({ 'aria-label': ariaLabel, stages, orientation = 'responsive', onStageSelect, className, ...props }: ProcessStageIndicatorProps) {
+/** @deprecated Use StageNavigator for peer workspaces or BusinessProcessFlow for governed lifecycle and reached-stage viewing. */
+export function ProcessStageIndicator({ 'aria-label': ariaLabel, stages, orientation = 'responsive', selectedStageId, onStageSelect, className, ...props }: ProcessStageIndicatorProps) {
   if (!ariaLabel.trim()) throw new Error('ProcessStageIndicator requires a non-empty aria-label.');
   if (stages.length === 0) throw new Error('ProcessStageIndicator requires at least one stage.');
   if (new Set(stages.map(stage => stage.id)).size !== stages.length) throw new Error('Process stage IDs must be unique.');
   if (stages.filter(stage => stage.status === 'current').length > 1) throw new Error('Only one process stage may be current.');
+  if (selectedStageId !== undefined && !stages.some(stage => stage.id === selectedStageId)) throw new Error('Selected stage ID must exist.');
   return createElement('ol', { ...props, 'aria-label': ariaLabel, className: withClass(`nidec-ui-process-stage nidec-ui-process-stage--${orientation}`, className) },
     stages.map((stage, index) => {
-      const current = stage.status === 'current' ? { 'aria-current': 'step' as const } : {};
+      const current = selectedStageId === undefined
+        ? stage.status === 'current' ? { 'aria-current': 'step' as const } : {}
+        : stage.id === selectedStageId ? { 'aria-current': 'location' as const } : {};
       const content = createElement('span', { className: 'nidec-ui-process-stage__layout' },
         createElement('span', { className: 'nidec-ui-process-stage__marker', 'aria-hidden': true }, index + 1),
         createElement('span', { className: 'nidec-ui-process-stage__text' },
@@ -987,7 +993,7 @@ export function ProcessStageIndicator({ 'aria-label': ariaLabel, stages, orienta
         onClick: (event: MouseEvent<HTMLButtonElement>) => onStageSelect(event, stage),
         style: { minWidth: 0, padding: 'var(--spacingVerticalXS) var(--spacingHorizontalXS)', width: 'fit-content' }, type: 'button',
       }, content) : createElement('div', { ...current, className: 'nidec-ui-process-stage__content' }, content);
-      return createElement('li', { key: stage.id, className: 'nidec-ui-process-stage__item', 'data-stage-status': stage.status }, stageContent);
+      return createElement('li', { key: stage.id, className: 'nidec-ui-process-stage__item', 'data-stage-status': stage.status, 'data-selected': stage.id === selectedStageId ? 'true' : undefined }, stageContent);
     }));
 }
 
@@ -1007,14 +1013,22 @@ export type BusinessProcessStageDefinition = Readonly<{
 export type BusinessProcessFlowProps = Omit<ComponentPropsWithoutRef<'section'>, 'children' | 'aria-label'> & {
   'aria-label': string;
   stages: readonly BusinessProcessStageDefinition[];
+  /** The stage whose content is being viewed; this never changes the authoritative process stage. */
+  viewedStageId?: string;
+  /** View navigation only. Upcoming stages are never activatable. */
+  onStageView?: (event: MouseEvent<HTMLButtonElement>, stage: BusinessProcessStageDefinition) => void;
 };
 
-/** Read-only, application-controlled lifecycle presentation with no manual stage-switch API. */
-export function BusinessProcessFlow({ 'aria-label': ariaLabel, stages, className, ...props }: BusinessProcessFlowProps) {
+/** Application-controlled lifecycle with separate, bounded navigation to reached stage content. */
+export function BusinessProcessFlow({ 'aria-label': ariaLabel, stages, viewedStageId, onStageView, className, ...props }: BusinessProcessFlowProps) {
   if (!ariaLabel.trim()) throw new Error('BusinessProcessFlow requires a non-empty aria-label.');
   if (stages.length === 0) throw new Error('BusinessProcessFlow requires at least one stage.');
   if (new Set(stages.map(stage => stage.id)).size !== stages.length) throw new Error('Business process stage IDs must be unique.');
   if (stages.filter(stage => stage.status === 'current').length > 1) throw new Error('Only one business process stage may be current.');
+  if (viewedStageId !== undefined && !stages.some(stage => stage.id === viewedStageId && stage.status !== 'upcoming')) {
+    throw new Error('Viewed business process stage must be a reached stage.');
+  }
+  const activeViewId = viewedStageId ?? stages.find(stage => stage.status === 'current')?.id;
 
   return createElement('section', {
     ...props,
@@ -1027,12 +1041,21 @@ export function BusinessProcessFlow({ 'aria-label': ariaLabel, stages, className
       'aria-current': stage.status === 'current' ? 'step' : undefined,
       className: 'nidec-ui-business-process-flow__stage',
       'data-stage-status': stage.status,
+      'data-viewed': stage.id === activeViewId ? 'true' : undefined,
     },
-    createElement('span', { className: 'nidec-ui-business-process-flow__marker', 'aria-hidden': true }, index + 1),
-    createElement('span', { className: 'nidec-ui-business-process-flow__copy' },
-      createElement('strong', null, stage.label),
-      stage.description === undefined ? null : createElement('small', null, stage.description),
-      createElement('span', { className: 'nidec-ui-visually-hidden' }, stage.statusLabel))))));
+    createElement(onStageView && stage.status !== 'upcoming' ? 'button' : 'div', {
+      className: 'nidec-ui-business-process-flow__body',
+      ...(onStageView && stage.status !== 'upcoming' ? {
+        type: 'button' as const,
+        'aria-current': stage.id === activeViewId ? 'location' as const : undefined,
+        onClick: (event: MouseEvent<HTMLButtonElement>) => onStageView(event, stage),
+      } : {}),
+    },
+      createElement('span', { className: 'nidec-ui-business-process-flow__marker', 'aria-hidden': true }, index + 1),
+      createElement('span', { className: 'nidec-ui-business-process-flow__copy' },
+        createElement('strong', null, stage.label),
+        stage.description === undefined ? null : createElement('small', null, stage.description),
+        createElement('span', { className: 'nidec-ui-visually-hidden' }, stage.statusLabel)))))));
 }
 
 export {

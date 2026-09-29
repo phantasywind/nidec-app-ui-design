@@ -45,7 +45,7 @@ Visual resemblance does not override the decision table. For example, both a Dir
 - An independent card with one destination uses one whole-card link or button target. It does not repeat that target as an inner title Link.
 - A same-surface editor uses controlled whole-row selection. The primary value is plain text, and the row has no redundant Open or Select control.
 - Direct row commands use an icon-only action with an accessible name and Tooltip. Multiple or low-frequency commands use an overflow Menu.
-- `StageNavigator` is for directly selectable peer stages. A business process indicator reflects application-controlled progression and is not used as Tabs.
+- `StageNavigator` is for directly selectable peer workspaces, including preparation ahead of a workflow. A business process indicator reflects application-controlled progression; it may navigate only to reached stage content, never to future stages or directly change process state.
 - Switching List and Card presentation does not reset query, filtering, sorting, pagination, selection or loaded data.
 
 ## Shared versus consumer responsibility
