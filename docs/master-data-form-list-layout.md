@@ -1,5 +1,7 @@
 # Master-data and Form + List layout
 
+使用前请结合[组件目录与样例选择](component-catalog.md)和[应用接入与原 UI 替换要求](consumer-ui-adoption.md)。共享布局的字体、按钮尺寸、模块边界不能叠加原应用旧皮肤；本地预览中的候选调整不代表已发布版本发生变化。
+
 Status: SHARED MAINLINE GOVERNANCE / NOT YET PUBLISHED OR ADOPTED
 
 ## Purpose

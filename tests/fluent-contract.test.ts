@@ -12,7 +12,7 @@ const compositions = ['Input', 'Field', 'Dialog', 'DialogTrigger', 'DialogSurfac
   'MessageBar', 'MessageBarBody', 'MessageBarTitle', 'MessageBarActions',
   'Text', 'Body1', 'Caption1', 'Subtitle2', 'Spinner',
   'Tooltip', 'Link', 'TabList', 'Tab', 'Menu', 'MenuTrigger', 'MenuPopover', 'MenuList', 'MenuItem', 'MenuDivider',
-  'Combobox', 'Option', 'OptionGroup'] as const;
+  'Dropdown', 'Combobox', 'OptionGroup'] as const;
 const platformSurfaces = [
   'Table', 'TableHeader', 'TableBody', 'TableRow', 'TableHeaderCell', 'TableCell',
   'TableCellLayout', 'TableSelectionCell', 'TableCellActions',
@@ -44,7 +44,7 @@ const compositePatterns = [
 
 describe('Fluent public boundary', () => {
   it('exports exactly the approved API and preserves upstream composition identity', () => {
-    expect(Object.keys(shared).sort()).toEqual(['Button', 'IconButton', 'NidecProvider', 'nidecLightTheme', ...compositions, ...platformSurfaces, ...commonContentControls, ...compositePatterns].sort());
+    expect(Object.keys(shared).sort()).toEqual(['Button', 'IconButton', 'Option', 'NidecProvider', 'nidecLightTheme', ...compositions, ...platformSurfaces, ...commonContentControls, ...compositePatterns].sort());
     for (const name of [...compositions, ...platformSurfaces, ...commonContentControls]) expect(shared[name]).toBe(upstream[name]);
   });
   it('forwards an explicit theme and establishes a host', () => {

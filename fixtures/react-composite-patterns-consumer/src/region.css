@@ -44,6 +44,14 @@ body { margin: 0; }
 .showcase-topbar span { color: var(--colorNeutralForeground3); }
 .showcase-content { align-content: start; display: grid; gap: var(--spacingVerticalXL); margin-inline: auto; max-width: 96rem; min-width: 0; padding: var(--spacingVerticalXL) var(--spacingHorizontalXXL); width: 100%; }
 .showcase-content h1, .showcase-content h2, .showcase-content h3, .showcase-content p { margin-block: 0; }
+.specimen h2,
+.template-contract strong,
+.foundation-strip strong,
+.fact-row strong,
+.action-band strong,
+.context-stack strong { font-weight: var(--fontWeightRegular); }
+.showcase-brand strong,
+.showcase-content .fui-CardHeader strong { font-weight: var(--fontWeightSemibold); }
 .showcase-content > nav { margin-block-end: calc(0px - var(--spacingVerticalM)); }
 
 .template-contract {
@@ -80,6 +88,12 @@ body { margin: 0; }
 .specimen > header { align-items: start; display: flex; gap: var(--spacingHorizontalM); justify-content: space-between; }
 .specimen > header p, .muted, .table-note { color: var(--colorNeutralForeground3); }
 .specimen__body, .form-stack, .workspace-stack, .context-stack { display: grid; gap: var(--spacingVerticalM); min-width: 0; }
+.compact-choice-field { width: 16rem; max-width: 100%; justify-self: start; min-width: 0; }
+.bounded-text-fields { width: 32rem; max-width: 100%; }
+.catalog-live .form-grid { width: 48rem; max-width: 100%; min-width: 0; }
+.catalog-live .form-grid > * { min-width: 0; }
+.catalog-live .number-field { width: 12rem; max-width: 100%; justify-self: start; }
+.catalog-live .date-preview-grid { max-width: 52rem; }
 .specimen__body > *, .specimen__body .fui-MessageBar { max-width: 100%; min-width: 0; }
 .specimen__body .fui-MessageBar { overflow: hidden; }
 .date-preview-grid { align-items: start; display: grid; gap: var(--spacingHorizontalL); grid-template-columns: repeat(3, minmax(0, 1fr)); }
@@ -198,3 +212,26 @@ body { margin: 0; }
   .pagination-sample { flex-wrap: wrap; }
   .auth-sample { min-height: auto; padding: var(--spacingVerticalXL) var(--spacingHorizontalM); }
 }
+.catalog-guide { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--spacingHorizontalL); border: var(--strokeWidthThin) solid var(--colorNeutralStroke2); border-radius: var(--borderRadiusLarge); padding: var(--spacingVerticalL) var(--spacingHorizontalL); }
+.catalog-guide h2 { font-size: var(--fontSizeBase300); font-weight: var(--fontWeightSemibold); margin: 0 0 var(--spacingVerticalS); }
+.catalog-guide p { color: var(--colorNeutralForeground2); }
+.catalog-guide--single { display: block; }
+.catalog-guide details { margin-block: var(--spacingVerticalL); }
+.catalog-guide pre { white-space: pre-wrap; overflow-wrap: anywhere; font-size: var(--fontSizeBase200); }
+.catalog-live { min-width: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--spacingVerticalL); }
+.catalog-live > .specimen-grid { grid-template-columns: minmax(0, 1fr); }
+.catalog-live .template-contract { display: none; }
+.catalog-fieldset { display: grid; gap: var(--spacingVerticalL); border: 0; margin: 0; padding: 0; min-width: 0; }
+.catalog-layout-demo { display: grid; grid-template-columns: 2fr 1fr; gap: var(--spacingHorizontalL); }
+.catalog-search { padding: var(--spacingVerticalS) var(--spacingHorizontalM); min-width: 0; }
+.catalog-search .fui-SearchBox { min-width: 0; width: 100%; }
+.catalog-live .fui-Toolbar { gap: var(--spacingHorizontalS); flex-wrap: wrap; }
+.catalog-live .nidec-ui-directory-workspace__toolbar .fui-SearchBox { width: 15rem; min-width: 0; }
+.catalog-nav-group > summary { cursor: pointer; padding: var(--spacingVerticalM) var(--spacingHorizontalM); font-weight: var(--fontWeightSemibold); }
+.catalog-nav-group .nidec-ui-application-navigation__group-label { display: none; }
+.catalog-nav-group .nidec-ui-application-navigation__group { margin: 0; }
+@media (max-width: 900px) { .catalog-guide, .catalog-layout-demo { grid-template-columns: minmax(0, 1fr); } }
+.searchable-choice { position: relative; min-width: 0; display: grid; }
+.searchable-choice__icon { position: absolute; inset-inline-start: var(--spacingHorizontalM); inset-block-start: 50%; transform: translateY(-50%); z-index: 1; pointer-events: none; color: var(--colorNeutralForeground3); font-size: var(--fontSizeBase400); }
+.searchable-choice .fui-Combobox__input { padding-inline-start: calc(var(--spacingHorizontalXXL) + var(--spacingHorizontalXS)); }
+.catalog-live .fui-Dropdown { min-width: 0; }

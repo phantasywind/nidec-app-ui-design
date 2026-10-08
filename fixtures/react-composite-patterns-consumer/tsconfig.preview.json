@@ -1,10 +1,11 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
+    "skipLibCheck": true,
     "paths": {
-      "@phantasywind/nidec-app-ui-design": ["../../src/index.ts"],
-      "@phantasywind/nidec-app-ui-design/date-picker": ["../../src/date-picker.ts"],
-      "@phantasywind/nidec-app-ui-design/layouts": ["../../src/layouts.ts"]
+      "@phantasywind/nidec-app-ui-design": ["../../dist/index.d.ts"],
+      "@phantasywind/nidec-app-ui-design/layouts": ["../../dist/layouts.d.ts"],
+      "@phantasywind/nidec-app-ui-design/date-picker": ["../../dist/date-picker.d.ts"]
     }
   }
 }

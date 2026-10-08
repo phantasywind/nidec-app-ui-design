@@ -185,6 +185,7 @@
 
   :where([data-nidec-ui]) .nidec-ui-authentication-layout__title {
     font-size: var(--fontSizeHero800);
+    font-weight: var(--fontWeightSemibold);
     line-height: var(--lineHeightHero800);
     margin: 0;
   }
@@ -325,7 +326,7 @@
     color: var(--colorNeutralForeground1);
     font-family: var(--fontFamilyBase);
     font-size: var(--fontSizeBase500);
-    font-weight: var(--fontWeightSemibold);
+    font-weight: var(--fontWeightRegular);
     line-height: var(--lineHeightBase500);
     margin: 0;
   }
@@ -566,7 +567,6 @@
     color: var(--colorNeutralForeground2);
     flex: 0 0 auto;
     font-weight: var(--fontWeightRegular);
-    min-block-size: 32px;
     white-space: nowrap;
   }
 
@@ -594,7 +594,7 @@
   :where([data-nidec-ui]) .nidec-ui-page-header__eyebrow {
     color: var(--colorBrandForeground1);
     font-size: var(--fontSizeBase200);
-    font-weight: var(--fontWeightSemibold);
+    font-weight: var(--fontWeightRegular);
     line-height: var(--lineHeightBase200);
     text-transform: uppercase;
   }
@@ -687,7 +687,7 @@
 
   :where([data-nidec-ui]) .nidec-ui-workspace-section__title {
     font-size: var(--fontSizeBase500);
-    font-weight: var(--fontWeightSemibold);
+    font-weight: var(--fontWeightRegular);
     line-height: var(--lineHeightBase500);
   }
 
@@ -746,7 +746,7 @@
     color: var(--colorNeutralForeground1);
     font-family: var(--fontFamilyBase);
     font-size: var(--fontSizeBase300);
-    font-weight: var(--fontWeightSemibold);
+    font-weight: var(--fontWeightRegular);
     line-height: var(--lineHeightBase300);
   }
 
@@ -1086,7 +1086,7 @@
 
   :where([data-nidec-ui]) .nidec-ui-business-process-flow__copy strong {
     font-size: var(--fontSizeBase300);
-    font-weight: var(--fontWeightSemibold);
+    font-weight: var(--fontWeightRegular);
     line-height: var(--lineHeightBase300);
   }
 

@@ -104,25 +104,27 @@ const inlineModeTabsContract: InlineModeTabsProps = {
 };
 
 describe('consumer-neutral composite patterns', () => {
-  it('presents governed materials, two grid patterns and five synthetic page templates', async () => {
-    const fixture = await readFile(join(repositoryRoot, 'fixtures', 'react-composite-patterns-consumer', 'src', 'main.tsx'), 'utf8');
+  it('organizes governed materials and samples into four navigable categories', async () => {
+    const fixture = await readFile(join(repositoryRoot, 'fixtures', 'react-composite-patterns-consumer', 'src', 'demos.tsx'), 'utf8');
     const fixtureCss = await readFile(join(repositoryRoot, 'fixtures', 'react-composite-patterns-consumer', 'src', 'region.css'), 'utf8');
-    expect(fixture).toContain("type ShowcaseView = 'elements' | 'authentication' | 'directory' | 'editable-grid' | 'grouped-table' | 'record' | 'master-data' | 'governance'");
-    expect(fixture).toContain("label: 'UI materials'");
-    expect(fixture).toContain("label: 'Authentication sample'");
-    expect(fixture).toContain("label: 'Directory sample'");
-    expect(fixture).toContain("label: 'Editable grid'");
-    expect(fixture).toContain("label: 'Grouped table'");
-    expect(fixture).toContain("label: 'Record workspace'");
-    expect(fixture).toContain("label: 'Master data / Form + List'");
-    expect(fixture).toContain("label: 'Governance sample'");
+    const { catalog, groups, resolveView } = await import('../fixtures/react-composite-patterns-consumer/src/catalog');
+    expect(groups).toEqual(['Forms', 'Page building blocks', 'Specialized components', 'Examples']);
+    expect(new Set(catalog.map(item => item.id)).size).toBe(catalog.length);
+    for (const item of catalog) {
+      expect(catalog.some(related => related.id === item.related)).toBe(true);
+      expect(item.use.length).toBeGreaterThan(0);
+      expect(item.guidance.length).toBeGreaterThan(0);
+    }
+    for (const legacy of ['authentication', 'directory', 'editable-grid', 'grouped-table', 'record', 'master-data', 'governance']) expect(resolveView(legacy)).toBe(legacy);
+    expect(resolveView('elements')).toBe('text');
+    expect(resolveView('unknown')).toBe('text');
     expect(fixture).toContain('Template usage contract');
     expect(fixture).toContain('Business meaning remains with the adopting application.');
     expect(fixtureCss).toMatch(/showcase-content[\s\S]*?align-content: start/);
   });
 
   it('records authentication entry as a presentation pattern without owning authentication policy', async () => {
-    const fixture = await readFile(join(repositoryRoot, 'fixtures', 'react-composite-patterns-consumer', 'src', 'main.tsx'), 'utf8');
+    const fixture = await readFile(join(repositoryRoot, 'fixtures', 'react-composite-patterns-consumer', 'src', 'demos.tsx'), 'utf8');
     const governance = await readFile(join(repositoryRoot, 'docs', 'authentication-entry-pattern.md'), 'utf8');
     const readme = await readFile(join(repositoryRoot, 'README.md'), 'utf8');
     expect(fixture).toContain('<AuthenticationLayout aria-label="Authentication entry"');
@@ -173,7 +175,9 @@ describe('consumer-neutral composite patterns', () => {
   it('uses shared theme roles for a balanced segmented-control boundary and selection state', async () => {
     const css = await readFile(join(repositoryRoot, 'styles', 'components.css'), 'utf8');
     expect(css).toMatch(/nidec-ui-segmented-control[\s\S]*?colorNeutralBackground2/);
-    expect(css).toMatch(/nidec-ui-segmented-control__item[\s\S]*?min-block-size: 32px/);
+    const itemRule = css.match(/\.nidec-ui-segmented-control__item\s*\{([^}]*)\}/)?.[1];
+    expect(itemRule).toBeDefined();
+    expect(itemRule).not.toMatch(/min-block-size:/);
     expect(css).not.toContain('nidec-ui-segmented-control__item[aria-checked="true"]');
   });
 
@@ -182,7 +186,7 @@ describe('consumer-neutral composite patterns', () => {
     const source = await readFile(join(repositoryRoot, 'src', 'index.ts'), 'utf8');
     const readme = await readFile(join(repositoryRoot, 'README.md'), 'utf8');
     const governance = await readFile(join(repositoryRoot, 'docs', 'inline-mode-tabs.md'), 'utf8');
-    const fixture = await readFile(join(repositoryRoot, 'fixtures', 'react-composite-patterns-consumer', 'src', 'main.tsx'), 'utf8');
+    const fixture = await readFile(join(repositoryRoot, 'fixtures', 'react-composite-patterns-consumer', 'src', 'demos.tsx'), 'utf8');
     const fixtureCss = await readFile(join(repositoryRoot, 'fixtures', 'react-composite-patterns-consumer', 'src', 'region.css'), 'utf8');
     expect(html).toContain('nidec-ui-inline-mode-tabs');
     expect(html).not.toContain('nidec-ui-segmented-control');
@@ -249,7 +253,7 @@ describe('consumer-neutral composite patterns', () => {
   });
 
   it('keeps a navigable data-table identity cell to one link without stacked fields', async () => {
-    const fixture = await readFile(join(repositoryRoot, 'fixtures', 'react-composite-patterns-consumer', 'src', 'main.tsx'), 'utf8');
+    const fixture = await readFile(join(repositoryRoot, 'fixtures', 'react-composite-patterns-consumer', 'src', 'demos.tsx'), 'utf8');
     const readme = await readFile(join(repositoryRoot, 'README.md'), 'utf8');
     expect(fixture).toContain('primary={<Link inline href={`#${record.id}`}');
     expect(fixture).not.toContain('secondary={record.owner}');
@@ -368,7 +372,7 @@ describe('consumer-neutral composite patterns', () => {
     expect(css).toContain('@media (forced-colors: active)');
     expect(css).toContain('.fui-TableCellActions');
     expect(css).toContain('margin-inline-end: var(--spacingHorizontalM)');
-    const fixture = await readFile(join(repositoryRoot, 'fixtures', 'react-composite-patterns-consumer', 'src', 'main.tsx'), 'utf8');
+    const fixture = await readFile(join(repositoryRoot, 'fixtures', 'react-composite-patterns-consumer', 'src', 'demos.tsx'), 'utf8');
     expect(fixture).toContain("type SelectionItem = { id: string; name: string }");
     expect(fixture).not.toContain('primary={item.name} secondary={item.detail}');
   });
@@ -416,7 +420,7 @@ describe('consumer-neutral composite patterns', () => {
 
   it('ships an explicit record-entry decision rule for adopting applications', async () => {
     const readme = await readFile(join(repositoryRoot, 'README.md'), 'utf8');
-    const fixture = await readFile(join(repositoryRoot, 'fixtures', 'react-composite-patterns-consumer', 'src', 'main.tsx'), 'utf8');
+    const fixture = await readFile(join(repositoryRoot, 'fixtures', 'react-composite-patterns-consumer', 'src', 'demos.tsx'), 'utf8');
     expect(readme).toContain('## Record-entry interaction contract');
     expect(readme).toContain('Each record has exactly one primary entry mechanism.');
     expect(readme).toContain('do not implement this with a raw `<li onClick>`');
@@ -428,7 +432,8 @@ describe('consumer-neutral composite patterns', () => {
     expect(readme).toContain('24 x 24 CSS pixel target');
     expect(readme).toContain('Every icon action requires both a non-empty `aria-label` and a visible-on-hover/focus `Tooltip`');
     expect(readme).toContain('does not retroactively add an interaction API to immutable `0.1.0-rc.1`');
-    expect(fixture).toContain('<NidecProvider theme={nidecLightTheme}><ApplicationFrame');
+    const shell = await readFile(join(repositoryRoot, 'fixtures', 'react-composite-patterns-consumer', 'src', 'main.tsx'), 'utf8');
+    expect(shell).toContain('<NidecProvider theme={nidecLightTheme}><ApplicationFrame');
     expect(fixture).toContain('primary={<Link inline href={`#${record.id}`}');
     expect(fixture).toContain('aria-label={`More actions for ${name}`}');
     expect(fixture).toContain('aria-label={`Open ${record.name}`}');

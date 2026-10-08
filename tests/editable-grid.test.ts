@@ -93,7 +93,7 @@ describe('EditableGrid governance', () => {
 
   it('governs one sticky final action column for plain and grouped leaf rows', async () => {
     const css = await readFile(join(repositoryRoot, 'styles', 'components.css'), 'utf8');
-    const preview = await readFile(join(repositoryRoot, 'fixtures', 'react-composite-patterns-consumer', 'src', 'main.tsx'), 'utf8');
+    const preview = await readFile(join(repositoryRoot, 'fixtures', 'react-composite-patterns-consumer', 'src', 'demos.tsx'), 'utf8');
     expect(css).toMatch(/\.nidec-ui-editable-grid__viewport td\.nidec-ui-editable-grid__action-column\s*\{[^}]*position:\s*sticky/s);
     expect(css).toMatch(/\.nidec-ui-editable-grid__viewport th:last-child\s*\{[^}]*position:\s*sticky/s);
     expect(preview.match(/<TableCell className="nidec-ui-editable-grid__action-column">/g)).toHaveLength(2);

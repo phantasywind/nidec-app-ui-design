@@ -1,7 +1,7 @@
 import { createContext, createElement } from 'react';
 import type { ComponentPropsWithRef, ComponentPropsWithoutRef, KeyboardEvent, MouseEvent, ReactElement, ReactNode } from 'react';
 import {
-  Button as FluentButton, Card as FluentCard, FluentProvider,
+  Button as FluentButton, Card as FluentCard, FluentProvider, Option as FluentOption,
   DataGrid as FluentDataGrid, DataGridHeader as FluentDataGridHeader, DataGridRow as FluentDataGridRow,
   TableCellLayout as FluentTableCellLayout,
   TableCell as FluentTableCell, TableRow as FluentTableRow,
@@ -155,6 +155,27 @@ export type NidecProviderProps = Omit<FluentProviderProps,
 export function NidecProvider(props: NidecProviderProps) {
   const hostProps = { ...props, 'data-nidec-ui': '' };
   return createElement(FluentProvider, hostProps);
+}
+
+const useOptionStyles = makeStyles({
+  root: {
+    '@media (forced-colors: none)': {
+      '&:not([aria-disabled="true"]):hover': {
+        backgroundColor: tokens.colorBrandBackground2,
+        color: tokens.colorBrandForeground1,
+      },
+      '&[aria-selected="true"]:not([aria-disabled="true"])': {
+        backgroundColor: tokens.colorBrandBackground2,
+        color: tokens.colorBrandForeground1,
+      },
+    },
+  },
+});
+
+/** Fluent option behavior with shared green hover/selection, including portal content. */
+export function Option({ className, ...props }: ComponentPropsWithRef<typeof FluentOption>) {
+  const styles = useOptionStyles();
+  return createElement(FluentOption, { ...props, className: mergeClasses(styles.root, className) });
 }
 
 /** Icon actions have an explicit accessible name; business meaning stays with the caller. */
@@ -443,7 +464,7 @@ export function SegmentedControl({
   options,
   value,
   onValueChange,
-  size = 'medium',
+  size = 'small',
   disabled = false,
   className,
   ...props
@@ -1067,7 +1088,7 @@ export {
   Text, Body1, Caption1, Subtitle2, Spinner,
   Tooltip, Link, TabList, Tab,
   Menu, MenuTrigger, MenuPopover, MenuList, MenuItem, MenuDivider,
-  Combobox, Option, OptionGroup,
+  Dropdown, Combobox, OptionGroup,
   Table, TableHeader, TableBody, TableRow, TableHeaderCell, TableCell,
   TableCellLayout, TableSelectionCell, TableCellActions,
   DataGrid, DataGridHeader, DataGridBody, DataGridRow, DataGridHeaderCell, DataGridCell,
@@ -1096,7 +1117,7 @@ export type {
   TextProps, SpinnerProps,
   TooltipProps, LinkProps, TabListProps, TabProps,
   MenuProps, MenuTriggerProps, MenuPopoverProps, MenuListProps, MenuItemProps, MenuDividerProps,
-  ComboboxProps, OptionProps, OptionGroupProps,
+  DropdownProps, ComboboxProps, OptionProps, OptionGroupProps,
   TableProps, TableHeaderProps, TableBodyProps, TableRowProps, TableHeaderCellProps, TableCellProps,
   TableCellLayoutProps, TableSelectionCellProps, TableCellActionsProps,
   DataGridProps, DataGridHeaderProps, DataGridBodyProps, DataGridRowProps, DataGridHeaderCellProps, DataGridCellProps,

@@ -1,5 +1,7 @@
 # Editable Grid
 
+使用前请结合[组件目录与样例选择](component-catalog.md)和[应用接入与原 UI 替换要求](consumer-ui-adoption.md)。共享布局的字体、按钮尺寸、模块边界不能叠加原应用旧皮肤；本地预览中的候选调整不代表已发布版本发生变化。
+
 `EditableGrid` is the governed high-density editing pattern for line collections that are large and changed repeatedly. Typical consumer-owned examples include BOM lines, quote lines, allocation lines and similar tabular work. The shared pattern does not define any of those business records.
 
 ## Use when

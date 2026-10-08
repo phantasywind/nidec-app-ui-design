@@ -2,6 +2,16 @@
 
 Shared, versioned UI design system for Nidec applications.
 
+## Version 0.1.0 and adoption
+
+This source prepares the first stable package, `0.1.0`. Release availability, final checksum and approval status are tracked in the [release record](docs/releases/0.1.0.md). Until publication completes, `0.1.0-rc.4` remains the latest published version; do not treat local qualification as publication.
+
+The English preview groups Forms, Page building blocks, Specialized components and Examples. Start with the [component catalog](docs/component-catalog.md), [Dropdown / Combobox contract](docs/dropdown-and-combobox.md) and [adoption guide](docs/consumer-ui-adoption.md). Migrated regions must remove legacy skins and typography overrides, and explicitly control field/action container widths.
+
+The npm package contains dist and README, not the full docs. Version-aligned documents will be available at [the v0.1.0 tag](https://github.com/phantasywind/nidec-app-ui-design/tree/v0.1.0/docs) after publication. Do not substitute main-branch documents for another package version.
+
+Preview: run `npm run build` in the repository, then in `fixtures/react-composite-patterns-consumer` set `NIDEC_UI_LOCAL_PREVIEW=1` and run `node ../../node_modules/vite/bin/vite.js build`. Preview types: `node ../../node_modules/typescript/bin/tsc -p tsconfig.preview.json` (local examples checked; upstream declaration checking skipped).
+
 This private repository is the source of truth for the Nidec Engineering Design System package `@phantasywind/nidec-app-ui-design`. It owns reusable UI foundations and their build, verification, documentation, and release mechanisms. Each adopting application retains ownership of its integration and business behavior.
 
 CPQ and EPM are the initial reference consumers used to establish and verify the first compatibility contract. Future Nidec applications may adopt qualified versions after completing the same application-specific compatibility assessment; compatibility is not assumed solely because an application belongs to Nidec.
@@ -12,11 +22,11 @@ CPQ and EPM are the initial reference consumers used to establish and verify the
 - [ADR-0001: Repository and distribution governance](docs/decisions/0001-repository-and-distribution-governance.md)
 - [Gated delivery roadmap](docs/roadmap.md)
 
-The current immutable pre-release is `0.1.0-rc.4`. Its matching Git tag, GitHub Package, GitHub Release, `.tgz`, checksum and [release record](docs/releases/0.1.0-rc.4.md) have been published and read back. Earlier releases remain immutable and available for controlled rollback. The `rc.4` tarball's embedded README still names `rc.3` in its install example; that is a documentation error, not a different package identity. Use this updated repository guidance and the `rc.4` release record. No pre-release is the future stable `0.1.0`, independent application acceptance, deployment approval or Production approval.
+Version 0.1.0 removes the RC suffix but does not imply independent application acceptance, deployment or Production approval. Previous RC releases remain immutable rollback references. This README corrects the stale version instructions embedded in rc.4.
 
 ## Fluent React package
 
-The finite React surface covers governed forms, dialogs/drawers, feedback, navigation, menus, tables/data grids, cards, status/content controls, shared page layouts, and the `CollectionList`, `CardGallery`, `StageNavigator`, and `BusinessProcessFlow` compositions. `ProcessStageIndicator` remains only as a deprecated compatibility export. Upstream Fluent contracts are preserved where components are directly exported; consumer business workflows remain outside this package. See [ADR-0003](docs/decisions/0003-fluent-ui-foundation.md), [batch scope](docs/decisions/0005-batched-form-components.md), and the latest [`0.1.0-rc.4` release record](docs/releases/0.1.0-rc.4.md).
+The finite React surface covers governed forms, dialogs/drawers, feedback, navigation, menus, tables/data grids, cards, status/content controls, shared page layouts, and the `CollectionList`, `CardGallery`, `StageNavigator`, and `BusinessProcessFlow` compositions. `ProcessStageIndicator` remains only as a deprecated compatibility export. Upstream Fluent contracts are preserved where components are directly exported; consumer business workflows remain outside this package. See [ADR-0003](docs/decisions/0003-fluent-ui-foundation.md), [batch scope](docs/decisions/0005-batched-form-components.md), and the [`0.1.0` release record](docs/releases/0.1.0.md).
 
 React consumers explicitly install the exact qualified `@fluentui/react-components@9.74.7` alongside the exact shared-package version. React/React DOM and Fluent are external optional peers; optional means token-only consumers can omit them, not that React consumers can omit them. Commit the application lockfile to freeze transitive dependencies.
 
@@ -41,7 +51,7 @@ Button remains a text-only native-button interface, defaults to `type="button"`,
 
 Use `SegmentedControl` only for a compact choice between two or more mutually exclusive peer modes, views or presentation variants when switching is immediate. It is not a workflow stage, persistent multi-select, boolean setting, navigation across unrelated destinations or a substitute for ordinary form radio options with long explanatory text. The application owns the option values, current value and business effect; the shared component owns the Fluent radio-toolbar semantics, geometry, selection hierarchy and focus behavior.
 
-The control requires an accessible group label, at least two unique text-labelled options, a controlled value and `onValueChange`. It deliberately renders one subtle neutral boundary around all segments, uses the shared Nidec light-theme brand roles for the selected segment, and keeps every medium item at the Fluent-governed 32px control height. Applications must not place a legacy selected-button skin over it or restyle individual segments with raw colors.
+The control requires an accessible group label, at least two unique text-labelled options, a controlled value and `onValueChange`. It deliberately renders one subtle neutral boundary around all segments, uses the shared Nidec light-theme brand roles for the selected segment, and defaults to Fluent small (24px item height); explicit medium retains Fluent 32px item height. Applications must not place a legacy selected-button skin over it or restyle individual segments with raw colors.
 
 ```tsx
 <SegmentedControl
@@ -109,7 +119,7 @@ The packaged composite consumer exercises the shared UI-material inventory and a
 
 `CardGalleryItem` is display-only. Use `ActionableCardGalleryItem` when one whole Card is the sole link or command entry; do not nest another Link or Button inside it. A Data Table continues to use one green semantic identity Link, while Form + List uses whole-row selection with plain primary text.
 
-This page-layout API was published in immutable `0.1.0-rc.3` and remains in `0.1.0-rc.4`. Publication does not replace each consumer's compatibility and acceptance gates.
+This page-layout API was published in immutable `0.1.0-rc.3` and remains in `0.1.0`. Publication does not replace each consumer's compatibility and acceptance gates.
 
 ## Record-entry interaction contract
 
@@ -219,7 +229,7 @@ save-exact=true
 ```
 
 ```powershell
-npm install --save-exact @phantasywind/nidec-app-ui-design@0.1.0-rc.4 @fluentui/react-components@9.74.7
+npm install --save-exact @phantasywind/nidec-app-ui-design@0.1.0 @fluentui/react-components@9.74.7
 ```
 
 The application must already use a qualified exact React/React DOM 19.2.x pair. Do not use `latest`, ranges, Git URLs, or `main`. A built application does not contact GitHub at runtime.
