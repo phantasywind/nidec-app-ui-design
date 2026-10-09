@@ -1,0 +1,332 @@
+{
+  "name": "Nidec Engineering Design System",
+  "version": 1,
+  "meta": {
+    "source": "github",
+    "repo": "phantasywind/nidec-app-ui-design",
+    "ref": "{{SOURCE_REF}}",
+    "package": "{{PACKAGE}}",
+    "paths": {
+      "tokens": [
+        "tokens/nidec-light.tokens.json",
+        "src/internal/light-palette.mjs",
+        "styles/tokens.css",
+        "styles/components.css"
+      ],
+      "docs": [
+        "README.md",
+        "AGENTS.md",
+        "docs/consumer-ui-adoption.md",
+        "docs/component-catalog.md",
+        "docs/page-archetypes.md",
+        "docs/dropdown-and-combobox.md",
+        "docs/view-mode-toggle.md",
+        "docs/decisions/0006-color-governance.md"
+      ]
+    },
+    "synced": "{{DATE}}"
+  },
+  "color": {
+    "themes": [
+      {
+        "id": "light",
+        "name": "Light"
+      }
+    ],
+    "tokens": [
+      {
+        "name": "brand",
+        "palette": "brand",
+        "usage": "Nidec green for static brand surfaces, graphics, selection markers and focus-adjacent accents. Reaches 3.63:1 on surface, so never use it for text or as a fill behind white text; use brand-strong for that."
+      },
+      {
+        "name": "brand-strong",
+        "palette": "brandStrong",
+        "usage": "Primary action fill with on-brand text, and brand-coloured text and links on surface or canvas (5.12:1 on surface). Hover, pressed and selected states are derived from it by mixing toward text at 18%, 50% and 35%."
+      },
+      {
+        "name": "brand-soft",
+        "palette": "brandSoft",
+        "usage": "Light green fill for hover and selected rows, options and menu items. Hold text on it to text or text-secondary; brand-strong on brand-soft is 4.42:1 and misses the 4.5:1 floor for small text."
+      },
+      {
+        "name": "on-brand-strong",
+        "palette": "surface",
+        "usage": "Text and icons on brand-strong fills (5.12:1). Not a repository role; the shared package uses white here and this token names it."
+      },
+      {
+        "name": "text",
+        "palette": "text",
+        "usage": "Primary text and headings on surface, canvas, surface-subtle and brand-soft (14.3:1 or better)."
+      },
+      {
+        "name": "text-secondary",
+        "palette": "textSecondary",
+        "usage": "Supporting text, field labels and secondary content on surface, canvas, surface-subtle and brand-soft (7.9:1 or better)."
+      },
+      {
+        "name": "text-muted",
+        "palette": "textMuted",
+        "usage": "Hints, captions and placeholders on surface (4.93:1) and canvas (4.58:1) only. It falls below 4.5:1 on surface-subtle (4.41:1) and brand-soft (4.25:1); use text-secondary there. Also the colour for actionable control boundaries."
+      },
+      {
+        "name": "canvas",
+        "palette": "canvas",
+        "usage": "Page background behind white modules."
+      },
+      {
+        "name": "surface",
+        "palette": "surface",
+        "usage": "Module, card, navigation, dialog and popover surfaces. Overlays stay opaque."
+      },
+      {
+        "name": "surface-subtle",
+        "palette": "surfaceSubtle",
+        "usage": "Quiet fills such as table headers, disabled areas and neutral selected segments."
+      },
+      {
+        "name": "border",
+        "palette": "border",
+        "usage": "Decorative hairlines and dividers on surface. It is 1.38:1 on white, so it must never be the only cue that a control exists; use text-muted for interactive boundaries."
+      },
+      {
+        "name": "border-strong",
+        "palette": "borderStrong",
+        "usage": "Stronger decorative separation on surface (1.82:1). Not an interactive boundary."
+      },
+      {
+        "name": "info",
+        "palette": "info",
+        "usage": "Informational text, icons and message accents on surface, canvas and surface-subtle (5.17:1 or better). Pair with a word or icon."
+      },
+      {
+        "name": "success",
+        "palette": "success",
+        "usage": "Success text and icons on surface and canvas (5.19:1 or better). Pair with a word or icon; it is close to the brand green. Which business states count as success belongs to the consuming application."
+      },
+      {
+        "name": "warning",
+        "palette": "warning",
+        "usage": "Warning text and icons on surface and canvas (5.27:1 or better). Pair with a word or icon. State meaning belongs to the consuming application."
+      },
+      {
+        "name": "danger",
+        "palette": "danger",
+        "usage": "Error text, destructive emphasis and invalid-field feedback on surface and canvas (6.07:1 or better). Show errors next to the field in words, not by colour alone."
+      },
+      {
+        "name": "focus",
+        "palette": "focus",
+        "usage": "Focus ring: a white inner ring and a blue outer ring, 5.77:1 on surface. Focus stays blue even though the brand is green."
+      }
+    ]
+  },
+  "type": {
+    "fonts": [],
+    "families": {
+      "sans": "\"Segoe UI\", -apple-system, BlinkMacSystemFont, Roboto, \"Helvetica Neue\", sans-serif",
+      "mono": "Consolas, \"Courier New\", Courier, monospace"
+    },
+    "groups": [
+      {
+        "name": "Fluent roles",
+        "family": "sans",
+        "styles": [
+          {
+            "name": "caption1",
+            "fontSize": "12px",
+            "lineHeight": "16px",
+            "fontWeight": 400,
+            "usage": "Hints, captions and metadata (Fluent fontSizeBase200)."
+          },
+          {
+            "name": "body1",
+            "fontSize": "14px",
+            "lineHeight": "20px",
+            "fontWeight": 400,
+            "usage": "Default body, field values and table text (Fluent fontSizeBase300)."
+          },
+          {
+            "name": "subtitle2",
+            "fontSize": "16px",
+            "lineHeight": "22px",
+            "fontWeight": 600,
+            "usage": "Page sub-headings and selected primary identities (Fluent fontSizeBase400). Secondary module headings stay regular weight."
+          },
+          {
+            "name": "subtitle1",
+            "fontSize": "20px",
+            "lineHeight": "28px",
+            "fontWeight": 600,
+            "usage": "Section headings (Fluent fontSizeBase500)."
+          },
+          {
+            "name": "title2",
+            "fontSize": "28px",
+            "lineHeight": "36px",
+            "fontWeight": 600,
+            "usage": "Page headings (Fluent fontSizeHero700)."
+          },
+          {
+            "name": "title1",
+            "fontSize": "32px",
+            "lineHeight": "40px",
+            "fontWeight": 600,
+            "usage": "Large page and authentication headings (Fluent fontSizeHero800)."
+          }
+        ]
+      }
+    ]
+  },
+  "spacing": {
+    "tokens": [
+      {
+        "name": "space-xxs",
+        "value": "2px",
+        "usage": "Hairline gaps inside compact controls (Fluent spacing XXS)."
+      },
+      {
+        "name": "space-xs",
+        "value": "4px",
+        "usage": "Gap between the two ViewModeToggle buttons and between icon and label (Fluent spacing XS)."
+      },
+      {
+        "name": "space-s",
+        "value": "8px",
+        "usage": "Gap between adjacent actions and inside toolbars (Fluent spacing S)."
+      },
+      {
+        "name": "space-m",
+        "value": "12px",
+        "usage": "Gap between the view toggle and the count, sort or filter control before it (Fluent spacing M)."
+      },
+      {
+        "name": "space-l",
+        "value": "16px",
+        "usage": "Field-to-field gap and standard module padding (Fluent spacing L)."
+      },
+      {
+        "name": "space-xl",
+        "value": "20px",
+        "usage": "Gap between form groups (Fluent spacing XL)."
+      },
+      {
+        "name": "space-xxl",
+        "value": "24px",
+        "usage": "Gap between modules and page sections (Fluent spacing XXL)."
+      }
+    ]
+  },
+  "radius": {
+    "tokens": [
+      {
+        "name": "radius-sm",
+        "value": "2px",
+        "usage": "Small marks and inline chips (Fluent borderRadiusSmall)."
+      },
+      {
+        "name": "radius-md",
+        "value": "4px",
+        "usage": "Buttons, inputs and dropdowns (Fluent borderRadiusMedium)."
+      },
+      {
+        "name": "radius-lg",
+        "value": "6px",
+        "usage": "Cards, modules, popovers and menus (Fluent borderRadiusLarge)."
+      },
+      {
+        "name": "radius-pill",
+        "value": "10000px",
+        "usage": "InlineModeTabs capsules and circular indicators (Fluent borderRadiusCircular)."
+      }
+    ]
+  },
+  "checks": [
+    {
+      "fg": "text",
+      "bg": "surface",
+      "min": 4.5
+    },
+    {
+      "fg": "text",
+      "bg": "canvas",
+      "min": 4.5
+    },
+    {
+      "fg": "text",
+      "bg": "surface-subtle",
+      "min": 4.5
+    },
+    {
+      "fg": "text",
+      "bg": "brand-soft",
+      "min": 4.5
+    },
+    {
+      "fg": "text-secondary",
+      "bg": "surface",
+      "min": 4.5
+    },
+    {
+      "fg": "text-secondary",
+      "bg": "surface-subtle",
+      "min": 4.5
+    },
+    {
+      "fg": "text-secondary",
+      "bg": "brand-soft",
+      "min": 4.5
+    },
+    {
+      "fg": "text-muted",
+      "bg": "surface",
+      "min": 4.5
+    },
+    {
+      "fg": "text-muted",
+      "bg": "canvas",
+      "min": 4.5
+    },
+    {
+      "fg": "brand-strong",
+      "bg": "surface",
+      "min": 4.5
+    },
+    {
+      "fg": "on-brand-strong",
+      "bg": "brand-strong",
+      "min": 4.5
+    },
+    {
+      "fg": "info",
+      "bg": "surface",
+      "min": 4.5
+    },
+    {
+      "fg": "success",
+      "bg": "surface",
+      "min": 4.5
+    },
+    {
+      "fg": "warning",
+      "bg": "surface",
+      "min": 4.5
+    },
+    {
+      "fg": "danger",
+      "bg": "surface",
+      "min": 4.5
+    },
+    {
+      "fg": "focus",
+      "bg": "surface",
+      "min": 3
+    },
+    {
+      "fg": "brand",
+      "bg": "surface",
+      "min": 3
+    }
+  ],
+  "checksNote": "Build fails if a pair listed here drops below its minimum contrast ratio. The ratios quoted in the usage notes are written by hand: update them when the palette changes."
+}

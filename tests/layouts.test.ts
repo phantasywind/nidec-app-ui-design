@@ -1,3 +1,6 @@
+import { readFile } from 'node:fs/promises';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
@@ -53,5 +56,11 @@ describe('page layout public boundary', () => {
     expect(auth.match(/<h1/g)).toHaveLength(1);
     expect(versioned).toContain('nidec-ui-versioned-workspace__identity');
     expect(versioned).toContain('aria-label="Versioned object history"');
+  });
+
+  it('gives a hovered navigation item a subtle grey background', async () => {
+    const css = await readFile(join(dirname(fileURLToPath(import.meta.url)), '..', 'styles', 'components.css'), 'utf8');
+    const hover = /\.nidec-ui-application-navigation__item:hover\s*\{([^}]*)\}/s.exec(css);
+    expect(hover?.[1]).toMatch(/background:\s*var\(--colorSubtleBackgroundHover\)/);
   });
 });

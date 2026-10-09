@@ -81,6 +81,13 @@ Local, reversible work must still follow an approved small step. Before each ste
 - Locke separately authorized CPQ 02 to integrate the existing single-search-field pilot into `main` and remove exactly `codex/fluent-enquiries-pilot` and `D:\Documents\ChatGPT\worktrees\cpq-fluent-enquiries-pilot`, preserving its artifact/evidence first. This one-time cleanup does not authorize other branch/worktree deletions, new component adoption, pushes or deployment.
 - Generated package-consumer test directories under this repository's `.tmp/` are not Git worktrees or CPQ checkouts; keep them separate from consumer applications.
 
+### Maintainer transition (Locke, 2026-10-09)
+
+- Claude assumes maintenance of this repository and the `@phantasywind/nidec-app-ui-design` package. Codex stops maintaining and publishing it and acts only as a consumer. Locke Yuan remains maintainer of record and the sole release approver; Claude never approves its own release. Rationale and consequences: ADR-0007; handover and release steps: `docs/maintenance-handoff.md`.
+- Standing authorization: Claude may create branches in this repository and push to them. This does not authorize merging to `main`, tags, publishing, a GitHub Release, or any change to repository permissions, Rulesets, environments, variables or secrets; each still needs Locke's explicit authorization for the specific action. Claude does not read, store or record tokens.
+- Publication is performed by `.github/workflows/release.yml` after Locke approves the exact version and candidate SHA-256, with the publish job gated by the `release` environment.
+- Adopting applications are not told about the change of maintainer. Locke continues to forward the exact-version adoption method when a new version is published, and applications decide when to update their exact pin.
+
 ## Evidence and release controls
 
 The initial maintainer, release executor, and approver is Locke Yuan (`phantasywind`). While this is a self-review model, each release must use a fixed checklist and prove consistency among the immutable version, Git tag, npm package, GitHub Release, artifact filename, and SHA-256 record.

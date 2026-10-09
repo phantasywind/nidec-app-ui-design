@@ -22,6 +22,8 @@ This checklist governs every GitHub Packages publication. Package self-test is n
 
 ## Publication authorization and execution
 
+Publication is performed by `.github/workflows/release.yml` (ADR-0007): run it first with `dry_run` true, then with `dry_run` false and the approved SHA-256 after Locke authorizes the exact version. The steps below are the controls the workflow and its approver must satisfy; they are not a license to publish by hand without Locke's authorization.
+
 - [ ] Locke explicitly authorizes this exact version and exact candidate SHA-256.
 - [ ] Create immutable tag `v<version>` at the qualified commit; never reuse it.
 - [ ] Set `NIDEC_UI_RELEASE_APPROVED` to that exact version only for the authorized command.

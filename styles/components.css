@@ -133,6 +133,7 @@
   }
 
   :where([data-nidec-ui]) .nidec-ui-application-navigation__item:hover {
+    background: var(--colorSubtleBackgroundHover);
     color: var(--colorBrandForeground1);
   }
 
@@ -1189,7 +1190,6 @@
    override must share that cascade level to keep actions visible on scroll. */
 :where([data-nidec-ui]) .nidec-ui-editable-grid__viewport td.nidec-ui-editable-grid__action-column {
   background: var(--colorNeutralBackground1);
-  border-inline-start: var(--strokeWidthThin) solid var(--colorNeutralStroke2);
   inset-inline-end: 0;
   padding-inline-end: var(--spacingHorizontalS);
   position: sticky;
@@ -1198,7 +1198,6 @@
 
 :where([data-nidec-ui]) .nidec-ui-editable-grid__viewport th:last-child {
   background: var(--colorNeutralBackground2);
-  border-inline-start: var(--strokeWidthThin) solid var(--colorNeutralStroke2);
   inset-inline-end: 0;
   padding-inline-end: var(--spacingHorizontalS);
   position: sticky;

@@ -1,0 +1,173 @@
+# Immutable release workflow for @phantasywind/nidec-app-ui-design (ADR-0007).
+#
+# Run manually. With dry_run=true (the default) it only qualifies a candidate:
+# two independent builds, all repository checks, byte comparison, SHA-256.
+# With dry_run=false it additionally tags, publishes to GitHub Packages and
+# creates the GitHub Release, but only after the `release` environment's
+# required reviewer approves, and only if approved_sha256 equals the candidate.
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Exact version to release. Must equal package.json.
+        required: true
+        type: string
+      dry_run:
+        description: Qualify only. Set to false to publish after approval.
+        required: true
+        type: boolean
+        default: true
+      approved_sha256:
+        description: SHA-256 of the candidate archive approved by the release approver. Required when dry_run is false.
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  qualify:
+    name: Qualify build ${{ matrix.build }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        build: [a, b]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Check version input
+        run: |
+          actual=$(node -p "require('./package.json').version")
+          if [ "$actual" != "${{ inputs.version }}" ]; then
+            echo "package.json version is $actual, input is ${{ inputs.version }}" >&2
+            exit 1
+          fi
+          test -f "docs/releases/${{ inputs.version }}.md"
+      - run: npm ci
+      - run: npm run verify
+      - name: Pack
+        run: |
+          mkdir -p out
+          npm pack --pack-destination out
+          cd out && sha256sum *.tgz > ../sha256-${{ matrix.build }}.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: candidate-${{ matrix.build }}
+          path: |
+            out/*.tgz
+            sha256-${{ matrix.build }}.txt
+          if-no-files-found: error
+
+  compare:
+    name: Compare independent builds
+    needs: qualify
+    runs-on: ubuntu-latest
+    outputs:
+      sha256: ${{ steps.sha.outputs.sha256 }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: candidate-*
+          path: candidates
+      - name: Compare and summarise
+        id: sha
+        run: |
+          a=$(cut -d' ' -f1 candidates/candidate-a/sha256-a.txt)
+          b=$(cut -d' ' -f1 candidates/candidate-b/sha256-b.txt)
+          if [ "$a" != "$b" ]; then
+            echo "Independent builds differ: $a vs $b" >&2
+            exit 1
+          fi
+          echo "sha256=$a" >> "$GITHUB_OUTPUT"
+          {
+            echo "## Release candidate ${{ inputs.version }}"
+            echo
+            echo "Source commit: \`${GITHUB_SHA}\`"
+            echo
+            echo "SHA-256 (two independent builds, byte-identical): \`$a\`"
+            echo
+            echo "Dry run: ${{ inputs.dry_run }}"
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Check the version is new
+        run: |
+          if git ls-remote --exit-code --tags origin "refs/tags/v${{ inputs.version }}" >/dev/null 2>&1; then
+            echo "Tag v${{ inputs.version }} already exists. Published versions are never reused." >&2
+            exit 1
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: candidate
+          path: candidates/candidate-a/out/*.tgz
+          if-no-files-found: error
+
+  publish:
+    name: Publish (requires release approval)
+    needs: compare
+    if: ${{ !inputs.dry_run }}
+    runs-on: ubuntu-latest
+    environment: release
+    permissions:
+      contents: write
+      packages: write
+    steps:
+      - name: Require the approved candidate hash
+        run: |
+          if [ "${{ inputs.approved_sha256 }}" != "${{ needs.compare.outputs.sha256 }}" ]; then
+            echo "approved_sha256 does not match the qualified candidate." >&2
+            exit 1
+          fi
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://npm.pkg.github.com
+          scope: '@phantasywind'
+      - uses: actions/download-artifact@v4
+        with:
+          name: candidate
+          path: candidate
+      - name: Verify the downloaded archive
+        run: |
+          cd candidate
+          sha256sum *.tgz | cut -d' ' -f1 | grep -qx "${{ needs.compare.outputs.sha256 }}"
+          sha256sum *.tgz > SHA256SUMS.txt
+      - name: Create the immutable tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag "v${{ inputs.version }}" "$GITHUB_SHA"
+          git push origin "refs/tags/v${{ inputs.version }}"
+      - run: npm ci
+      - name: Check publication inputs and authorization
+        env:
+          NIDEC_UI_RELEASE_APPROVED: ${{ inputs.version }}
+        run: |
+          npm run publication:check
+          npm run release:authorize
+      - name: Publish to GitHub Packages
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          case "${{ inputs.version }}" in
+            *-*) tag=next ;;
+            *)   tag=latest ;;
+          esac
+          npm publish candidate/*.tgz --tag "$tag"
+      - name: Create the GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          flags=""
+          case "${{ inputs.version }}" in *-*) flags="--prerelease" ;; esac
+          gh release create "v${{ inputs.version }}" candidate/*.tgz candidate/SHA256SUMS.txt \
+            --verify-tag $flags \
+            --title "${{ inputs.version }}" \
+            --notes-file "docs/releases/${{ inputs.version }}.md"
