@@ -44,6 +44,10 @@ No environment reviewer is configured or required: protection rules on environme
 
 ## Known gaps
 
+- The release workflow's post-publication verification (registry download, Release archive and `SHA256SUMS.txt` against the authorized hash) has not run yet; it first runs in the first real release. It runs after publication and cannot undo it, so a failure there must be investigated before anyone adopts the version.
+- The workflow uses GitHub actions that still target Node 20 (`actions/checkout`, `setup-node`, `upload-artifact`, `download-artifact` at `v4`). GitHub forces them onto Node 24 for now and warns. Move them to maintained versions and pin full commit SHAs.
+- Claude cannot download Actions artifacts from its environment, so hashes must be readable in the run logs; the workflow prints them.
+
 - The release workflow has not been executed. Its first run must be a dry run, and its first real run should be watched.
 - Third-party actions are referenced by major version tag. Pinning them to full commit SHAs is recommended before relying on the workflow for a release.
 - There is no independent review and no technical separation of identity, credential or pipeline authority. See the control limits in ADR-0007.

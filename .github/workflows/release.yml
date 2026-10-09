@@ -58,7 +58,7 @@ jobs:
         run: |
           mkdir -p out
           npm pack --pack-destination out
-          cd out && sha256sum *.tgz > ../sha256-${{ matrix.build }}.txt
+          cd out && sha256sum *.tgz | tee ../sha256-${{ matrix.build }}.txt
       - uses: actions/upload-artifact@v4
         with:
           name: candidate-${{ matrix.build }}
@@ -89,6 +89,7 @@ jobs:
             exit 1
           fi
           echo "sha256=$a" >> "$GITHUB_OUTPUT"
+          echo "Candidate SHA-256 (builds a and b byte-identical): $a"
           {
             echo "## Release candidate ${{ inputs.version }}"
             echo
@@ -174,3 +175,40 @@ jobs:
             --verify-tag $flags \
             --title "${{ inputs.version }}" \
             --notes-file "docs/releases/${{ inputs.version }}.md"
+      - name: Verify the published package and the Release asset
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          EXPECTED: ${{ needs.compare.outputs.sha256 }}
+        run: |
+          set -euo pipefail
+          version="${{ inputs.version }}"
+          mkdir -p verify/registry verify/release
+          # What the registry serves, downloaded back as a tarball.
+          npm pack "@phantasywind/nidec-app-ui-design@${version}" --pack-destination verify/registry --registry https://npm.pkg.github.com
+          registry_sha=$(sha256sum verify/registry/*.tgz | cut -d' ' -f1)
+          # What the GitHub Release carries.
+          gh release download "v${version}" --dir verify/release
+          release_sha=$(sha256sum verify/release/*.tgz | cut -d' ' -f1)
+          listed_sha=$(cut -d' ' -f1 verify/release/SHA256SUMS.txt)
+          {
+            echo "## Post-publication verification for ${version}"
+            echo
+            echo "| Source | SHA-256 |"
+            echo "| --- | --- |"
+            echo "| Authorized candidate | \`${EXPECTED}\` |"
+            echo "| Registry download | \`${registry_sha}\` |"
+            echo "| Release archive | \`${release_sha}\` |"
+            echo "| Release SHA256SUMS.txt | \`${listed_sha}\` |"
+          } >> "$GITHUB_STEP_SUMMARY"
+          echo "Authorized candidate: ${EXPECTED}"
+          echo "Registry download:    ${registry_sha}"
+          echo "Release archive:      ${release_sha}"
+          echo "Release SHA256SUMS:   ${listed_sha}"
+          for value in "${registry_sha}" "${release_sha}" "${listed_sha}"; do
+            if [ "${value}" != "${EXPECTED}" ]; then
+              echo "Published content does not match the authorized candidate." >&2
+              exit 1
+            fi
+          done
+          echo "Registry, Release archive and SHA256SUMS.txt all match the authorized candidate."
