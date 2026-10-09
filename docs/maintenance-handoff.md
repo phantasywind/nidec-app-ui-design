@@ -11,7 +11,7 @@ Written 2026-10-09 for whoever maintains this repository next, including a new C
 ## Current state
 
 - Latest published version: `0.1.0` (see `docs/releases/0.1.0.md`). Source commit `6f8bae7`, tag `v0.1.0`.
-- Prepared but not released: `0.1.2` (`docs/releases/0.1.2.md`), a visual refinement with a grey hover background on application navigation items and no divider lines before the Editable Grid frozen Actions column. `0.1.1` was abandoned and never published (its release run failed before upload; tag `v0.1.1` stays unused at `f56bbb0`, see `docs/releases/0.1.1.md`). `0.1.2` still needs a dry run, Locke's authorization of the exact SHA-256, and publication.
+- Latest published version: `0.1.2` (`docs/releases/0.1.2.md`), released 2026-10-09 from `895672d` through the release workflow. It is a visual refinement of `0.1.0`: a grey hover background on application navigation items and no divider lines before the Editable Grid frozen Actions column. `0.1.1` was abandoned and never published (tag `v0.1.1` stays unused at `f56bbb0`, see `docs/releases/0.1.1.md`).
 - Table-header colour direction (`docs/table-header-visual-direction.md`) is selected but not implemented.
 - A Claude Design System artifact is built from this repository by `design-system/` (see its README). It reproduces the published artifact files exactly. Rebuild and republish it after any change to components, styles or palette.
 
@@ -44,9 +44,9 @@ No environment reviewer is configured or required: protection rules on environme
 
 ## Known gaps
 
-- Lesson from the first real release attempt (0.1.1): the publish step passed a path without `./` and npm read it as a GitHub repository. The workflow has since been fixed, but it has still never completed a publication end to end. The tag is now created locally for the authorization check and pushed only after publication succeeds.
+- Lesson from the first real release attempt (0.1.1, run 3): the publish step passed a path without `./` and npm read it as a GitHub repository, after the tag had already been pushed. Fixed: the path now starts with `./`, and the tag is created locally for the authorization check and pushed only after publication succeeds. The workflow completed a publication end to end for 0.1.2 (run 5).
 
-- The release workflow's post-publication verification (registry download, Release archive and `SHA256SUMS.txt` against the authorized hash) has not run yet; it first runs in the first real release. It runs after publication and cannot undo it, so a failure there must be investigated before anyone adopts the version.
+- The workflow's post-publication verification (registry download, Release archive and `SHA256SUMS.txt` against the authorized hash) ran for the first time in 0.1.2 and passed. It runs after publication and cannot undo it, so a failure there must be investigated before anyone adopts the version. It does not replace installing the published version into an isolated consumer; that comparison was not done for 0.1.2 because Claude's environment cannot download from GitHub Packages.
 - The workflow uses GitHub actions that still target Node 20 (`actions/checkout`, `setup-node`, `upload-artifact`, `download-artifact` at `v4`). GitHub forces them onto Node 24 for now and warns. Move them to maintained versions and pin full commit SHAs.
 - Claude cannot download Actions artifacts from its environment, so hashes must be readable in the run logs; the workflow prints them.
 
