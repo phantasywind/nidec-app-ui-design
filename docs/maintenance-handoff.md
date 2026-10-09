@@ -13,7 +13,7 @@ Written 2026-10-09 for whoever maintains this repository next, including a new C
 - Latest published version: `0.1.0` (see `docs/releases/0.1.0.md`). Source commit `6f8bae7`, tag `v0.1.0`.
 - Unreleased changes on the maintenance branch since `0.1.0`: a subtle grey hover background on application navigation items; removal of the divider lines before the frozen Actions column of the Editable Grid. Both are visual changes that consumers must re-check on upgrade. Neither has a version or release record yet.
 - Table-header colour direction (`docs/table-header-visual-direction.md`) is selected but not implemented.
-- A Claude Design System artifact is built from this repository. Its build recipe is not yet stored in the repository.
+- A Claude Design System artifact is built from this repository by `design-system/` (see its README). It reproduces the published artifact files exactly. Rebuild and republish it after any change to components, styles or palette.
 
 ## Working rules
 

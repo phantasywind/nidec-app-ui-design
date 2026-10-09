@@ -1,0 +1,4 @@
+// @card group="Page building blocks" height=110 subtitle="Live component"
+function Demo() {
+  return <Toolbar aria-label="Collection tools"><SearchBox aria-label="Search" placeholder="Search" /><Dropdown aria-label="Status" defaultValue="All statuses" defaultSelectedOptions={['all']} style={{minWidth:140}}><Option value="all">All statuses</Option><Option>Ready</Option></Dropdown><Tooltip content="Refresh" relationship="label"><ToolbarButton aria-label="Refresh" icon={<Icons.Refresh />} /></Tooltip><ToolbarDivider /><ToolbarGroup><Tooltip content="Previous page" relationship="label"><ToolbarButton aria-label="Previous page" icon={<Icons.ChevronLeft />} /></Tooltip><Tooltip content="Next page" relationship="label"><ToolbarButton aria-label="Next page" icon={<Icons.ChevronRight />} /></Tooltip></ToolbarGroup></Toolbar>;
+}

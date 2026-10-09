@@ -1,0 +1,16 @@
+{
+  "name": "nidec-design-system-artifact",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Builds the Claude Design System artifact for @phantasywind/nidec-app-ui-design from this repository. Not published and not part of the package.",
+  "type": "module",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "verify": "node scripts/verify.mjs",
+    "files": "node scripts/files.mjs"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2",
+    "playwright-core": "1.64.0"
+  }
+}
