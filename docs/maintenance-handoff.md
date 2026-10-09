@@ -44,6 +44,8 @@ No environment reviewer is configured or required: protection rules on environme
 
 ## Known gaps
 
+- The Claude Design System artifact is a snapshot of the repository at one commit and is republished by hand (`design-system/README.md`). After every release, rebuild and republish it, and check that its README names the released version; nothing triggers this automatically. Applications built outside Claude must still install the exact package; the artifact is a reference for work done inside Claude (prototypes, designs, slides, pages) and is private unless Locke shares it.
+
 - Lesson from the first real release attempt (0.1.1, run 3): the publish step passed a path without `./` and npm read it as a GitHub repository, after the tag had already been pushed. Fixed: the path now starts with `./`, and the tag is created locally for the authorization check and pushed only after publication succeeds. The workflow completed a publication end to end for 0.1.2 (run 5).
 
 - The workflow's post-publication verification (registry download, Release archive and `SHA256SUMS.txt` against the authorized hash) ran for the first time in 0.1.2 and passed. It runs after publication and cannot undo it, so a failure there must be investigated before anyone adopts the version. It does not replace installing the published version into an isolated consumer; that comparison was not done for 0.1.2 because Claude's environment cannot download from GitHub Packages.
