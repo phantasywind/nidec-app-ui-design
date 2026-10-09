@@ -143,12 +143,11 @@ jobs:
           cd candidate
           sha256sum *.tgz | cut -d' ' -f1 | grep -qx "${{ needs.compare.outputs.sha256 }}"
           sha256sum *.tgz > SHA256SUMS.txt
-      - name: Create the immutable tag
+      - name: Create the tag locally for the authorization check
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git tag "v${{ inputs.version }}" "$GITHUB_SHA"
-          git push origin "refs/tags/v${{ inputs.version }}"
       - run: npm ci
       - name: Check publication inputs and authorization
         env:
@@ -164,7 +163,10 @@ jobs:
             *-*) tag=next ;;
             *)   tag=latest ;;
           esac
-          npm publish candidate/*.tgz --tag "$tag"
+          # The ./ matters: without it npm reads candidate/x.tgz as a GitHub repository.
+          npm publish ./candidate/*.tgz --tag "$tag"
+      - name: Push the immutable tag after successful publication
+        run: git push origin "refs/tags/v${{ inputs.version }}"
       - name: Create the GitHub Release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

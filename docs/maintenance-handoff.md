@@ -44,6 +44,8 @@ No environment reviewer is configured or required: protection rules on environme
 
 ## Known gaps
 
+- Lesson from the first real release attempt (0.1.1): the publish step passed a path without `./` and npm read it as a GitHub repository. The workflow has since been fixed, but it has still never completed a publication end to end. The tag is now created locally for the authorization check and pushed only after publication succeeds.
+
 - The release workflow's post-publication verification (registry download, Release archive and `SHA256SUMS.txt` against the authorized hash) has not run yet; it first runs in the first real release. It runs after publication and cannot undo it, so a failure there must be investigated before anyone adopts the version.
 - The workflow uses GitHub actions that still target Node 20 (`actions/checkout`, `setup-node`, `upload-artifact`, `download-artifact` at `v4`). GitHub forces them onto Node 24 for now and warns. Move them to maintained versions and pin full commit SHAs.
 - Claude cannot download Actions artifacts from its environment, so hashes must be readable in the run logs; the workflow prints them.
