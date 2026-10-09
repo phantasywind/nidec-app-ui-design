@@ -3,8 +3,12 @@
 # Run manually. With dry_run=true (the default) it only qualifies a candidate:
 # two independent builds, all repository checks, byte comparison, SHA-256.
 # With dry_run=false it additionally tags, publishes to GitHub Packages and
-# creates the GitHub Release, but only after the `release` environment's
-# required reviewer approves, and only if approved_sha256 equals the candidate.
+# creates the GitHub Release, and only if approved_sha256 equals the candidate.
+#
+# Control model (ADR-0007): this is single-party control. approved_sha256 binds
+# the publication to the candidate the repository owner authorized in writing;
+# it is a consistency check, not a security control. Run dry_run=false only
+# after that authorization has been recorded in the release record.
 name: Release
 
 on:
@@ -15,12 +19,12 @@ on:
         required: true
         type: string
       dry_run:
-        description: Qualify only. Set to false to publish after approval.
+        description: Qualify only. Set to false to publish after the owner's authorization is recorded.
         required: true
         type: boolean
         default: true
       approved_sha256:
-        description: SHA-256 of the candidate archive approved by the release approver. Required when dry_run is false.
+        description: SHA-256 of the candidate archive the owner authorized. Required when dry_run is false. Consistency check, not a security control.
         required: false
         type: string
 
@@ -107,11 +111,10 @@ jobs:
           if-no-files-found: error
 
   publish:
-    name: Publish (requires release approval)
+    name: Publish
     needs: compare
     if: ${{ !inputs.dry_run }}
     runs-on: ubuntu-latest
-    environment: release
     permissions:
       contents: write
       packages: write
