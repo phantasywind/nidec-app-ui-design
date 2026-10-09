@@ -4,8 +4,8 @@ Written 2026-10-09 for whoever maintains this repository next, including a new C
 
 ## Roles
 
-- Maintainer of record and release approver: Locke Yuan.
-- Day-to-day maintenance: Claude (ADR-0007). Codex is a consumer only.
+- Accountable owner: Locke Yuan. He authorizes each release; responsibility stays with him.
+- Maintenance, release review and release execution: Claude (ADR-0007). Codex is a consumer only. This is single-party control with no technical separation; Claude's review is not independent.
 - Locke's authorization is required for: merging to `main`, tags, publication, GitHub Releases, repository settings, Rulesets, environments, variables and secrets, and any change to an adopting application.
 
 ## Current state
@@ -31,23 +31,19 @@ While the package is pre-1.0: a patch version for fixes and visual refinements w
 
 1. Prepare: set the exact version in `package.json` and `package-lock.json`, write `docs/releases/<version>.md` (changes, change type, what applications must do, whether Fluent or React exact versions change), and update `docs/roadmap.md`.
 2. Run the release workflow with `dry_run` left at `true`. It builds twice, compares the two archives byte for byte, runs all checks and reports the SHA-256. Nothing is published.
-3. Ask Locke to approve the exact version and SHA-256.
-4. Run the workflow again with `dry_run` set to `false`. The publish job waits for Locke's approval in the `release` environment, then creates the tag, publishes to GitHub Packages and creates the GitHub Release with the `.tgz`, `SHA256SUMS.txt` and the release record.
+3. Ask Locke to authorize the exact version and the candidate SHA-256 from the dry run. Record his words and the time in the release record before continuing.
+4. Run the workflow again with `dry_run` set to `false` and `approved_sha256` set to the authorized hash. The publish job creates the tag, publishes to GitHub Packages with the workflow's built-in token and creates the GitHub Release with the `.tgz`, `SHA256SUMS.txt` and the release record.
 5. Verify tag, package, Release, filename and SHA-256 agree, then install the published version into an isolated consumer and compare content.
 6. Give Locke the exact-version adoption method to forward to adopting applications. Do not contact applications directly.
 
 Corrections always use a new version. A published version, tag or artifact is never overwritten.
 
-## One-time setup Locke performs in GitHub
+## GitHub settings
 
-The workflow cannot run its publish job until these exist. Claude must not change repository settings.
-
-1. Repository Settings, Environments, create an environment named `release`. Under Required reviewers add `phantasywind`. Optionally restrict deployment branches to `main`.
-2. Repository Settings, Actions, General: allow GitHub Actions to run, and set Workflow permissions so that the workflow can be given `packages: write` and `contents: write` (the workflow requests them only in the publish job).
-3. Confirm the package `@phantasywind/nidec-app-ui-design` is linked to this repository under its Package settings, so the workflow's built-in token may publish it. If a Ruleset blocks tags named `v*` for the Actions token, add the workflow as a permitted actor.
+No environment reviewer is configured or required: protection rules on environments are not available for this private repository on the current plan, and the model does not depend on them (ADR-0007). Before the first real release confirm in the repository settings that Actions may run, that the workflow may be given `packages: write` and `contents: write` (the publish job requests them), that the package `@phantasywind/nidec-app-ui-design` is linked to this repository, and that no Ruleset blocks `v*` tags for the Actions token. Claude does not change repository settings.
 
 ## Known gaps
 
 - The release workflow has not been executed. Its first run must be a dry run, and its first real run should be watched.
 - Third-party actions are referenced by major version tag. Pinning them to full commit SHAs is recommended before relying on the workflow for a release.
-- Two-person review does not exist. See ADR-0007.
+- There is no independent review and no technical separation of identity, credential or pipeline authority. See the control limits in ADR-0007.

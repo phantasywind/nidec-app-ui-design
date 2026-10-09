@@ -83,14 +83,15 @@ Local, reversible work must still follow an approved small step. Before each ste
 
 ### Maintainer transition (Locke, 2026-10-09)
 
-- Claude assumes maintenance of this repository and the `@phantasywind/nidec-app-ui-design` package. Codex stops maintaining and publishing it and acts only as a consumer. Locke Yuan remains maintainer of record and the sole release approver; Claude never approves its own release. Rationale and consequences: ADR-0007; handover and release steps: `docs/maintenance-handoff.md`.
-- Standing authorization: Claude may create branches in this repository and push to them. This does not authorize merging to `main`, tags, publishing, a GitHub Release, or any change to repository permissions, Rulesets, environments, variables or secrets; each still needs Locke's explicit authorization for the specific action. Claude does not read, store or record tokens.
-- Publication is performed by `.github/workflows/release.yml` after Locke approves the exact version and candidate SHA-256, with the publish job gated by the `release` environment.
+- Claude assumes maintenance of this repository and the `@phantasywind/nidec-app-ui-design` package, including release review and execution. Codex stops maintaining and publishing it and acts only as a consumer. Locke Yuan remains accountable for the package and every release: Claude owns the code and the release work, Locke owns the responsibility. Rationale, control limits and consequences: ADR-0007; handover and release steps: `docs/maintenance-handoff.md`.
+- This is single-party control. Claude's review is not independent review, and there is no technical separation of identity, credential or pipeline authority. Do not describe it otherwise.
+- Authorization: Claude may create branches, push to them, open pull requests, and merge a pull request when Locke asks for that merge. A release is authorized per release: Locke names the exact version and the candidate SHA-256 from the dry run, and Claude records his authorization in the release record. Tags, publication, a GitHub Release, and any change to repository permissions, Rulesets, environments, variables or secrets otherwise need Locke's explicit authorization for the specific action. Claude does not read, store or record tokens.
+- Publication is performed by `.github/workflows/release.yml` with the workflow's built-in token.
 - Adopting applications are not told about the change of maintainer. Locke continues to forward the exact-version adoption method when a new version is published, and applications decide when to update their exact pin.
 
 ## Evidence and release controls
 
-The initial maintainer, release executor, and approver is Locke Yuan (`phantasywind`). While this is a self-review model, each release must use a fixed checklist and prove consistency among the immutable version, Git tag, npm package, GitHub Release, artifact filename, and SHA-256 record.
+Locke Yuan (`phantasywind`) is the accountable owner and authorizes each release. Until 2026-10-09 he was also maintainer, release executor and reviewer; since then Claude is maintainer, release reviewer and release executor under his authorization (ADR-0007). This is a single-party self-review model, and each release must use a fixed checklist and prove consistency among the immutable version, Git tag, npm package, GitHub Release, artifact filename, and SHA-256 record.
 
 When a second maintainer is assigned, release governance must be reviewed and upgraded to dual review before relying on that role.
 
