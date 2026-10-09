@@ -9,7 +9,7 @@ describe('package contract', () => {
   it('pins the release candidate and exposes only approved subpaths', async () => {
     const packageJson = JSON.parse(await readFile(join(repositoryRoot, 'package.json'), 'utf8'));
 
-    expect(packageJson.version).toBe('0.1.1');
+    expect(packageJson.version).toBe('0.1.2');
     expect(packageJson.private).toBe(false);
     expect(packageJson.publishConfig).toEqual({ registry: 'https://npm.pkg.github.com', access: 'restricted' });
     expect(packageJson.sideEffects).toEqual(['./dist/styles.css', './dist/tokens.css']);
