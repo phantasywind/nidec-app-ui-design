@@ -2,13 +2,13 @@
 
 Shared, versioned UI design system for Nidec applications.
 
-## Version 0.1.0 and adoption
+## Version 0.1.1 and adoption
 
-This source prepares the first stable package, `0.1.0`. Release availability, final checksum and approval status are tracked in the [release record](docs/releases/0.1.0.md). Until publication completes, `0.1.0-rc.4` remains the latest published version; do not treat local qualification as publication.
+This source prepares `0.1.1`, a visual refinement of the stable `0.1.0` with no change to exports, props, dependencies or peer versions. Release availability, final checksum and approval status are tracked in the [release record](docs/releases/0.1.1.md). Until publication completes, `0.1.0` remains the latest published version; do not treat local qualification as publication. The [`0.1.0` release record](docs/releases/0.1.0.md) remains the record of that immutable version.
 
 The English preview groups Forms, Page building blocks, Specialized components and Examples. Start with the [component catalog](docs/component-catalog.md), [Dropdown / Combobox contract](docs/dropdown-and-combobox.md) and [adoption guide](docs/consumer-ui-adoption.md). Migrated regions must remove legacy skins and typography overrides, and explicitly control field/action container widths.
 
-The npm package contains dist and README, not the full docs. Version-aligned documents will be available at [the v0.1.0 tag](https://github.com/phantasywind/nidec-app-ui-design/tree/v0.1.0/docs) after publication. Do not substitute main-branch documents for another package version.
+The npm package contains dist and README, not the full docs. Version-aligned documents will be available at [the v0.1.1 tag](https://github.com/phantasywind/nidec-app-ui-design/tree/v0.1.1/docs) after publication. Do not substitute main-branch documents for another package version.
 
 Preview: run `npm run build` in the repository, then in `fixtures/react-composite-patterns-consumer` set `NIDEC_UI_LOCAL_PREVIEW=1` and run `node ../../node_modules/vite/bin/vite.js build`. Preview types: `node ../../node_modules/typescript/bin/tsc -p tsconfig.preview.json` (local examples checked; upstream declaration checking skipped).
 
@@ -22,7 +22,7 @@ CPQ and EPM are the initial reference consumers used to establish and verify the
 - [ADR-0001: Repository and distribution governance](docs/decisions/0001-repository-and-distribution-governance.md)
 - [Gated delivery roadmap](docs/roadmap.md)
 
-Version 0.1.0 removes the RC suffix but does not imply independent application acceptance, deployment or Production approval. Previous RC releases remain immutable rollback references. This README corrects the stale version instructions embedded in rc.4.
+Version 0.1.0 removed the RC suffix, and version 0.1.1 refines its visuals. Neither implies independent application acceptance, deployment or Production approval. Previous RC releases remain immutable rollback references. This README corrects the stale version instructions embedded in rc.4.
 
 ## Fluent React package
 
@@ -229,7 +229,7 @@ save-exact=true
 ```
 
 ```powershell
-npm install --save-exact @phantasywind/nidec-app-ui-design@0.1.0 @fluentui/react-components@9.74.7
+npm install --save-exact @phantasywind/nidec-app-ui-design@0.1.1 @fluentui/react-components@9.74.7
 ```
 
 The application must already use a qualified exact React/React DOM 19.2.x pair. Do not use `latest`, ranges, Git URLs, or `main`. A built application does not contact GitHub at runtime.

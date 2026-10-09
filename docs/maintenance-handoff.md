@@ -11,7 +11,7 @@ Written 2026-10-09 for whoever maintains this repository next, including a new C
 ## Current state
 
 - Latest published version: `0.1.0` (see `docs/releases/0.1.0.md`). Source commit `6f8bae7`, tag `v0.1.0`.
-- Unreleased changes on the maintenance branch since `0.1.0`: a subtle grey hover background on application navigation items; removal of the divider lines before the frozen Actions column of the Editable Grid. Both are visual changes that consumers must re-check on upgrade. Neither has a version or release record yet.
+- Prepared but not released: `0.1.1` (`docs/releases/0.1.1.md`), a visual refinement with a grey hover background on application navigation items and no divider lines before the Editable Grid frozen Actions column. It still needs a release workflow dry run, Locke's approval of the exact SHA-256, and publication.
 - Table-header colour direction (`docs/table-header-visual-direction.md`) is selected but not implemented.
 - A Claude Design System artifact is built from this repository by `design-system/` (see its README). It reproduces the published artifact files exactly. Rebuild and republish it after any change to components, styles or palette.
 
@@ -22,6 +22,10 @@ Written 2026-10-09 for whoever maintains this repository next, including a new C
 - Verify with `npm run verify` (lint, strict types, build, tests, CSS and colour checks, export boundaries, adoption check). For a release candidate also follow `docs/release-checklist.md` in full.
 - Dark Mode is out of scope unless Locke requests it. Do not add business rules, role rules or API behaviour to the package.
 - Record unresolved semantics as `Business Rule Pending` and name the owning application.
+
+## Versioning (proposed, pending Locke's confirmation)
+
+While the package is pre-1.0: a patch version for fixes and visual refinements with no export, prop, dependency or peer-version change; a minor version for new exports, changed behaviour, or a change to the exact Fluent, React or date-picker versions applications must install. Every release record states the change type and what applications must do.
 
 ## Releasing
 

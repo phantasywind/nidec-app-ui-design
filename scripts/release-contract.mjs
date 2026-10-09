@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 import { gunzipSync } from 'node:zlib';
 
 export const RELEASE_PACKAGE_NAME = '@phantasywind/nidec-app-ui-design';
-export const RELEASE_PACKAGE_VERSION = '0.1.0';
+export const RELEASE_PACKAGE_VERSION = '0.1.1';
 export const RELEASE_FILES = [
   'README.md', 'dist/date-picker.d.ts', 'dist/date-picker.js', 'dist/index.d.ts', 'dist/index.js', 'dist/layouts.d.ts', 'dist/layouts.js', 'dist/styles.css',
   'dist/styles.css.d.ts', 'dist/tokens.css', 'dist/tokens.css.d.ts',
