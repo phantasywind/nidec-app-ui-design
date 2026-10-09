@@ -11,7 +11,7 @@ Written 2026-10-09 for whoever maintains this repository next, including a new C
 ## Current state
 
 - Latest published version: `0.1.0` (see `docs/releases/0.1.0.md`). Source commit `6f8bae7`, tag `v0.1.0`.
-- Prepared but not released: `0.1.1` (`docs/releases/0.1.1.md`), a visual refinement with a grey hover background on application navigation items and no divider lines before the Editable Grid frozen Actions column. It still needs a release workflow dry run, Locke's approval of the exact SHA-256, and publication.
+- Prepared but not released: `0.1.2` (`docs/releases/0.1.2.md`), a visual refinement with a grey hover background on application navigation items and no divider lines before the Editable Grid frozen Actions column. `0.1.1` was abandoned and never published (its release run failed before upload; tag `v0.1.1` stays unused at `f56bbb0`, see `docs/releases/0.1.1.md`). `0.1.2` still needs a dry run, Locke's authorization of the exact SHA-256, and publication.
 - Table-header colour direction (`docs/table-header-visual-direction.md`) is selected but not implemented.
 - A Claude Design System artifact is built from this repository by `design-system/` (see its README). It reproduces the published artifact files exactly. Rebuild and republish it after any change to components, styles or palette.
 

@@ -1,6 +1,6 @@
 # Application adoption and legacy UI replacement
 
-This guide targets `0.1.1`, which keeps the `0.1.0` typography, compact sizing and Dropdown behaviour and adds two small visual refinements (see the [`0.1.1` release record](releases/0.1.1.md)). Check the release record for publication status before installation. Installing the package does not complete a migration: each region must satisfy the shared presentation contract and application-level acceptance.
+This guide targets `0.1.2`, which keeps the `0.1.0` typography, compact sizing and Dropdown behaviour and adds two small visual refinements (see the [`0.1.2` release record](releases/0.1.2.md)). Check the release record for publication status before installation. Installing the package does not complete a migration: each region must satisfy the shared presentation contract and application-level acceptance.
 
 ## Versions and documentation
 
