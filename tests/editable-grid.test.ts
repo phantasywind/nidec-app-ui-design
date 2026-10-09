@@ -98,4 +98,14 @@ describe('EditableGrid governance', () => {
     expect(css).toMatch(/\.nidec-ui-editable-grid__viewport th:last-child\s*\{[^}]*position:\s*sticky/s);
     expect(preview.match(/<TableCell className="nidec-ui-editable-grid__action-column">/g)).toHaveLength(2);
   });
+
+  it('keeps the frozen action column free of a divider line', async () => {
+    const css = await readFile(join(repositoryRoot, 'styles', 'components.css'), 'utf8');
+    const actionCell = /\.nidec-ui-editable-grid__viewport td\.nidec-ui-editable-grid__action-column\s*\{([^}]*)\}/s.exec(css);
+    const actionHeader = /\.nidec-ui-editable-grid__viewport th:last-child\s*\{([^}]*)\}/s.exec(css);
+    expect(actionCell?.[1]).toBeDefined();
+    expect(actionHeader?.[1]).toBeDefined();
+    expect(actionCell?.[1]).not.toMatch(/border/);
+    expect(actionHeader?.[1]).not.toMatch(/border/);
+  });
 });
