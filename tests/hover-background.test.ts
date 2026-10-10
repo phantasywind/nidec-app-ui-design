@@ -1,4 +1,4 @@
-import { readFile } from 'node:fs/promises';
+import { readFile, readdir } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
@@ -7,7 +7,8 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 
 describe('shared hover background', () => {
   it('gives every unselected hover the shared neutral grey, never a brand fill', async () => {
-    const source = await readFile(join(root, 'src', 'index.ts'), 'utf8');
+    const files = (await readdir(join(root, 'src'), { recursive: true })).filter(file => file.endsWith('.ts'));
+    const source = (await Promise.all(files.map(file => readFile(join(root, 'src', file), 'utf8')))).join('\n');
     const css = await readFile(join(root, 'styles', 'components.css'), 'utf8');
     // Selected, checked or pressed items keep their own selected-state hover
     // fill (for example the ViewModeToggle `selected` slot on a grey surface).
