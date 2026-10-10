@@ -6,6 +6,8 @@ export type { NidecProviderProps } from './internal/components/provider';
 export { Button, IconButton, TableActionIconButton } from './internal/components/button';
 export type { ButtonProps, IconButtonProps, TableActionIconButtonProps } from './internal/components/button';
 export { Option } from './internal/components/option';
+export { MultiSelectDropdown } from './internal/components/multi-select-dropdown';
+export type { MultiSelectDropdownOption, MultiSelectDropdownProps } from './internal/components/multi-select-dropdown';
 export { GroupedTableSectionRow } from './internal/components/grouped-table';
 export type { GroupedTableSectionRowProps } from './internal/components/grouped-table';
 export { EditableGrid, EditableGridRowActionGroup } from './internal/components/editable-grid';

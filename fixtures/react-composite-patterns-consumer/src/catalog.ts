@@ -35,9 +35,9 @@ export const catalog: CatalogEntry[] = [
     "id": "select",
     "group": "Forms",
     "title": "Dropdown and searchable selection",
-    "components": "Dropdown · Combobox · Option",
+    "components": "Dropdown · MultiSelectDropdown · Combobox · Option",
     "use": "Choose from fixed or larger option sets",
-    "guidance": "Use Dropdown for fixed choices and Combobox for searchable matching.",
+    "guidance": "Use Dropdown for fixed choices, MultiSelectDropdown for several fixed choices and Combobox for searchable matching.",
     "demo": "select",
     "related": "form"
   },

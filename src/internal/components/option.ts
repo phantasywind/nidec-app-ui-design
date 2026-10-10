@@ -13,6 +13,11 @@ const useOptionStyles = makeStyles({
         backgroundColor: tokens.colorBrandBackground2,
         color: tokens.colorBrandForeground1,
       },
+      // Multiselect lists mark chosen options as checked menu items instead of selected options.
+      '&[aria-checked="true"]:not([aria-disabled="true"])': {
+        backgroundColor: tokens.colorBrandBackground2,
+        color: tokens.colorBrandForeground1,
+      },
     },
   },
 });
