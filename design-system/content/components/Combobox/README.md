@@ -1,4 +1,4 @@
-Combobox accepts typed text to match options, for searchable or long lists. The package re-exports Fluent's `Combobox` and uses its own `Option` for the green hover and selected colours. Use Dropdown for a short, fixed list.
+Combobox accepts typed text to match options, for searchable or long lists. The package re-exports Fluent's `Combobox` and uses its own `Option` for the shared grey hover and the green selected colour. Use Dropdown for a short, fixed list.
 
 Show a magnifier on the left for search, and the arrow on the right. Import `Combobox` and `Option` from the package entry. Use the shared `Option` so the option colours also reach the popup.
 

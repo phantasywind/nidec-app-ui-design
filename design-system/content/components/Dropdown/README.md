@@ -4,6 +4,6 @@ Use Dropdown for short lists, with the arrow kept and no free text. Use Combobox
 
 The consumer provides the option keys and labels, the selected key, filtering and any remote loading. Read the choice from `data.optionValue` or `data.selectedOptions` in `onOptionSelect`; `value` is display text, never an internal ID. Show a disabled "No matching results" option when nothing matches, and decide what happens to the old selection when the query is cleared.
 
-- The list panel is white; hover and selected options use `brand-soft` with `brand-strong` text and a check mark.
+- The list panel is white. A hovered option uses the shared neutral grey hover with `brand-strong` text; the selected option uses `brand-soft` with `brand-strong` text and a check mark.
 - Bound the width to about 16rem for short options, with `max-width: 100%` and `min-width: 0`.
 - Do not style options with global `option` CSS or by changing neutral tokens.

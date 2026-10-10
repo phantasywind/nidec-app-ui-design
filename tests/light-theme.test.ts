@@ -53,6 +53,11 @@ describe('central light theme mapping',()=>{
     for(const [foreground,background] of pairs)expect(contrast(foreground!,background!),`${foreground} on ${background}`).toBeGreaterThanOrEqual(4.5);
     for(const foreground of [t.colorCompoundBrandBackground,t.colorNeutralStrokeAccessible,t.colorStrokeFocus2])expect(contrast(foreground,t.colorNeutralBackground1)).toBeGreaterThanOrEqual(3);
   });
+  it('uses one neutral grey for hover backgrounds and keeps brand text readable on it',()=>{
+    const t=nidecLightTheme;
+    expect(t.colorSubtleBackgroundHover).toBe(t.colorNeutralBackground1Hover);
+    expect(contrast(t.colorBrandForeground1,t.colorNeutralBackground1Hover)).toBeGreaterThanOrEqual(4.5);
+  });
   it('defines differentiated hover/pressed/selected brand states and mapped semantic colors',()=>{
     expect(new Set([nidecLightTheme.colorBrandBackground,nidecLightTheme.colorBrandBackgroundHover,nidecLightTheme.colorBrandBackgroundPressed,nidecLightTheme.colorBrandBackgroundSelected]).size).toBe(4);
     expect(nidecLightTheme.colorStatusSuccessBackground3).toBe(lightPalette.success);

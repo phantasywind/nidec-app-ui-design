@@ -12,7 +12,7 @@ The Nidec Engineering Design System is a shared, versioned UI foundation for Nid
 
 - **Light theme only.** Dark mode is out of scope; do not add dark tokens, dark previews or dark acceptance criteria.
 - **Colour.** Page ground is `canvas`; every module sits on white `surface` with one boundary. Do not nest a second border or shadow inside a bordered module. Text is `text`, `text-secondary`, then `text-muted`; use `text-muted` only on `surface` or `canvas`.
-- **Green.** Fill primary actions with `brand-strong` and `on-brand-strong` text. Use `brand` only for graphics and markers, and `brand-soft` for hover and selected fills. Never put white text on `brand`.
+- **Green.** Fill primary actions with `brand-strong` and `on-brand-strong` text. Use `brand` only for graphics and markers, and `brand-soft` for selected fills. Hover backgrounds are always the theme's neutral grey (`colorNeutralBackground1Hover`), never green. Never put white text on `brand`.
 - **Boundaries.** `border` and `border-strong` are decorative. Draw the edge of an input or other actionable control in `text-muted`.
 - **Status.** `success`, `warning`, `danger` and `info` always come with a word or icon. They are presentation roles only; which business state maps to which role is the application's decision.
 - **Focus.** Use the white-inside, `focus`-blue-outside ring supplied by the theme. Do not recolour it to green.
