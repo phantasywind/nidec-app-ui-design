@@ -1,0 +1,110 @@
+import { createLightTheme } from '@fluentui/react-components';
+import type { BrandVariants, Theme } from '@fluentui/react-components';
+import { lightPalette as palette } from '../light-palette.mjs';
+
+// Deterministic sRGB interpolation. Derived states are UI mapping choices, not
+// additional official raw brand colors. See ADR-0006 and the mapping record.
+function mixColor(from: string, to: string, weight: number): string {
+  const channels = [1, 3, 5].map(offset => Math.round(
+    parseInt(from.slice(offset, offset + 2), 16) * (1 - weight) +
+    parseInt(to.slice(offset, offset + 2), 16) * weight,
+  ).toString(16).padStart(2, '0'));
+  return `#${channels.join('')}`;
+}
+
+const brandRamp: BrandVariants = /* @__PURE__ */ (() => ({
+  10: mixColor(palette.brandStrong, palette.text, 0.9),
+  20: mixColor(palette.brandStrong, palette.text, 0.8),
+  30: mixColor(palette.brandStrong, palette.text, 0.65),
+  40: mixColor(palette.brandStrong, palette.text, 0.5),
+  50: mixColor(palette.brandStrong, palette.text, 0.35),
+  60: mixColor(palette.brandStrong, palette.text, 0.18),
+  70: palette.brandStrong,
+  80: palette.brand,
+  90: mixColor(palette.brand, palette.surface, 0.12),
+  100: mixColor(palette.brand, palette.surface, 0.24),
+  110: mixColor(palette.brand, palette.surface, 0.36),
+  120: mixColor(palette.brand, palette.surface, 0.48),
+  130: mixColor(palette.brand, palette.surface, 0.6),
+  140: mixColor(palette.brand, palette.surface, 0.72),
+  150: mixColor(palette.brand, palette.surface, 0.82),
+  160: palette.brandSoft,
+}))();
+
+/** Centrally mapped light theme; Provider still requires explicit opt-in. */
+export const nidecLightTheme: Theme = /* @__PURE__ */ (() => ({
+  ...createLightTheme(brandRamp),
+  colorNeutralForeground1: palette.text,
+  colorNeutralForeground1Hover: palette.text,
+  colorNeutralForeground1Pressed: palette.text,
+  colorNeutralForeground1Selected: palette.text,
+  colorNeutralForeground2: palette.textSecondary,
+  // Fluent pairs this role with darker neutral surfaces (for example the
+  // neutral Avatar background), so darken the approved muted-text source just
+  // enough to retain AA text contrast across the supported light-theme pair.
+  colorNeutralForeground3: mixColor(palette.textMuted, palette.text, 0.12),
+  colorNeutralForegroundOnBrand: palette.surface,
+  colorNeutralBackground1: palette.surface,
+  colorNeutralBackground2: palette.canvas,
+  colorNeutralBackground3: palette.surfaceSubtle,
+  colorNeutralStroke1: palette.border,
+  colorNeutralStroke2: palette.borderStrong,
+  // Decorative borders can stay subtle; functional control boundaries are darker.
+  colorNeutralStrokeAccessible: palette.textMuted,
+  colorNeutralStrokeAccessibleHover: palette.textSecondary,
+  colorNeutralStrokeAccessiblePressed: palette.text,
+  colorStrokeFocus1: palette.surface,
+  colorStrokeFocus2: palette.focus,
+  // Text on a solid brand surface needs the stronger green, not raw brand 80.
+  colorBrandBackground: brandRamp[70],
+  colorBrandBackgroundHover: brandRamp[60],
+  colorBrandBackgroundPressed: brandRamp[40],
+  colorBrandBackgroundSelected: brandRamp[50],
+  colorBrandForeground1: brandRamp[70],
+  colorBrandForegroundOnLight: brandRamp[70],
+  colorBrandForegroundOnLightHover: brandRamp[60],
+  colorBrandForegroundOnLightPressed: brandRamp[40],
+  colorBrandForegroundOnLightSelected: brandRamp[50],
+  colorNeutralForeground2BrandHover: brandRamp[70],
+  colorNeutralForeground2BrandPressed: brandRamp[60],
+  colorNeutralForeground2BrandSelected: brandRamp[70],
+  colorNeutralForeground3BrandHover: brandRamp[70],
+  colorNeutralForeground3BrandPressed: brandRamp[60],
+  colorNeutralForeground3BrandSelected: brandRamp[70],
+  colorStatusSuccessForeground1: palette.success,
+  colorStatusSuccessForeground2: palette.success,
+  colorStatusSuccessForeground3: palette.success,
+  colorStatusSuccessForegroundInverted: mixColor(palette.success, palette.surface, 0.5),
+  colorStatusSuccessBackground1: mixColor(palette.success, palette.surface, 0.96),
+  colorStatusSuccessBackground2: mixColor(palette.success, palette.surface, 0.9),
+  colorStatusSuccessBackground3: palette.success,
+  colorStatusSuccessBorderActive: palette.success,
+  colorStatusSuccessBorder1: mixColor(palette.success, palette.surface, 0.65),
+  colorStatusSuccessBorder2: palette.success,
+  colorStatusWarningForeground1: palette.warning,
+  colorStatusWarningForeground2: palette.warning,
+  colorStatusWarningForeground3: palette.warning,
+  colorStatusWarningForegroundInverted: mixColor(palette.warning, palette.surface, 0.5),
+  colorStatusWarningBackground1: mixColor(palette.warning, palette.surface, 0.96),
+  colorStatusWarningBackground2: mixColor(palette.warning, palette.surface, 0.9),
+  colorStatusWarningBackground3: palette.warning,
+  colorStatusWarningBorderActive: palette.warning,
+  colorStatusWarningBorder1: mixColor(palette.warning, palette.surface, 0.65),
+  colorStatusWarningBorder2: palette.warning,
+  colorStatusDangerForeground1: palette.danger,
+  colorStatusDangerForeground2: palette.danger,
+  colorStatusDangerForeground3: palette.danger,
+  colorStatusDangerForegroundInverted: mixColor(palette.danger, palette.surface, 0.5),
+  colorStatusDangerBackground1: mixColor(palette.danger, palette.surface, 0.96),
+  colorStatusDangerBackground2: mixColor(palette.danger, palette.surface, 0.9),
+  colorStatusDangerBackground3: palette.danger,
+  colorStatusDangerBackground3Hover: mixColor(palette.danger, palette.text, 0.15),
+  colorStatusDangerBackground3Pressed: mixColor(palette.danger, palette.text, 0.3),
+  colorStatusDangerBorderActive: palette.danger,
+  colorStatusDangerBorder1: mixColor(palette.danger, palette.surface, 0.65),
+  colorStatusDangerBorder2: palette.danger,
+  // Fluent has no colorStatusInfo family; information uses its Blue palette roles.
+  colorPaletteBlueForeground2: palette.info,
+  colorPaletteBlueBackground2: mixColor(palette.info, palette.surface, 0.9),
+  colorPaletteBlueBorderActive: palette.info,
+} satisfies Theme))();

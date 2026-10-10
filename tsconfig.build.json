@@ -6,7 +6,7 @@
     "emitDeclarationOnly": true,
     "stripInternal": true,
     "rootDir": "./src",
-    "outDir": "./dist"
+    "outDir": "./.tmp/declarations"
   },
   "include": [
     "src/index.ts",

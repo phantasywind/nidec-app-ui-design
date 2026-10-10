@@ -183,7 +183,7 @@ describe('consumer-neutral composite patterns', () => {
 
   it('provides a dedicated inline editor mode without segmented-control chrome', async () => {
     const html = renderToStaticMarkup(createElement(InlineModeTabs, inlineModeTabsContract));
-    const source = await readFile(join(repositoryRoot, 'src', 'index.ts'), 'utf8');
+    const source = await readFile(join(repositoryRoot, 'src', 'internal', 'components', 'inline-mode-tabs.ts'), 'utf8');
     const readme = await readFile(join(repositoryRoot, 'README.md'), 'utf8');
     const governance = await readFile(join(repositoryRoot, 'docs', 'inline-mode-tabs.md'), 'utf8');
     const fixture = await readFile(join(repositoryRoot, 'fixtures', 'react-composite-patterns-consumer', 'src', 'demos.tsx'), 'utf8');
@@ -441,7 +441,7 @@ describe('consumer-neutral composite patterns', () => {
   });
 
   it('renders a responsive semantic gallery with flat nested Fluent Cards', async () => {
-    const source = await readFile(join(repositoryRoot, 'src', 'index.ts'), 'utf8');
+    const source = await readFile(join(repositoryRoot, 'src', 'internal', 'components', 'card-gallery.ts'), 'utf8');
     const html = renderToStaticMarkup(createElement(CardGallery, { minimumItemWidth: 'large', 'aria-label': 'Examples' },
       createElement(CardGalleryItem, {}, createElement('h3', {}, 'Example card'))));
     expect(html).toContain('<ul');
@@ -580,7 +580,7 @@ describe('consumer-neutral composite patterns', () => {
   });
 
   it('keeps stage hover bounded and connectors outside marker geometry', async () => {
-    const source = await readFile(join(repositoryRoot, 'src', 'index.ts'), 'utf8');
+    const source = await readFile(join(repositoryRoot, 'src', 'internal', 'components', 'process-stage.ts'), 'utf8');
     const css = await readFile(join(repositoryRoot, 'styles', 'components.css'), 'utf8');
     const sealSource = await readFile(join(repositoryRoot, 'scripts', 'seal-composite-patterns-browser.mjs'), 'utf8');
     expect(source).toContain("appearance: 'transparent'");
