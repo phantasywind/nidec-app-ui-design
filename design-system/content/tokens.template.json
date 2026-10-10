@@ -47,7 +47,7 @@
       {
         "name": "brand-soft",
         "palette": "brandSoft",
-        "usage": "Light green fill for hover and selected rows, options and menu items. Hold text on it to text or text-secondary; brand-strong on brand-soft is 4.42:1 and misses the 4.5:1 floor for small text."
+        "usage": "Light green fill for selected rows, options and menu items. Hover backgrounds use the theme's neutral grey instead. Hold text on it to text or text-secondary; brand-strong on brand-soft is 4.42:1 and misses the 4.5:1 floor for small text."
       },
       {
         "name": "on-brand-strong",

@@ -61,6 +61,6 @@ describe('page layout public boundary', () => {
   it('gives a hovered navigation item a subtle grey background', async () => {
     const css = await readFile(join(dirname(fileURLToPath(import.meta.url)), '..', 'styles', 'components.css'), 'utf8');
     const hover = /\.nidec-ui-application-navigation__item:hover\s*\{([^}]*)\}/s.exec(css);
-    expect(hover?.[1]).toMatch(/background:\s*var\(--colorSubtleBackgroundHover\)/);
+    expect(hover?.[1]).toMatch(/background:\s*var\(--colorNeutralBackground1Hover\)/);
   });
 });

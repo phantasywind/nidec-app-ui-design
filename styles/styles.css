@@ -133,7 +133,7 @@
   }
 
   :where([data-nidec-ui]) .nidec-ui-application-navigation__item:hover {
-    background: var(--colorSubtleBackgroundHover);
+    background: var(--colorNeutralBackground1Hover);
     color: var(--colorBrandForeground1);
   }
 
