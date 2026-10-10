@@ -159,7 +159,7 @@ if (distFiles.length > 0) {
     'MessageBar', 'MessageBarBody', 'MessageBarTitle', 'MessageBarActions',
     'Text', 'Body1', 'Caption1', 'Subtitle2', 'Spinner', 'IconButton',
     'Tooltip', 'Link', 'TabList', 'Tab', 'Menu', 'MenuTrigger', 'MenuPopover', 'MenuList', 'MenuItem', 'MenuDivider',
-    'Dropdown', 'Combobox', 'Option', 'OptionGroup',
+    'Dropdown', 'Combobox', 'Option', 'OptionGroup', 'MultiSelectDropdown',
     'Table', 'TableHeader', 'TableBody', 'TableRow', 'TableHeaderCell', 'TableCell',
     'TableCellLayout', 'TableSelectionCell', 'TableCellActions',
     'DataGrid', 'DataGridHeader', 'DataGridBody', 'DataGridRow', 'DataGridHeaderCell', 'DataGridCell',

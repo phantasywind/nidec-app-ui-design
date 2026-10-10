@@ -11,7 +11,7 @@
 | 表单 / `text` | Input · Textarea · Field | 输入名称、编号、描述及字段校验 | 长说明用 Textarea；标签、提示和错误统一放在 Field 内 |
 | 表单 / `date` | DatePicker | 业务日期录入、范围限制和禁用日期 | 日期含义、时区、格式与可选范围由应用决定 |
 | 表单 / `choice` | RadioGroup · Checkbox · Switch | 互斥选择、多项选择和即时开关 | 互斥选 Radio；批量选 Checkbox；即时二态选 Switch |
-| 表单 / `select` | Dropdown · Combobox · Option | 从固定或较长选项集合中选择 | 短列表用 Dropdown；搜索或输入匹配用 Combobox |
+| 表单 / `select` | Dropdown · MultiSelectDropdown · Combobox · Option | 从固定或较长选项集合中选择一个或多个值 | 短列表单选用 Dropdown，多选用 MultiSelectDropdown；搜索或输入匹配用 Combobox |
 | 表单 / `number` | SpinButton · Slider | 精确数量输入或有范围的连续调整 | 精确值用 SpinButton；估计区间用 Slider，单位与精度归应用 |
 | 表单 / `actions` | Button · IconButton · TableActionIconButton · Menu | 主次操作、行末操作和低频菜单 | 导航用 Link；图标按钮必须有可访问名称和 Tooltip |
 | 表单 / `modes` | SegmentedControl · InlineModeTabs | 同级模式选择、字段内部输入来源切换 | 局部编辑来源用胶囊；页面导航用 Tabs |

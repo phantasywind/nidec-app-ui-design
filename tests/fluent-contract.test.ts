@@ -44,7 +44,7 @@ const compositePatterns = [
 
 describe('Fluent public boundary', () => {
   it('exports exactly the approved API and preserves upstream composition identity', () => {
-    expect(Object.keys(shared).sort()).toEqual(['Button', 'IconButton', 'Option', 'NidecProvider', 'nidecLightTheme', ...compositions, ...platformSurfaces, ...commonContentControls, ...compositePatterns].sort());
+    expect(Object.keys(shared).sort()).toEqual(['Button', 'IconButton', 'Option', 'MultiSelectDropdown', 'NidecProvider', 'nidecLightTheme', ...compositions, ...platformSurfaces, ...commonContentControls, ...compositePatterns].sort());
     for (const name of [...compositions, ...platformSurfaces, ...commonContentControls]) expect(shared[name]).toBe(upstream[name]);
   });
   it('forwards an explicit theme and establishes a host', () => {

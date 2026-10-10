@@ -1,6 +1,6 @@
 Dropdown picks one value from a fixed list. Combobox accepts typed text to match options, for searchable or long lists.
 
-Use Dropdown for short lists, with the arrow kept and no free text. Use Combobox for search: show the magnifier on the left and the arrow on the right. Import `Dropdown`, `Combobox` and `Option` from the package entry. Use the shared `Option` so option styling reaches the portal; do not use `Select` for new pages.
+Use Dropdown for short lists, with the arrow kept and no free text. Use Combobox for search: show the magnifier on the left and the arrow on the right. For several values from a fixed list use MultiSelectDropdown. Import `Dropdown`, `Combobox` and `Option` from the package entry. Use the shared `Option` so option styling reaches the portal; do not use `Select` for new pages.
 
 The consumer provides the option keys and labels, the selected key, filtering and any remote loading. Read the choice from `data.optionValue` or `data.selectedOptions` in `onOptionSelect`; `value` is display text, never an internal ID. Show a disabled "No matching results" option when nothing matches, and decide what happens to the old selection when the query is cleared.
 

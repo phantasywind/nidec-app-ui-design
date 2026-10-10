@@ -51,7 +51,7 @@ Choose the page layout by the user's main task, then compose the listed componen
 ## Form page
 
 - **Use for:** creating or editing one record on a dedicated page, with a single submit.
-- **Components:** PageHeader, WorkspaceSection for each group of fields, Field with Input, Textarea, Dropdown, Combobox, DatePicker, SpinButton, RadioGroup, Checkbox or Switch, MessageBar for submission feedback, and Button for the actions.
+- **Components:** PageHeader, WorkspaceSection for each group of fields, Field with Input, Textarea, Dropdown, MultiSelectDropdown, Combobox, DatePicker, SpinButton, RadioGroup, Checkbox or Switch, MessageBar for submission feedback, and Button for the actions.
 - **Rules:** a real `form`; one heading; fields grouped into titled sections; every field has a visible label and required fields are marked; errors appear next to the field in words, and a failed submit may add a summary at the start of the form; the actions sit at the end of the form, with the one primary submit first and Cancel or Reset after it; a busy submit disables duplicate submission and keeps the label; leaving with unsaved work asks first.
 - **Do not use when:** selecting a row loads the editor on the same page (Master data), or the page also has sections, tabs and a status to track (Record workspace).
 - **The application owns:** fields, validation rules, defaults, persistence, permissions and what happens after saving.
