@@ -9,6 +9,7 @@ Choose the page layout by the user's main task, then compose the listed componen
 | Is the main task processing assigned, pending or exception work? | Work queue |
 | Does one record stay authoritative while the user moves among its sections? | Record workspace |
 | Does selecting a row load an editor that stays on the same page? | Master data (Form + List) |
+| Is the main task creating or editing one record through a form on its own page? | Form page |
 | Does one stable object have a current version or state and controlled commands to advance it? | Versioned governance workspace |
 | Is the page only a summary across several concerns, with no stronger task? | Dashboard (a documented type only, not yet a shared layout; needs separate review) |
 | None of the above, once domain words are removed? | Application-specific page: compose the shared components and do not create a shared template |
@@ -47,12 +48,50 @@ Choose the page layout by the user's main task, then compose the listed componen
 - **Rules:** the whole row is the one selection target; the primary value is plain text, not a link; no Open or Select control; a neutral selected state; switching records must not silently discard unsaved work; create mode is explicit.
 - **Order:** page identity, editor, then the list.
 
+## Form page
+
+- **Use for:** creating or editing one record on a dedicated page, with a single submit.
+- **Components:** PageHeader, WorkspaceSection for each group of fields, Field with Input, Textarea, Dropdown, Combobox, DatePicker, SpinButton, RadioGroup, Checkbox or Switch, MessageBar for submission feedback, and Button for the actions.
+- **Rules:** a real `form`; one heading; fields grouped into titled sections; every field has a visible label and required fields are marked; errors appear next to the field in words, and a failed submit may add a summary at the start of the form; the actions sit at the end of the form, with the one primary submit first and Cancel or Reset after it; a busy submit disables duplicate submission and keeps the label; leaving with unsaved work asks first.
+- **Do not use when:** selecting a row loads the editor on the same page (Master data), or the page also has sections, tabs and a status to track (Record workspace).
+- **The application owns:** fields, validation rules, defaults, persistence, permissions and what happens after saving.
+
 ## Versioned governance workspace
 
 - **Use for:** one stable object whose governed versions or states change, such as reviewing or advancing revisions.
 - **Components:** PageHeader, an identity and status region (labelled facts and Badge), commands (Button, Menu), Tabs, WorkspaceSection, and optionally StageNavigator or BusinessProcessFlow.
 - **Rules:** keep the object, version and status as separate labelled facts; at most one primary command per group; disabled commands explain why; never colour alone for state.
 - **The application owns:** transitions, permissions, approval, validation, persistence and audit.
+
+## Page layout patterns
+
+These rules apply to every page type above. They cover where things go, not what they mean.
+
+**Region order, top to bottom:** page identity (the single `h1` in PageHeader); page-level feedback (MessageBar); the primary work area built from WorkspaceSection modules; an optional context rail. Put status and metadata in the same section as the content they govern.
+
+**Where actions go**
+
+| Action | Place |
+| --- | --- |
+| Page-level (create, edit, export) | PageHeader actions: at most one primary, placed last; secondary before it; low-frequency in a Menu |
+| Section-level | That WorkspaceSection's actions |
+| Row-level | In the row: icon-only buttons with a name and Tooltip, or a Menu for several |
+| Form submit and cancel | End of the form: primary first, then Cancel or Reset (Form page) |
+| Destructive | In a Menu, then a confirmation Dialog that names the object; never the primary action |
+
+Do not repeat the same action in the header and the form footer. A disabled action says why.
+
+**Feedback**
+- Loading keeps the layout and the query controls (Skeleton or Spinner). Empty and error states stay in the region they replace and keep the query context.
+- Success and failure of a page action appear in a MessageBar at the start of the page area. Field errors stay at the field. Never rely on colour alone.
+- A Tooltip or Popover never holds the only copy of an important message.
+
+**Choosing a surface**
+- Dialog: a short confirmation or one decision, with focus returning to its trigger.
+- Sheet (OverlayDrawer): detailed viewing or editing of a record without leaving a list; guard closing with unsaved work.
+- Dedicated page: a flow that needs its own route, sections and submit.
+
+**Reflow:** moving regions at 900 px and below must not change route, selection, unsaved work or business state.
 
 ## Choosing a stage component
 
