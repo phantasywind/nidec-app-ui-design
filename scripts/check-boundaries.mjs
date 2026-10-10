@@ -5,7 +5,7 @@ import { RELEASE_PACKAGE_VERSION } from './release-contract.mjs';
 
 const repositoryRoot = resolve(import.meta.dirname, '..');
 const packagePath = join(repositoryRoot, 'package.json');
-const publicEntryPath = join(repositoryRoot, 'src', 'index.ts');
+const buttonSourcePath = join(repositoryRoot, 'src', 'internal', 'components', 'button.ts');
 const namespacePath = join(repositoryRoot, 'src', 'internal', 'namespace.ts');
 const distPath = join(repositoryRoot, 'dist');
 
@@ -104,8 +104,8 @@ for (const [name, version] of Object.entries(packageJson.devDependencies ?? {}))
   assert(isExactVersion(version), `Development dependency must use an exact version: ${name}=${version}`);
 }
 
-const publicEntry = await readFile(publicEntryPath, 'utf8');
-assert(publicEntry.includes('export function Button(') && publicEntry.includes('export type ButtonProps ='), 'Approved Button contract required.');
+const buttonSource = await readFile(buttonSourcePath, 'utf8');
+assert(buttonSource.includes('export function Button(') && buttonSource.includes('export type ButtonProps ='), 'Approved Button contract required.');
 
 const namespaceSource = await readFile(namespacePath, 'utf8');
 for (const requiredValue of [
@@ -204,6 +204,10 @@ if (distFiles.length > 0) {
 
   const declaration = await readFile(join(distPath, 'index.d.ts'), 'utf8');
   assert(declaration.includes('ButtonProps') && declaration.includes('function Button('), 'Button declaration is required.');
+  for (const entry of ['index.d.ts', 'layouts.d.ts', 'date-picker.d.ts']) {
+    const entryDeclaration = await readFile(join(distPath, entry), 'utf8');
+    assert(!/from\s+['"]\.{1,2}\//.test(entryDeclaration) && !/import\(\s*['"]\.{1,2}\//.test(entryDeclaration), `${entry} must be self-contained.`);
+  }
 }
 
 console.log(`Boundary contract verified${distFiles.length > 0 ? ` for ${distFiles.length} build files` : ' before build'}.`);
