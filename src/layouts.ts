@@ -1,6 +1,6 @@
 import { createElement, useEffect, useRef } from 'react';
 import type { ComponentPropsWithoutRef, ReactElement, ReactNode } from 'react';
-import { Button as FluentButton, mergeClasses } from '@fluentui/react-components';
+import { Button as FluentButton } from '@fluentui/react-components';
 
 const withClass = (base: string, className?: string) => className ? `${base} ${className}` : base;
 
