@@ -30,10 +30,10 @@ export type {
 } from './internal/components/record-selection';
 export { CardGallery, CardGalleryItem, ActionableCardGalleryItem } from './internal/components/card-gallery';
 export type { CardGalleryProps, CardGalleryItemProps, ActionableCardGalleryItemProps } from './internal/components/card-gallery';
-export { ProcessStageIndicator, StageNavigator, BusinessProcessFlow } from './internal/components/process-stage';
+export { ProcessStageIndicator, StageNavigator, BusinessProcessFlow, BusinessProcessStageDetail } from './internal/components/process-stage';
 export type {
   ProcessStageStatus, ProcessStageDefinition, ProcessStageIndicatorProps, StageNavigatorProps,
-  BusinessProcessStageDefinition, BusinessProcessFlowProps,
+  BusinessProcessStageDefinition, BusinessProcessFlowProps, BusinessProcessStageCheck, BusinessProcessStageDetailProps,
 } from './internal/components/process-stage';
 
 export {
