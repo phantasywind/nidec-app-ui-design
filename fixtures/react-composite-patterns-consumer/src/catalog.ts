@@ -215,9 +215,9 @@ export const catalog: CatalogEntry[] = [
     "id": "bpf",
     "group": "Specialized components",
     "title": "Business Process Flow",
-    "components": "BusinessProcessFlow",
-    "use": "Stages with actual business progression",
-    "guidance": "Only reached stages can be viewed; viewing must not change actual process progress.",
+    "components": "BusinessProcessFlow · BusinessProcessStageDetail",
+    "use": "Stages with actual business progression and a detail card per reached stage",
+    "guidance": "Only reached stages can be viewed; viewing must not change actual process progress. Checks and actions in the detail card stay consumer-owned.",
     "demo": "Business Process Flow",
     "related": "governance"
   },

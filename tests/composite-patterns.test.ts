@@ -6,7 +6,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import type { TableRowId } from '@fluentui/react-components';
 import { describe, expect, it } from 'vitest';
 import {
-  ActionableCardGalleryItem, BusinessProcessFlow, CardGallery, CardGalleryItem, CollectionList, CollectionListItem,
+  ActionableCardGalleryItem, BusinessProcessFlow, BusinessProcessStageDetail, CardGallery, CardGalleryItem, CollectionList, CollectionListItem,
   ProcessStageIndicator, StageNavigator,
   RecordDataGridHeader, RecordIdentityCellLayout, RecordSelectionDataGrid, RecordSelectionDataGridRow,
   InlineModeTabs, RecordSelectionRegion, RecordTableHeader, SegmentedControl, TableActionIconButton, ViewModeToggle,
@@ -548,21 +548,67 @@ describe('consumer-neutral composite patterns', () => {
     expect(css).toContain('padding: var(--spacingVerticalXXS) 1.5rem var(--spacingVerticalXXS) 1.25rem');
     expect(css).toContain('grid-template-columns: 1.5rem minmax(0, 1fr)');
     expect(css).toContain('height: 1.5rem');
-    expect(css).toMatch(/data-stage-status="completed"[\s\S]*?color: var\(--colorNeutralForeground1\)/);
     expect(css).toMatch(/nidec-ui-business-process-flow__copy small[\s\S]*?opacity: 1/);
-    expect(css).toContain('--nidec-bpf-stage-fill: var(--colorBrandBackground2)');
     expect(css).toContain('background: var(--nidec-bpf-stage-fill)');
-    expect(css).toContain('--nidec-bpf-stage-outline: var(--colorBrandBackground)');
     expect(css).toContain('--nidec-bpf-arrow-tip: 0.75rem');
-    expect(css).toContain('right: calc(0px - var(--nidec-bpf-ring-offset))');
-    expect(css).toContain('left: calc(0px - var(--nidec-bpf-ring-offset) - var(--nidec-bpf-ring-slant))');
+  });
+
+  it('distinguishes BusinessProcessFlow stages by flat fill only, with a keyboard-only focus ring', async () => {
+    const css = await readFile(join(repositoryRoot, 'styles', 'components.css'), 'utf8');
+    expect(css).toMatch(/:is\(\[data-stage-status="completed"\], \[data-stage-status="current"\]\) \{\s*--nidec-bpf-stage-fill: var\(--colorBrandBackground4Static\);\s*color: var\(--colorNeutralForegroundOnBrand\)/);
+    expect(css).toMatch(/\[data-viewed="true"\] \{\s*--nidec-bpf-stage-fill: var\(--colorBrandBackground\);/);
+    expect(css).not.toContain('--nidec-bpf-stage-fill: var(--colorBrandBackground2)');
+    expect(css).not.toMatch(/business-process-flow__stage:is\(\[data-viewed="true"\]/);
+    expect(css).toContain('.nidec-ui-business-process-flow__stage:has(> .nidec-ui-business-process-flow__body:focus-visible)::before');
+    expect(css).toContain('--nidec-bpf-stage-outline: var(--colorStrokeFocus2)');
     expect(css).toContain('--nidec-bpf-ring-offset: var(--spacingHorizontalXS)');
-    expect(css).toContain('--nidec-bpf-ring-offset: var(--spacingVerticalXXS)');
-    expect(css).toContain('--nidec-bpf-ring-slant: var(--spacingVerticalXXS)');
-    expect(css).toContain('--nidec-bpf-ring-slant: var(--strokeWidthThin)');
-    expect(css).toContain('.nidec-ui-business-process-flow__stage:is([data-viewed="true"], :focus-within)::before');
-    expect(css).not.toContain('filter: drop-shadow(0 0 var(--spacingVerticalXXS) var(--nidec-bpf-stage-outline))');
-    expect(css).not.toContain('button.nidec-ui-business-process-flow__body:hover {\n    box-shadow:');
+    expect(css).toMatch(/:not\(\[data-stage-status="upcoming"\]\) \.nidec-ui-business-process-flow__marker \{\s*color: var\(--nidec-bpf-stage-fill\)/);
+  });
+
+  it('opens consumer-owned stage detail from reached BusinessProcessFlow stages only', () => {
+    const html = renderToStaticMarkup(createElement(BusinessProcessFlow, {
+      stages: businessProcessStages,
+      'aria-label': 'Quote lifecycle',
+      renderStageDetail: stage => stage.id === 'issued' ? 'never' : createElement('p', null, `Detail ${stage.id}`),
+    }));
+    expect(html.match(/<button/g)).toHaveLength(2);
+    expect(html.match(/aria-expanded="false"/g)).toHaveLength(2);
+    expect(html).not.toContain('aria-current="location"');
+    expect(html).toMatch(/data-stage-status="upcoming"[\s\S]*?<div class="nidec-ui-business-process-flow__body"/);
+    const withoutDetail = renderToStaticMarkup(createElement(BusinessProcessFlow, {
+      stages: businessProcessStages, 'aria-label': 'Quote lifecycle', renderStageDetail: () => undefined,
+    }));
+    expect(withoutDetail).not.toContain('<button');
+  });
+
+  it('renders BusinessProcessStageDetail checks with met and unmet icons and accessible state text', () => {
+    const html = renderToStaticMarkup(createElement(BusinessProcessStageDetail, {
+      title: 'Review',
+      status: 'Waiting for you',
+      checksTitle: 'To move to Release',
+      checks: [
+        { id: 'a', label: 'Evidence attached', met: true, stateLabel: 'Done' },
+        { id: 'b', label: 'Owner assigned', met: false, stateLabel: 'Missing', detail: 'Returned by reviewer', action: createElement('a', { href: '#owner' }, 'Go to field') },
+      ],
+      actionsTitle: 'Your actions',
+      actions: createElement('button', { type: 'button' }, 'Submit'),
+      next: 'Next: another reviewer approves.',
+    }));
+    expect(html).toContain('<h3');
+    expect(html).toContain('data-check-state="met"');
+    expect(html).toContain('data-check-state="unmet"');
+    expect(html.match(/<svg/g)).toHaveLength(2);
+    expect(html).toContain('Done: ');
+    expect(html).toContain('Missing: ');
+    expect(html).toContain('Returned by reviewer');
+    expect(html).toContain('Go to field');
+    expect(html).toContain('Next: another reviewer approves.');
+    expect(() => renderToStaticMarkup(createElement(BusinessProcessStageDetail, {
+      title: 'Review', checks: [{ id: 'a', label: 'A', met: true, stateLabel: 'Done' }, { id: 'a', label: 'B', met: false, stateLabel: 'Missing' }],
+    }))).toThrow('unique');
+    expect(() => renderToStaticMarkup(createElement(BusinessProcessStageDetail, {
+      title: 'Review', checks: [{ id: 'a', label: 'A', met: true, stateLabel: ' ' }],
+    }))).toThrow('stateLabel');
   });
 
   it('rejects ambiguous BusinessProcessFlow structure without interpreting lifecycle rules', () => {

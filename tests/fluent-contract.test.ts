@@ -35,7 +35,7 @@ const commonContentControls = [
 ] as const;
 const compositePatterns = [
   'CollectionList', 'CollectionListItem', 'CardGallery', 'CardGalleryItem', 'ActionableCardGalleryItem',
-  'ProcessStageIndicator', 'StageNavigator', 'BusinessProcessFlow',
+  'ProcessStageIndicator', 'StageNavigator', 'BusinessProcessFlow', 'BusinessProcessStageDetail',
   'RecordIdentityCellLayout', 'RecordTableHeader', 'RecordDataGridHeader', 'TableActionIconButton',
   'EditableGrid', 'EditableGridRowActionGroup', 'GroupedTableSectionRow',
   'RecordSelectionRegion', 'RecordSelectionDataGrid', 'RecordSelectionDataGridRow', 'SegmentedControl', 'InlineModeTabs', 'ViewModeToggle',

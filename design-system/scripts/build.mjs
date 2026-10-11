@@ -110,7 +110,7 @@ ${pageStyle}
 <script>
 (function(){
 var U=window.NidecUi;if(!U){document.body.textContent='Component bundle not loaded.';return;}
-var h=U.React.createElement,Frag=U.React.Fragment,useState=U.React.useState;
+var h=U.React.createElement,Frag=U.React.Fragment,useState=U.React.useState,useEffect=U.React.useEffect,useRef=U.React.useRef;
 ${used.length ? `var {${used.join(',')}}=U;` : ''}
 ${code}
 U.createRoot(document.getElementById('root')).render(h(U.NidecProvider,{theme:U.nidecLightTheme},h(Demo)));

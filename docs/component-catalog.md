@@ -29,7 +29,7 @@
 | 页面 / `table` | Table · DataGrid · RecordIdentityCellLayout · RecordSelectionDataGrid | 多列比较、记录入口或同屏编辑选择 | 独立目录用主列链接；Form + List 使用整行选择 |
 | 页面 / `cards` | CardGallery · ActionableCardGalleryItem · ViewModeToggle | 记录摘要与同一集合的卡片视图 | 导航卡片整体点击；展示卡片无内嵌重复边框和阴影 |
 | 特殊部件 / `stage` | StageNavigator | 可提前查看的同级准备工作区 | 选中外圈只表示查看位置；节点底色保留自身状态 |
-| 特殊部件 / `bpf` | BusinessProcessFlow | 有实际业务进度的流程阶段 | 只允许查看已到达阶段；查看位置不能改变真实流程位置 |
+| 特殊部件 / `bpf` | BusinessProcessFlow · BusinessProcessStageDetail | 有实际业务进度的流程阶段，点击已到达阶段弹出阶段详情卡 | 只允许查看已到达阶段；查看位置不能改变真实流程位置；详情卡中的条件与操作归应用 |
 | 特殊部件 / `editable-grid` | EditableGrid · EditableGridRowActionGroup | 大量行、频繁修改、批量保存 | 列、校验、选中、草稿、保存与冲突归应用；行末操作冻结 |
 | 特殊部件 / `grouped-table` | GroupedTableSectionRow · EditableGrid | 自然分组的多行集合和高频编辑 | 分组只控制展开；选中和编辑发生在叶子行，折叠保留草稿 |
 | 样例 / `directory` | DirectoryWorkspace | 查找、筛选、比较并打开记录 | 主列链接或整卡入口打开 Sheet；返回保留目录状态 |

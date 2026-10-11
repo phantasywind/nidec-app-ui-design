@@ -956,7 +956,7 @@
   :where([data-nidec-ui]) .nidec-ui-business-process-flow__stage {
     --nidec-bpf-arrow-tip: 0.75rem;
     --nidec-bpf-stage-fill: var(--colorNeutralBackground3);
-    --nidec-bpf-stage-outline: var(--colorBrandBackground);
+    --nidec-bpf-stage-outline: var(--colorStrokeFocus2);
     background: transparent;
     box-sizing: border-box;
     color: var(--colorNeutralForeground2);
@@ -979,7 +979,7 @@
     position: absolute;
   }
 
-  /* Two parallel arrow layers leave a neutral gap before the stage's own status fill. */
+  /* Keyboard focus only: two parallel arrow layers leave a neutral gap before the stage fill. */
   :where([data-nidec-ui]) .nidec-ui-business-process-flow__stage::before {
     --nidec-bpf-ring-offset: var(--spacingHorizontalXS);
     --nidec-bpf-ring-slant: var(--spacingVerticalXXS);
@@ -1016,12 +1016,16 @@
     cursor: pointer;
   }
 
-  :where([data-nidec-ui]) .nidec-ui-business-process-flow__stage:is([data-viewed="true"], :focus-within) {
+  :where([data-nidec-ui]) .nidec-ui-business-process-flow__body:focus-visible {
+    outline: none;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-business-process-flow__stage:has(> .nidec-ui-business-process-flow__body:focus-visible) {
     z-index: 1;
   }
 
-  :where([data-nidec-ui]) .nidec-ui-business-process-flow__stage:is([data-viewed="true"], :focus-within)::before,
-  :where([data-nidec-ui]) .nidec-ui-business-process-flow__stage:is([data-viewed="true"], :focus-within)::after {
+  :where([data-nidec-ui]) .nidec-ui-business-process-flow__stage:has(> .nidec-ui-business-process-flow__body:focus-visible)::before,
+  :where([data-nidec-ui]) .nidec-ui-business-process-flow__stage:has(> .nidec-ui-business-process-flow__body:focus-visible)::after {
     opacity: 1;
   }
 
@@ -1039,14 +1043,14 @@
     left: calc(0px - var(--nidec-bpf-ring-offset));
   }
 
-  :where([data-nidec-ui]) .nidec-ui-business-process-flow__stage[data-stage-status="completed"] {
-    --nidec-bpf-stage-fill: var(--colorBrandBackground2);
-    color: var(--colorNeutralForeground1);
+  /* Flat fills: reached stages are deep green and the viewed stage is the saturated brand green, with no outline. */
+  :where([data-nidec-ui]) .nidec-ui-business-process-flow__stage:is([data-stage-status="completed"], [data-stage-status="current"]) {
+    --nidec-bpf-stage-fill: var(--colorBrandBackground4Static);
+    color: var(--colorNeutralForegroundOnBrand);
   }
 
-  :where([data-nidec-ui]) .nidec-ui-business-process-flow__stage[data-stage-status="current"] {
+  :where([data-nidec-ui]) .nidec-ui-business-process-flow__stage:is([data-stage-status="completed"], [data-stage-status="current"])[data-viewed="true"] {
     --nidec-bpf-stage-fill: var(--colorBrandBackground);
-    color: var(--colorNeutralForegroundOnBrand);
   }
 
   :where([data-nidec-ui]) .nidec-ui-business-process-flow__stage[data-stage-status="error"] {
@@ -1058,7 +1062,7 @@
     align-items: center;
     background: var(--colorNeutralBackground1);
     border-radius: var(--borderRadiusCircular);
-    color: inherit;
+    color: var(--colorNeutralForeground2);
     display: inline-flex;
     flex: none;
     font-size: var(--fontSizeBase200);
@@ -1069,8 +1073,8 @@
     width: 1.5rem;
   }
 
-  :where([data-nidec-ui]) .nidec-ui-business-process-flow__stage[data-stage-status="current"] .nidec-ui-business-process-flow__marker {
-    color: var(--colorBrandForeground1);
+  :where([data-nidec-ui]) .nidec-ui-business-process-flow__stage:not([data-stage-status="upcoming"]) .nidec-ui-business-process-flow__marker {
+    color: var(--nidec-bpf-stage-fill);
   }
 
   :where([data-nidec-ui]) .nidec-ui-business-process-flow__copy {

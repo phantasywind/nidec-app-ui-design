@@ -172,7 +172,7 @@ if (distFiles.length > 0) {
     'AppItem', 'AppItemStatic', 'Hamburger',
     'Tree', 'TreeItem', 'TreeItemLayout',
     'Accordion', 'AccordionItem', 'AccordionHeader', 'AccordionPanel',
-    'CollectionList', 'CollectionListItem', 'CardGallery', 'CardGalleryItem', 'ActionableCardGalleryItem', 'ProcessStageIndicator', 'StageNavigator', 'BusinessProcessFlow',
+    'CollectionList', 'CollectionListItem', 'CardGallery', 'CardGalleryItem', 'ActionableCardGalleryItem', 'ProcessStageIndicator', 'StageNavigator', 'BusinessProcessFlow', 'BusinessProcessStageDetail',
     'RecordIdentityCellLayout', 'RecordTableHeader', 'RecordDataGridHeader', 'TableActionIconButton',
     'EditableGrid', 'EditableGridRowActionGroup', 'GroupedTableSectionRow',
     'RecordSelectionRegion', 'RecordSelectionDataGrid', 'RecordSelectionDataGridRow', 'SegmentedControl', 'InlineModeTabs', 'ViewModeToggle',
