@@ -183,7 +183,8 @@ export function BusinessProcessFlow({ 'aria-label': ariaLabel, stages, viewedSta
         'data-stage-status': stage.status,
         'data-viewed': stage.id === activeViewId ? 'true' : undefined,
       }, hasDetail ? createElement(Popover, {
-        positioning: 'below-start',
+        // 8px gap between the arrow and the card, like spacingVerticalS.
+        positioning: { position: 'below', align: 'start', offset: 8 },
         trapFocus: true,
         children: [
           createElement(PopoverTrigger, { key: 'trigger', disableButtonEnhancement: true }, body),
