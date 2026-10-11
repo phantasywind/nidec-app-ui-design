@@ -543,17 +543,17 @@ describe('consumer-neutral composite patterns', () => {
 
   it('keeps the BusinessProcessFlow arrows at the governed compact density', async () => {
     const css = await readFile(join(repositoryRoot, 'styles', 'components.css'), 'utf8');
-    expect(css).toContain('min-height: 3.25rem');
-    expect(css).toContain('padding: var(--spacingVerticalM) var(--spacingHorizontalM)');
-    expect(css).toContain('padding: var(--spacingVerticalXS) 1.5rem var(--spacingVerticalXS) 1.25rem');
-    expect(css).toContain('grid-template-columns: 1.75rem minmax(0, 1fr)');
-    expect(css).toContain('height: 1.75rem');
+    expect(css).toContain('min-height: 2.75rem');
+    expect(css).toContain('padding: var(--spacingVerticalS) var(--spacingHorizontalM)');
+    expect(css).toContain('padding: var(--spacingVerticalXXS) 1.5rem var(--spacingVerticalXXS) 1.25rem');
+    expect(css).toContain('grid-template-columns: 1.5rem minmax(0, 1fr)');
+    expect(css).toContain('height: 1.5rem');
     expect(css).toMatch(/data-stage-status="completed"[\s\S]*?color: var\(--colorNeutralForeground1\)/);
     expect(css).toMatch(/nidec-ui-business-process-flow__copy small[\s\S]*?opacity: 1/);
     expect(css).toContain('--nidec-bpf-stage-fill: var(--colorBrandBackground2)');
     expect(css).toContain('background: var(--nidec-bpf-stage-fill)');
     expect(css).toContain('--nidec-bpf-stage-outline: var(--colorBrandBackground)');
-    expect(css).toContain('--nidec-bpf-arrow-tip: 0.875rem');
+    expect(css).toContain('--nidec-bpf-arrow-tip: 0.75rem');
     expect(css).toContain('right: calc(0px - var(--nidec-bpf-ring-offset))');
     expect(css).toContain('left: calc(0px - var(--nidec-bpf-ring-offset) - var(--nidec-bpf-ring-slant))');
     expect(css).toContain('--nidec-bpf-ring-offset: var(--spacingHorizontalXS)');
