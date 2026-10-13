@@ -4,7 +4,7 @@ Shared, versioned UI design system for Nidec applications.
 
 ## Version 0.2.0 and adoption
 
-This source prepares `0.2.0`, a minor release after `0.1.2`: new root and `/date-picker` exports, new props on existing components, and visual changes, with no removed export and no change to the exact Fluent or React versions applications install. Release availability and checksum are tracked in the [release record](docs/releases/0.2.0.md). Until publication completes, `0.1.2` remains the latest published version ([record](docs/releases/0.1.2.md)); do not treat local qualification as publication.
+`0.2.0` is the latest published version (released 2026-10-13), a minor release after `0.1.2`: new root and `/date-picker` exports, new props on existing components, and visual changes, with no removed export and no change to the exact Fluent or React versions applications install. Its checksum and evidence are in the [release record](docs/releases/0.2.0.md); `0.1.2` remains the rollback point ([record](docs/releases/0.1.2.md)).
 
 The English preview groups Forms, Page building blocks, Specialized components and Examples. Start with the [component catalog](docs/component-catalog.md), [Dropdown / Combobox contract](docs/dropdown-and-combobox.md) and [adoption guide](docs/consumer-ui-adoption.md). Migrated regions must remove legacy skins and typography overrides, and explicitly control field/action container widths.
 
