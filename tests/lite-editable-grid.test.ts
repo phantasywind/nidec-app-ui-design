@@ -7,7 +7,7 @@ import { describe, expect, it } from 'vitest';
 import { LiteEditableGrid } from '../src/index';
 import type { LiteEditableGridColumn, LiteEditableGridProps } from '../src/index';
 import {
-  computeRenderRange, filterLiteGridOptions, LITE_GRID_ROW_HEIGHT,
+  computeRenderRange, filterLiteGridOptions, LITE_GRID_ROW_HEIGHT, splitLiteGridValues,
 } from '../src/internal/components/lite-editable-grid';
 
 const repositoryRoot = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -57,6 +57,25 @@ describe('LiteEditableGrid', () => {
     expect(computeRenderRange(3200, 320, 5000, 5)).toEqual({ start: 95, end: 115 });
     expect(computeRenderRange(10 ** 7, 320, 5000, 5)).toEqual({ start: 4995, end: 5000 });
     expect(computeRenderRange(0, 320, 3, 10)).toEqual({ start: 0, end: 3 });
+  });
+
+  it('renders multiselect values as removable tags with a count tag for the rest', () => {
+    type Tagged = { id: string; regions: string[] };
+    const options = [{ value: 'a', text: 'Asia' }, { value: 'e', text: 'Europe' }, { value: 'm', text: 'Americas' }];
+    const html = renderToStaticMarkup(createElement(LiteEditableGrid<Tagged>, {
+      'aria-label': 'Tags', getRowId: row => row.id, onCellChange: () => undefined,
+      columns: [{ key: 'regions', header: 'Regions', editor: 'multiselect', options }],
+      rows: [{ id: '1', regions: ['m', 'a', 'e'] }],
+    }));
+    expect(html).toContain('data-remove="a"');
+    expect(html).toContain('aria-label="Remove Asia"');
+    expect(html).toContain('>+1<');
+    expect(html).toContain('title="Asia, Europe, Americas"');
+    expect(splitLiteGridValues('m,a', options)).toEqual(['a', 'm']);
+    expect(() => renderToStaticMarkup(createElement(LiteEditableGrid<Tagged>, {
+      'aria-label': 'Tags', getRowId: row => row.id, onCellChange: () => undefined, rows: [],
+      columns: [{ key: 'regions', header: 'Regions', editor: 'multiselect', options: [{ value: 'a,b', text: 'AB' }] }],
+    }))).toThrow('must not contain a comma');
   });
 
   it('filters combobox options by contained text', () => {

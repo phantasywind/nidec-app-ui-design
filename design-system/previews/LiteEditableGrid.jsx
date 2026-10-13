@@ -6,6 +6,7 @@ const categories = [
 const units = [{ value: 'ea', text: 'ea' }, { value: 'm', text: 'm' }, { value: 'kg', text: 'kg' }, { value: 'set', text: 'set' }];
 const suppliers = ['Alder Works', 'Birch Supply', 'Cedar Parts', 'Delta Components', 'Elm Industrial', 'Fir Trading', 'Grove Metals', 'Hazel Electric', 'Iris Plastics', 'Juniper Tools']
   .map((text, index) => ({ value: 'S' + String(index + 1).padStart(2, '0'), text }));
+const regions = [{ value: 'apac', text: 'Asia Pacific' }, { value: 'emea', text: 'Europe' }, { value: 'amer', text: 'Americas' }, { value: 'cn', text: 'China' }, { value: 'jp', text: 'Japan' }];
 const words = ['Control unit', 'Drive module', 'Mounting frame', 'Cable 18C', 'Sensor bracket', 'Cooling fan', 'Terminal block', 'Gear housing'];
 const columns = [
   { key: 'line', header: 'Line', editor: 'none', width: 72, align: 'end' },
@@ -16,8 +17,11 @@ const columns = [
   { key: 'quantity', header: 'Quantity', editor: 'text', width: 96, align: 'end',
     validate: v => (/^\d+$/.test(v) ? undefined : 'Enter a whole number') },
   { key: 'unit', header: 'Unit', editor: 'select', width: 80, options: units },
+  { key: 'regions', header: 'Regions', editor: 'multiselect', width: 230, options: regions },
   { key: 'price', header: 'Unit price', editor: 'text', width: 110, align: 'end',
     validate: v => (/^\d+(\.\d{1,2})?$/.test(v) ? undefined : 'Enter an amount with up to two decimals') },
+  { key: 'amount', header: 'Amount', editor: 'none', width: 110, align: 'end',
+    getValue: r => { const n = Number(r.quantity) * Number(r.price); return Number.isFinite(n) ? n.toFixed(2) : ''; } },
 ];
 function makeRows(count) {
   const rows = new Array(count);
@@ -26,7 +30,7 @@ function makeRows(count) {
       id: String(i + 1), line: String(i + 1), code: 'ITM-' + String(i + 1).padStart(5, '0'),
       description: words[i % words.length] + (i % 7 === 0 ? ', with an extended note that is longer than the column and is edited in the long text editor' : ''),
       category: categories[i % categories.length].value, supplier: suppliers[(i * 3) % suppliers.length].value,
-      quantity: String((i % 12) + 1), unit: units[i % units.length].value, price: ((i % 97) * 13.5 + 10).toFixed(2),
+      quantity: String((i % 12) + 1), regions: regions.filter((_, r) => (i + r) % 3 === 0).map(r => r.value), unit: units[i % units.length].value, price: ((i % 97) * 13.5 + 10).toFixed(2),
     };
   }
   return rows;
@@ -36,8 +40,8 @@ function Demo() {
   const [rows, setRows] = useState(() => makeRows(5000));
   const [changed, setChanged] = useState(0);
   const changeCount = (_, value) => { setCount(value); setRows(makeRows(Number(value))); setChanged(0); };
-  const onCellChange = ({ rowIndex, columnKey, value }) => {
-    setRows(current => { const next = current.slice(); next[rowIndex] = { ...current[rowIndex], [columnKey]: value }; return next; });
+  const onCellChange = ({ rowIndex, columnKey, value, values }) => {
+    setRows(current => { const next = current.slice(); next[rowIndex] = { ...current[rowIndex], [columnKey]: values ?? value }; return next; });
     setChanged(n => n + 1);
   };
   const toolbar = <>

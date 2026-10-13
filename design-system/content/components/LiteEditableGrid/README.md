@@ -8,11 +8,12 @@ Column editors, chosen per column with `editor`:
 - `longText`: multi-line text in a larger panel over the cell. Enter adds a line, Ctrl+Enter or Tab confirms. The cell shows one line with an ellipsis and the full text as its tooltip.
 - `select`: fixed choice list. Arrow keys or a typed letter highlight, Enter or a click picks. The cell shows the option text.
 - `combobox`: typing filters the list. With `freeform` (default) any typed text is accepted; with `freeform: false` only an option is.
-- `none`: read-only.
+- `multiselect`: several values from a fixed list, shown in the cell as tags with a leading remove mark (click it to remove that value without opening the editor) and a `+N` count tag beyond `maxVisibleTags` (default 2). The editor is a checklist: Space or Enter toggles, Backspace removes the last tag, Tab or Ctrl+Enter confirms, Esc discards. `onCellChange` passes `values` as an array; option values must not contain a comma.
+- `none`: read-only. Read-only cells sit on a faint grey with muted text and a default cursor; editable cells show a thin border and a text or pointer cursor on hover.
 
 Keyboard: arrow keys, Home and End, Ctrl+Home and Ctrl+End, Page Up and Page Down move the active cell; Enter, F2, double-click or typing starts editing; Delete clears; Ctrl+C and Ctrl+V copy and paste one cell. Clicking an active select or combobox cell opens its list.
 
-Visual states follow the shared rules: grey row hover, light-green active cell and selected option, a red outline and tooltip message for a value that fails `validate`. The active cell and editor use a thin brand border close to the table lines. Lists and the long-text panel fade and slide in and fade out; reduced motion turns this off.
+Scrollbars are light (grey thumb on a white track) whatever the host page's colour scheme. Visual states follow the shared rules: grey row hover, light-green active cell and selected option, a red outline and tooltip message for a value that fails `validate`. The active cell and editor use a thin brand border close to the table lines. Lists and the long-text panel fade and slide in and fade out; reduced motion turns this off.
 
 Limits that keep it light: every row has the same 32px height, there is no sorting, grouping, column resizing or multi-cell selection, and Chinese and other IME input starts after Enter, F2 or a double-click. Pass a stable `columns` array.
 
