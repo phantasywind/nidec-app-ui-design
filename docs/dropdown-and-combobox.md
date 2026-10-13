@@ -27,7 +27,8 @@
 - 弹层在勾选时保持打开，每个选项带复选标记；悬停为共享中性灰，选中为浅绿底、深绿文字。Fluent 多选选项以 `aria-checked` 而非 `aria-selected` 标记，共享 `Option` 对两者使用相同的选中色，`Combobox` 多选同样适用。
 - 触发框按 `options` 顺序显示 `brand` 外观、extra-small 尺寸的标签；超过 `maxVisibleTags`（默认 2）的部分折叠为一个计数标签，文字由 `formatOverflowText` 决定（默认 `+N`）。标签不是按钮，取消选择在列表中取消勾选；读屏读出完整的逗号分隔列表。
 - small 尺寸下标签（20px）高于文字行（16px），组件以 −2px 纵向外边距保持控件高度不变。这是唯一的尺寸例外，目的为保持 small 控件高度，仅作用于触发框内的标签行。
-- 多选模式不支持 `clearable`；需要一次清空时由应用提供单独操作。可搜索的长列表多选使用 `Combobox` 的 `multiselect`；需要同时看到全部选项时使用 Checkbox。
+- `tagPlacement="below"`：触发框只显示“N selected”，已选值以小号可删除标签显示在下方并自动换行，后跟“Clear all”；加 `searchable` 可输入筛选（多选 Combobox，无匹配时显示不可选提示）。删除标签和清除全部同样通过 `onOptionSelect` 回报完整选择。
+- 默认（标签在触发框内）模式不支持 `clearable`；需要一次清空时使用 `tagPlacement="below"` 或由应用提供单独操作。可搜索的长列表多选使用 `Combobox` 的 `multiselect`；需要同时看到全部选项时使用 Checkbox。
 - 哪些键有效、数量上限、默认值和提交内容由应用决定。
 
 `Select` 仍作为兼容出口保留，不再推荐用于要求统一外观的新页面。原生弹出菜单受系统和浏览器控制，不能承诺跨平台绿色高亮一致。

@@ -9,7 +9,7 @@ Column editors, chosen per column with `editor`:
 - `select`: fixed choice list. Arrow keys or a typed letter highlight, Enter or a click picks. The cell shows the option text.
 - `combobox`: typing filters the list. With `freeform` (default) any typed text is accepted; with `freeform: false` only an option is.
 - `multiselect`: several values from a fixed list, shown in the cell as tags with a leading remove mark (click it to remove that value without opening the editor) and a `+N` count tag beyond `maxVisibleTags` (default 2). The editor is a checklist: Space or Enter toggles, Backspace removes the last tag, Tab or Ctrl+Enter confirms, Esc discards. `onCellChange` passes `values` as an array; option values must not contain a comma.
-- `none`: read-only. Read-only cells sit on a faint grey with muted text and a default cursor; editable cells show a thin border and a text or pointer cursor on hover.
+- `none`: read-only. Read-only cells keep the normal background and show a small lock mark at the end of the cell, with a default cursor; the mark is decorative and `aria-readonly` tells assistive technology. This applies only inside LiteEditableGrid, not to other inputs; editable cells show a thin border and a text or pointer cursor on hover.
 
 Keyboard: arrow keys, Home and End, Ctrl+Home and Ctrl+End, Page Up and Page Down move the active cell; Enter, F2, double-click or typing starts editing; Delete clears; Ctrl+C and Ctrl+V copy and paste one cell. Clicking an active select or combobox cell opens its list.
 
@@ -18,3 +18,5 @@ Scrollbars are light (grey thumb on a white track) whatever the host page's colo
 Limits that keep it light: every row has the same 32px height, there is no sorting, grouping, column resizing or multi-cell selection, and Chinese and other IME input starts after Enter, F2 or a double-click. Pass a stable `columns` array.
 
 The consumer owns the rows, `onCellChange` handling, validation rules, unit and number parsing, persistence, permissions and batch save.
+
+- One column shows one field. Do not stack two fields in one column; an exception needs separate approval (shared rule, see the page selection guide).

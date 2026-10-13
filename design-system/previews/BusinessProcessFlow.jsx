@@ -1,9 +1,16 @@
-// @card group="Specialized components" height=440 subtitle="Live component"
+// @card group="Specialized components" height=600 subtitle="Live component"
 const stages = [
   { id: 'draft', label: 'Draft', description: 'Completed', status: 'completed', statusLabel: 'Completed' },
   { id: 'review', label: 'In review', description: 'Evidence requested', status: 'current', statusLabel: 'Current stage' },
   { id: 'approved', label: 'Approved', description: 'Not reached', status: 'upcoming', statusLabel: 'Upcoming' },
   { id: 'released', label: 'Released', description: 'Not released', status: 'upcoming', statusLabel: 'Upcoming' },
+];
+// After a return: the process went back to Preparation, so the later reached stage must be redone but stays viewable.
+const returned = [
+  { id: 'r-draft', label: 'Draft', description: 'Completed', status: 'completed', statusLabel: 'Completed' },
+  { id: 'r-prep', label: 'Evidence collection and preparation', description: 'Returned for changes', status: 'current', statusLabel: 'Current stage' },
+  { id: 'r-review', label: 'Technical review', description: 'Redo · draft kept', status: 'revisit', statusLabel: 'Reached before, must be redone' },
+  { id: 'r-approved', label: 'Approved', description: 'Not reached', status: 'upcoming', statusLabel: 'Upcoming' },
 ];
 const details = {
   draft: { title: 'Draft', status: 'Completed', checksTitle: 'Completed with', checks: [
@@ -19,9 +26,12 @@ const details = {
 };
 function Demo() {
   const [viewed, setViewed] = useState('review');
+  const [returnedView, setReturnedView] = useState('r-prep');
   const host = useRef(null);
-  useEffect(() => { host.current?.querySelector('[data-viewed="true"] button')?.click(); }, []);
-  return <div ref={host}>
+  useEffect(() => { host.current?.querySelector('[aria-label="Example lifecycle"] [data-viewed="true"] button')?.click(); }, []);
+  return <div ref={host} style={{display:'grid',gap:12,maxWidth:1100}}>
+    <BusinessProcessFlow aria-label="Returned lifecycle" stages={returned} viewedStageId={returnedView} onStageView={(_, s) => setReturnedView(s.id)} />
+    <BusinessProcessFlow aria-label="Returned lifecycle, revisit stage viewed" stages={returned} viewedStageId="r-review" onStageView={() => undefined} />
     <BusinessProcessFlow aria-label="Example lifecycle" stages={stages} viewedStageId={viewed} onStageView={(_, s) => setViewed(s.id)}
       renderStageDetail={s => details[s.id] && <BusinessProcessStageDetail {...details[s.id]} />} />
   </div>;

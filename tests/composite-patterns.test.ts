@@ -562,7 +562,7 @@ describe('consumer-neutral composite patterns', () => {
     expect(css).toContain('.nidec-ui-business-process-flow__stage:has(> .nidec-ui-business-process-flow__body:focus-visible)::before');
     expect(css).toContain('--nidec-bpf-stage-outline: var(--colorStrokeFocus2)');
     expect(css).toContain('--nidec-bpf-ring-offset: var(--spacingHorizontalXS)');
-    expect(css).toMatch(/:not\(\[data-stage-status="upcoming"\]\) \.nidec-ui-business-process-flow__marker \{\s*color: var\(--nidec-bpf-stage-fill\)/);
+    expect(css).toMatch(/:not\(\[data-stage-status="upcoming"\]\) \.nidec-ui-business-process-flow__marker \{\s*color: var\(--nidec-bpf-marker-color\)/);
   });
 
   it('opens consumer-owned stage detail from reached BusinessProcessFlow stages only', () => {

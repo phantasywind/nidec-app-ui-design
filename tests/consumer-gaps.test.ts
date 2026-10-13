@@ -5,7 +5,7 @@ import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 import {
-  FactList, FormDrawer, NidecProvider, PageHeader, Pagination, SectionNavigation, SegmentedControl, SingleSelectDropdown,
+  BusinessProcessFlow, FactList, FormDrawer, NidecProvider, PageHeader, Pagination, SectionNavigation, SegmentedControl, SingleSelectDropdown,
   StepStatusIcon, TableScrollRegion, WorkspaceStack, nidecLightTheme,
 } from '../src/index';
 import type { PaginationProps } from '../src/index';
@@ -208,5 +208,27 @@ describe('application frame additions', () => {
     expect(html).toContain('<h2 class="nidec-ui-workspace-section__title">Records (60)</h2>');
     expect(html.indexOf('Toolbar')).toBeGreaterThan(module);
     expect(html.indexOf('Pagination')).toBeGreaterThan(html.indexOf('Results'));
+  });
+});
+
+describe('BusinessProcessFlow follow-up', () => {
+  const stages = [
+    { id: 'a', label: 'Draft', status: 'completed', statusLabel: 'Completed' },
+    { id: 'b', label: 'Evidence collection and preparation', status: 'current', statusLabel: 'Current' },
+    { id: 'c', label: 'Review', status: 'revisit', statusLabel: 'Reached before, must be redone' },
+    { id: 'd', label: 'Approved', status: 'upcoming', statusLabel: 'Upcoming' },
+  ] as const;
+
+  it('makes a revisit stage viewable, unlike an upcoming one', () => {
+    const html = render(createElement(BusinessProcessFlow, { 'aria-label': 'Flow', stages, viewedStageId: 'c', onStageView: () => undefined }));
+    expect(html).toMatch(/data-stage-status="revisit" data-viewed="true"><button/);
+    expect(html).toMatch(/data-stage-status="upcoming"><div/);
+    expect(rule(':where([data-nidec-ui]) .nidec-ui-business-process-flow__stage[data-stage-status="revisit"] > .nidec-ui-business-process-flow__body')).toMatch(/background-image:\s*repeating-linear-gradient/);
+  });
+
+  it('wraps long stage names onto two lines with the full name as a title', () => {
+    const html = render(createElement(BusinessProcessFlow, { 'aria-label': 'Flow', stages }));
+    expect(html).toContain('<strong title="Evidence collection and preparation">');
+    expect(css).toMatch(/-webkit-line-clamp:\s*2;[\s\S]*white-space:\s*normal/);
   });
 });

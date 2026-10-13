@@ -10,4 +10,6 @@ const glyph = (d: string, size = 20): ReactElement => createElement('svg', {
 
 export const chevronLeftIcon = () => glyph('M12.5 4.5 7 10l5.5 5.5');
 export const chevronRightIcon = () => glyph('M7.5 4.5 13 10l-5.5 5.5');
+// Padlock: shackle and body, for read-only content.
+export const lockIcon = (size = 14) => glyph('M6.5 9V6.75a3.5 3.5 0 0 1 7 0V9M5.5 9h9v7h-9z', size);
 export const dismissIcon = () => glyph('M5 5l10 10M15 5 5 15');

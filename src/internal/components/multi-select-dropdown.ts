@@ -1,7 +1,12 @@
 import { createElement, useState } from 'react';
-import type { ReactElement } from 'react';
-import { Dropdown as FluentDropdown, Tag as FluentTag, makeStyles, mergeClasses, tokens } from '@fluentui/react-components';
-import type { DropdownProps as FluentDropdownProps } from '@fluentui/react-components';
+import type { ChangeEvent, MouseEvent, ReactElement } from 'react';
+import {
+  Button as FluentButton, Combobox as FluentCombobox, Dropdown as FluentDropdown, Tag as FluentTag, TagGroup as FluentTagGroup,
+  makeStyles, mergeClasses, tokens,
+} from '@fluentui/react-components';
+import type {
+  ComboboxProps as FluentComboboxProps, DropdownProps as FluentDropdownProps, OptionOnSelectData, SelectionEvents,
+} from '@fluentui/react-components';
 import { Option } from './option';
 import { withClass } from './with-class';
 
@@ -18,6 +23,22 @@ export type MultiSelectDropdownProps = Omit<FluentDropdownProps,
   maxVisibleTags?: number;
   /** Text of the count tag for the selected options that are not shown. */
   formatOverflowText?: (hiddenCount: number) => string;
+  /**
+   * `trigger` (default) shows the selection as tags inside the trigger.
+   * `below` keeps the trigger short and lists every selected value as a
+   * removable tag under it, wrapping onto more lines, with a Clear all action.
+   */
+  tagPlacement?: 'trigger' | 'below';
+  /** Type to filter the list (a multiselect Combobox). Only with `tagPlacement="below"`. */
+  searchable?: boolean;
+  /** Trigger text when values are selected and the tags are below. */
+  formatSelectionSummary?: (selectedCount: number) => string;
+  /** Accessible name of the tag list below the trigger. */
+  selectionLabel?: string;
+  clearAllLabel?: string;
+  /** Accessible name of each tag's remove button. */
+  formatRemoveLabel?: (text: string) => string;
+  noMatchText?: string;
 };
 
 const useMultiSelectDropdownStyles = makeStyles({
@@ -56,24 +77,66 @@ const useMultiSelectDropdownStyles = makeStyles({
 });
 
 const defaultOverflowText = (hiddenCount: number) => `+${hiddenCount}`;
+const defaultSelectionSummary = (selectedCount: number) => `${selectedCount} selected`;
+const defaultRemoveLabel = (text: string) => `Remove ${text}`;
+const noMatchValue = 'nidec-ui-multi-select-no-match';
+
+const useBelowStyles = makeStyles({
+  root: {
+    display: 'grid',
+    rowGap: tokens.spacingVerticalXS,
+    minWidth: 0,
+  },
+  selection: {
+    display: 'flex',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    columnGap: tokens.spacingHorizontalS,
+    rowGap: tokens.spacingVerticalXS,
+    minWidth: 0,
+  },
+  tags: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    columnGap: tokens.spacingHorizontalXS,
+    rowGap: tokens.spacingVerticalXS,
+    minWidth: 0,
+  },
+  tag: {
+    maxWidth: '100%',
+  },
+  trigger: {
+    minWidth: 0,
+  },
+});
 
 /** Fluent multiselect Dropdown over a fixed option list; selected values show as tags in the trigger. */
 export function MultiSelectDropdown({
   options,
   maxVisibleTags = 2,
   formatOverflowText = defaultOverflowText,
+  tagPlacement = 'trigger',
+  searchable = false,
+  formatSelectionSummary = defaultSelectionSummary,
+  selectionLabel = 'Selected values',
+  clearAllLabel = 'Clear all',
+  formatRemoveLabel = defaultRemoveLabel,
+  noMatchText = 'No matches',
   selectedOptions,
   defaultSelectedOptions,
   onOptionSelect,
   size,
   className,
   ...props
-}: MultiSelectDropdownProps): ReactElement<FluentDropdownProps> {
+}: MultiSelectDropdownProps): ReactElement {
   const styles = useMultiSelectDropdownStyles();
+  const belowStyles = useBelowStyles();
   const [uncontrolledSelection, setUncontrolledSelection] = useState<string[]>(() => [...(defaultSelectedOptions ?? [])]);
+  const [query, setQuery] = useState('');
   if (new Set(options.map(option => option.value)).size !== options.length) throw new Error('MultiSelectDropdown option values must be unique.');
   if (options.some(option => !option.value.trim() || !option.text.trim())) throw new Error('MultiSelectDropdown options require non-empty values and text.');
   if (!Number.isInteger(maxVisibleTags) || maxVisibleTags < 1) throw new Error('MultiSelectDropdown maxVisibleTags must be a positive integer.');
+  if (searchable && tagPlacement !== 'below') throw new Error('MultiSelectDropdown searchable requires tagPlacement="below".');
 
   const selection = selectedOptions ?? uncontrolledSelection;
   const known = new Set(options.map(option => option.value));
@@ -82,6 +145,85 @@ export function MultiSelectDropdown({
 
   // Show the selection in option order so the trigger is stable whatever the click order.
   const selected = options.filter(option => selection.includes(option.value));
+  const renderOption = (option: MultiSelectDropdownOption) => createElement(Option, {
+    key: option.value,
+    value: option.value,
+    text: option.text,
+    ...(option.disabled ? { disabled: true } : {}),
+  }, option.text);
+
+  if (tagPlacement === 'below') {
+    const change = (event: SelectionEvents, next: string[], toggled?: MultiSelectDropdownOption) => {
+      if (selectedOptions === undefined) setUncontrolledSelection(next);
+      const data: OptionOnSelectData = { optionValue: toggled?.value, optionText: toggled?.text, selectedOptions: next };
+      onOptionSelect?.(event, data);
+    };
+    const summary = selected.length === 0 ? '' : formatSelectionSummary(selected.length);
+    const needle = query.trim().toLocaleLowerCase();
+    const visible = needle === '' ? options : options.filter(option => option.text.toLocaleLowerCase().includes(needle));
+    const onSelect = (event: SelectionEvents, data: OptionOnSelectData) => {
+      const toggled = options.find(option => option.value === data.optionValue);
+      if (toggled === undefined || toggled.disabled) return;
+      change(event, data.selectedOptions.filter(value => known.has(value)), toggled);
+    };
+    const trigger = searchable
+      ? createElement(FluentCombobox, {
+        ...props,
+        ...(size === undefined ? {} : { size }),
+        className: mergeClasses('nidec-ui-multi-select-dropdown__trigger', belowStyles.trigger),
+        multiselect: true,
+        selectedOptions: selection,
+        value: query,
+        placeholder: summary || props.placeholder,
+        onChange: (event: ChangeEvent<HTMLInputElement>) => setQuery(event.target.value),
+        onOpenChange: (_event: unknown, data: { open: boolean }) => {
+          if (!data.open) setQuery('');
+        },
+        onOptionSelect: onSelect,
+      } as unknown as FluentComboboxProps, visible.length > 0 ? visible.map(renderOption) : createElement(Option, {
+        key: noMatchValue, value: noMatchValue, text: noMatchText, disabled: true,
+      }, noMatchText))
+      : createElement(FluentDropdown, {
+        ...props,
+        ...(size === undefined ? {} : { size }),
+        className: mergeClasses('nidec-ui-multi-select-dropdown__trigger', belowStyles.trigger),
+        multiselect: true,
+        selectedOptions: selection,
+        value: summary,
+        onOptionSelect: onSelect,
+      }, options.map(renderOption));
+    return createElement('div', {
+      className: mergeClasses(withClass('nidec-ui-multi-select-dropdown nidec-ui-multi-select-dropdown--tags-below', className), belowStyles.root),
+    },
+    trigger,
+    selected.length === 0 ? null : createElement('div', { className: mergeClasses('nidec-ui-multi-select-dropdown__selection', belowStyles.selection) },
+      createElement(FluentTagGroup, {
+        'aria-label': selectionLabel,
+        className: belowStyles.tags,
+        onDismiss: (event, data) => {
+          const removed = options.find(option => option.value === data.value);
+          // A tag dismiss is a click or key press on the tag, which onOptionSelect's event type already covers at runtime.
+          change(event as unknown as SelectionEvents, selection.filter(value => value !== data.value), removed);
+        },
+        size: 'extra-small',
+      }, selected.map(option => createElement(FluentTag, {
+        key: option.value,
+        appearance: 'brand',
+        className: belowStyles.tag,
+        dismissible: !props.disabled,
+        dismissIcon: { 'aria-label': formatRemoveLabel(option.text) },
+        primaryText: { className: styles.tagText },
+        shape: 'rounded',
+        value: option.value,
+      }, option.text))),
+      props.disabled ? null : createElement(FluentButton, {
+        appearance: 'transparent',
+        className: 'nidec-ui-multi-select-dropdown__clear',
+        onClick: (event: MouseEvent<HTMLButtonElement>) => change(event, []),
+        size: 'small',
+      }, clearAllLabel)));
+  }
+
   const visible = selected.slice(0, maxVisibleTags);
   const hiddenCount = selected.length - visible.length;
   const tag = (key: string, text: string, tagClassName: string) => createElement(FluentTag, {
@@ -111,10 +253,5 @@ export function MultiSelectDropdown({
       if (selectedOptions === undefined) setUncontrolledSelection(data.selectedOptions);
       onOptionSelect?.(event, data);
     },
-  }, options.map(option => createElement(Option, {
-    key: option.value,
-    value: option.value,
-    text: option.text,
-    ...(option.disabled ? { disabled: true } : {}),
-  }, option.text)));
+  }, options.map(renderOption));
 }

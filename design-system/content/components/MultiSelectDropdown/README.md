@@ -29,3 +29,18 @@ Use it when a field takes several values from a short, fixed list, such as categ
   />
 </Field>
 ```
+
+## Tags below the trigger
+
+Set `tagPlacement="below"` when people pick many values or need to remove them one by one. The trigger stays one line and shows `formatSelectionSummary` (default "3 selected"), and every selected value appears under it as a small removable tag that wraps onto more lines, followed by a Clear all action.
+
+| Prop | Values | Default |
+| --- | --- | --- |
+| `tagPlacement` | `trigger` or `below` | `trigger` |
+| `searchable` | type to filter the list, with a "no matches" row; only with `below` | `false` |
+| `formatSelectionSummary` | `(count) => string` for the trigger | `N selected` |
+| `selectionLabel` | accessible name of the tag list | `Selected values` |
+| `formatRemoveLabel` | `(text) => string`, each tag's remove button name | `Remove <text>` |
+| `clearAllLabel`, `noMatchText` | localised labels | `Clear all`, `No matches` |
+
+Removing a tag or clearing all calls `onOptionSelect` with the new `selectedOptions`; `optionValue` is the removed value, or undefined for Clear all. Hover and selected colours are the same as single selection: grey hover, light-green selected option.

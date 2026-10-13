@@ -2,6 +2,7 @@ import { createElement as h, memo, useCallback, useEffect, useId, useLayoutEffec
 import type {
   ClipboardEvent, ComponentPropsWithoutRef, CSSProperties, FocusEvent, KeyboardEvent, MouseEvent, ReactElement,
 } from 'react';
+import { lockIcon } from './icons';
 import { withClass } from './with-class';
 
 /** Row and header height in px. Fixed so that virtual scrolling needs no measurement. */
@@ -276,7 +277,9 @@ function RowViewImpl<Row>({ row, rowIndex, depth, columns, activeCol, gridId }: 
       key: column.key,
       role: 'gridcell',
       title: error ?? ((column.kind === 'longText' || multi) && text ? text : undefined),
-    }, values ? renderTags(column, values, column.maxVisibleTags ?? 2) : text);
+    }, values ? renderTags(column, values, column.maxVisibleTags ?? 2) : text,
+    // Read-only cells keep the row background and carry a lock mark instead of a grey fill.
+    column.kind === 'none' ? h('span', { 'aria-hidden': true, className: 'nidec-ui-lite-grid__lock' }, lockIcon()) : null);
   }));
 }
 

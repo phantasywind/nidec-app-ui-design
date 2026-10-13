@@ -53,7 +53,7 @@ export type { CardGalleryProps, CardGalleryItemProps, ActionableCardGalleryItemP
 export { ProcessStageIndicator, StageNavigator, BusinessProcessFlow, BusinessProcessStageDetail } from './internal/components/process-stage';
 export type {
   ProcessStageStatus, ProcessStageDefinition, ProcessStageIndicatorProps, StageNavigatorProps,
-  BusinessProcessStageDefinition, BusinessProcessFlowProps, BusinessProcessStageCheck, BusinessProcessStageDetailProps,
+  BusinessProcessStageDefinition, BusinessProcessStageStatus, BusinessProcessFlowProps, BusinessProcessStageCheck, BusinessProcessStageDetailProps,
 } from './internal/components/process-stage';
 
 export {

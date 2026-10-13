@@ -17,7 +17,7 @@
 | 表单 / `modes` | SegmentedControl · InlineModeTabs | 同级模式选择、字段内部输入来源切换 | 局部编辑来源用胶囊；页面导航用 Tabs |
 | 表单 / `feedback` | MessageBar · Badge · Tag · Spinner · Skeleton · StepStatusIcon | 状态、局部提示、加载和进度 | 错误就近显示；Badge 不是操作按钮；加载时保留布局；独立步骤的完成状态用 StepStatusIcon |
 | 表单 / `hints` | Tooltip · InfoLabel · Popover | 简短说明、字段帮助和上下文信息 | 重要错误不能只存在悬停提示；复杂编辑使用 Sheet |
-| 表单 / `overlays` | Dialog · FormDrawer · OverlayDrawer | 确认短任务或不离开目录编辑记录 | Dialog 用于聚焦确认；Sheet 用 FormDrawer（标题、关闭按钮、右对齐底部操作）；未保存关闭在 `onDismiss` 守卫 |
+| 表单 / `overlays` | Dialog · FormDrawer · OverlayDrawer | 确认短任务或不离开目录编辑记录 | 表单和清单一律用 FormDrawer；居中 Dialog 只用于简短确认、填写原因和提醒；未保存关闭在 `onDismiss` 守卫 |
 | 表单 / `login` | AuthenticationLayout · Field · Input | 登录入口的字段、错误和提交状态 | 只是界面组合；SSO、MFA、凭据与登录跳转由应用处理 |
 | 页面 / `shell` | ApplicationFrame · ApplicationTopBar · ApplicationNavigation | 带侧栏和稳定顶部区域的企业应用 | 白色平面导航；当前项标记与路由一致；窄屏使用移动导航；面包屑行用 `breadcrumb`，导航底部用 `footer`，计数用 `badge` |
 | 页面 / `breadcrumb` | Breadcrumb · BreadcrumbItem | 显示记录与上级目录的位置关系 | 当前项不可重复跳转；不要用面包屑表达流程状态 |
@@ -26,7 +26,7 @@
 | 页面 / `tabs` | TabList · Tab | 同一对象的并列内容视图 | 不能代替业务流程；为 Tab 绑定对应内容面板 |
 | 页面 / `toolbar` | Toolbar · SearchBox · ViewModeToggle · Pagination | 集合搜索、筛选、刷新与翻页 | 查询改变重置页码；视图切换保留搜索、筛选及分页 |
 | 页面 / `collection` | CollectionList · CollectionListItem | 少量记录或信息条目的紧凑展示 | 需要按列比较时用 Table；不得混合行导航与重复主入口 |
-| 页面 / `table` | Table · DataGrid · TableScrollRegion · RecordIdentityCellLayout · RecordSelectionDataGrid | 多列比较、记录入口或同屏编辑选择 | 独立目录用主列链接；Form + List 使用整行选择；宽表放入 TableScrollRegion 横向滚动 |
+| 页面 / `table` | Table · DataGrid · TableScrollRegion · RecordIdentityCellLayout · RecordSelectionDataGrid | 多列比较、记录入口或同屏编辑选择 | 独立目录用主列链接；Form + List 使用整行选择；宽表放入 TableScrollRegion 横向滚动；一列只显示一个字段，不在同一列叠放两个字段（特例需单独批准） |
 | 页面 / `cards` | CardGallery · ActionableCardGalleryItem · ViewModeToggle | 记录摘要与同一集合的卡片视图 | 导航卡片整体点击；展示卡片无内嵌重复边框和阴影 |
 | 特殊部件 / `stage` | StageNavigator | 可提前查看的同级准备工作区 | 选中外圈只表示查看位置；节点底色保留自身状态 |
 | 特殊部件 / `bpf` | BusinessProcessFlow · BusinessProcessStageDetail | 有实际业务进度的流程阶段，点击已到达阶段弹出阶段详情卡 | 只允许查看已到达阶段；查看位置不能改变真实流程位置；详情卡中的条件与操作归应用 |

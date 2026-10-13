@@ -46,7 +46,7 @@ describe('LiteEditableGrid', () => {
     expect(html).toContain('>Each<');
     expect(html).toContain('>Metre<');
     expect(html).toContain('>Beta<');
-    expect(html).toMatch(/aria-readonly="true"[^>]*>C-0</);
+    expect(html).toMatch(/aria-readonly="true"[^>]*>C-0<span aria-hidden="true" class="nidec-ui-lite-grid__lock"><svg/);
     expect(html).toMatch(/aria-invalid="true"[^>]*title="Whole number required"/);
     expect(html).toContain('role="grid"');
     expect(html).toContain('tabindex="0"');

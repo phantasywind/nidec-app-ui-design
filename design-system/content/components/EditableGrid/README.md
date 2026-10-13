@@ -9,3 +9,5 @@ Model: compact rows with one active edit row. An explicit affordance activates t
 - Every editable field needs a row-specific accessible name. Document and test the keyboard model.
 
 The consumer owns columns, units, calculations, validation, permissions, save and conflict handling, paging and virtualisation, and what happens when a row, filter or route changes with unsaved work.
+
+- One column shows one field. Do not stack two fields in one column; an exception needs separate approval (shared rule, see the page selection guide).

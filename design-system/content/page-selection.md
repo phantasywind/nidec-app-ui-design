@@ -89,7 +89,8 @@ Do not repeat the same action in the header and the form footer. A disabled acti
 - A Tooltip or Popover never holds the only copy of an important message.
 
 **Choosing a surface**
-- Dialog: a short confirmation or one decision, with focus returning to its trigger.
+- A form or checklist that opens over the current page always goes in a Sheet (FormDrawer), never in a centred Dialog. This is a shared rule (Locke, 2026-10-13).
+- Dialog: only a short confirmation, entering a reason, or a reminder, with focus returning to its trigger.
 - Sheet (FormDrawer, built on OverlayDrawer): detailed viewing or editing of a record without leaving a list; `medium` for a short form, `large` for a wide one; guard closing with unsaved work in `onDismiss`.
 - Dedicated page: a flow that needs its own route, sections and submit.
 
@@ -116,6 +117,8 @@ Independent steps that are each done or not, with no current stage (a checklist 
 - A wide Table scrolls sideways inside a TableScrollRegion, which never adds a vertical scrollbar. For many small inputs in table rows, use LiteEditableGrid rather than Fluent controls in Table cells.
 
 ## Always
+
+- In every table-type component (Table, DataGrid, RecordSelectionDataGrid, EditableGrid, LiteEditableGrid, grouped tables), one column shows one field. Do not stack two fields in one column, such as a code above a name or a value with a second value under it; give each field its own column. An exception needs Locke's separate approval, recorded with the page it applies to (shared rule, 2026-10-13).
 
 - Keep the application shell white and flat, and build pages from white modules with one light border. No grey canvas, no nested borders or shadows.
 - Keep one page `h1`, ordered headings, labelled regions and visible focus.
