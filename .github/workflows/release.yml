@@ -6,9 +6,9 @@
 # creates the GitHub Release, and only if approved_sha256 equals the candidate.
 #
 # Control model (ADR-0007): this is single-party control. approved_sha256 binds
-# the publication to the candidate the repository owner authorized in writing;
-# it is a consistency check, not a security control. Run dry_run=false only
-# after that authorization has been recorded in the release record.
+# the publication to the candidate a dry run qualified; it is a consistency
+# check, not a security control. Run dry_run=false only after the owner's
+# authorization of the version has been recorded in the release record.
 name: Release
 
 on:
@@ -24,7 +24,7 @@ on:
         type: boolean
         default: true
       approved_sha256:
-        description: SHA-256 of the candidate archive the owner authorized. Required when dry_run is false. Consistency check, not a security control.
+        description: SHA-256 of the candidate archive from the dry run. Required when dry_run is false. Consistency check, not a security control.
         required: false
         type: string
 

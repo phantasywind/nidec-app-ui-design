@@ -6,7 +6,7 @@ Written 2026-10-09 for whoever maintains this repository next, including a new C
 
 - Accountable owner: Locke Yuan. He authorizes each release; responsibility stays with him.
 - Maintenance, release review and release execution: Claude (ADR-0007). Codex is a consumer only. This is single-party control with no technical separation; Claude's review is not independent.
-- Locke's authorization is required for: merging to `main`, tags, publication, GitHub Releases, repository settings, Rulesets, environments, variables and secrets, and any change to an adopting application.
+- Locke's authorization is required for: merging to `main`, releases (he confirms the exact version, which covers merging its preparation pull request, the tag, publication, the GitHub Release and merging its release record), repository settings, Rulesets, environments, variables and secrets, and any change to an adopting application.
 
 ## Current state
 
@@ -23,16 +23,16 @@ Written 2026-10-09 for whoever maintains this repository next, including a new C
 - Dark Mode is out of scope unless Locke requests it. Do not add business rules, role rules or API behaviour to the package.
 - Record unresolved semantics as `Business Rule Pending` and name the owning application.
 
-## Versioning (proposed, pending Locke's confirmation)
+## Versioning
 
-While the package is pre-1.0: a patch version for fixes and visual refinements with no export, prop, dependency or peer-version change; a minor version for new exports, changed behaviour, or a change to the exact Fluent, React or date-picker versions applications must install. Every release record states the change type and what applications must do.
+While the package is pre-1.0: a patch version for fixes and visual refinements with no export, prop, dependency or peer-version change; a minor version for new exports, changed behaviour, or a change to the exact Fluent, React or date-picker versions applications must install. Every release record states the change type and what applications must do. Locke confirmed this rule on 2026-10-13 when he confirmed `0.2.0`.
 
 ## Releasing
 
-1. Prepare: set the exact version in `package.json` and `package-lock.json`, write `docs/releases/<version>.md` (changes, change type, what applications must do, whether Fluent or React exact versions change), and update `docs/roadmap.md`.
-2. Run the release workflow with `dry_run` left at `true`. It builds twice, compares the two archives byte for byte, runs all checks and reports the SHA-256. Nothing is published.
-3. Ask Locke to authorize the exact version and the candidate SHA-256 from the dry run. Record his words and the time in the release record before continuing.
-4. Run the workflow again with `dry_run` set to `false` and `approved_sha256` set to the authorized hash. The publish job creates the tag, publishes to GitHub Packages with the workflow's built-in token and creates the GitHub Release with the `.tgz`, `SHA256SUMS.txt` and the release record.
+1. Ask Locke to confirm the exact version (by the versioning rule above). Record his words and the time in the release record. He does not authorize the SHA-256 (his direction, 2026-10-13).
+2. Prepare: set the exact version in `package.json` and `package-lock.json`, write `docs/releases/<version>.md` (changes, change type, what applications must do, whether Fluent or React exact versions change), update `docs/roadmap.md`, and merge the preparation pull request. Locke's version confirmation covers this merge.
+3. Run the release workflow on `main` with `dry_run` left at `true`. It builds twice, compares the two archives byte for byte, runs all checks and reports the SHA-256. Nothing is published.
+4. Run the workflow again with `dry_run` set to `false` and `approved_sha256` set to the dry run's candidate hash, and record that hash in the release record. The publish job creates the tag, publishes to GitHub Packages with the workflow's built-in token and creates the GitHub Release with the `.tgz`, `SHA256SUMS.txt` and the release record.
 5. Verify tag, package, Release, filename and SHA-256 agree, then install the published version into an isolated consumer and compare content.
 6. Give Locke the exact-version adoption method to forward to adopting applications. Do not contact applications directly.
 
