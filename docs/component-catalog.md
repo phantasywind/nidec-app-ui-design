@@ -31,6 +31,7 @@
 | 特殊部件 / `stage` | StageNavigator | 可提前查看的同级准备工作区 | 选中外圈只表示查看位置；节点底色保留自身状态 |
 | 特殊部件 / `bpf` | BusinessProcessFlow · BusinessProcessStageDetail | 有实际业务进度的流程阶段，点击已到达阶段弹出阶段详情卡 | 只允许查看已到达阶段；查看位置不能改变真实流程位置；详情卡中的条件与操作归应用 |
 | 特殊部件 / `editable-grid` | EditableGrid · EditableGridRowActionGroup | 大量行、频繁修改、批量保存 | 列、校验、选中、草稿、保存与冲突归应用；行末操作冻结 |
+| 特殊部件 / `editable-grid` | LiteEditableGrid | 数百至数万行的轻量单元格编辑（文本、长文本、下拉、Combobox） | 单元格为纯文本，只渲染可见行，仅编辑中的单元格挂载编辑器；固定行高，无排序、分组和多选；数据、校验与保存归应用 |
 | 特殊部件 / `grouped-table` | GroupedTableSectionRow · EditableGrid | 自然分组的多行集合和高频编辑 | 分组只控制展开；选中和编辑发生在叶子行，折叠保留草稿 |
 | 样例 / `directory` | DirectoryWorkspace | 查找、筛选、比较并打开记录 | 主列链接或整卡入口打开 Sheet；返回保留目录状态 |
 | 样例 / `form` | Field · WorkspaceSection | 分区录入、校验、提交与反馈 | 本地合成数据；接口、业务校验及保存策略归应用 |

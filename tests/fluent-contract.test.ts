@@ -37,7 +37,7 @@ const compositePatterns = [
   'CollectionList', 'CollectionListItem', 'CardGallery', 'CardGalleryItem', 'ActionableCardGalleryItem',
   'ProcessStageIndicator', 'StageNavigator', 'BusinessProcessFlow', 'BusinessProcessStageDetail',
   'RecordIdentityCellLayout', 'RecordTableHeader', 'RecordDataGridHeader', 'TableActionIconButton',
-  'EditableGrid', 'EditableGridRowActionGroup', 'GroupedTableSectionRow',
+  'EditableGrid', 'EditableGridRowActionGroup', 'LiteEditableGrid', 'GroupedTableSectionRow',
   'RecordSelectionRegion', 'RecordSelectionDataGrid', 'RecordSelectionDataGridRow', 'SegmentedControl', 'InlineModeTabs', 'ViewModeToggle',
   'PageHeader', 'RecordManagementWorkspace', 'WorkspaceSection',
 ] as const;
