@@ -51,7 +51,7 @@ function Demo() {
     <span style={{ color: 'var(--colorNeutralForeground2)' }}>Click a group, or press Enter on it, to collapse or expand. Left collapses, Right expands.</span>
   </>;
   return <EditableGrid aria-label="Grouped lightweight line editor" title="Grouped line editor"
-    description="Groups by category and supplier. Collapsing keeps every edit; counts include hidden rows."
+    description="Groups by category and supplier. Collapsing hides rows but keeps every edit."
     status={<span>{modified.size} modified lines</span>} toolbar={toolbar} footer={<span>{rows.length.toLocaleString('en-US')} lines</span>}>
     <LiteEditableGrid aria-label="Grouped line records" columns={columns} rows={rows} getRowId={row => row.id} onCellChange={onCellChange}
       getRowGroup={groupOf} collapsedGroups={collapsed} onCollapsedGroupsChange={setCollapsed} getGroupSummary={summary} height={420} />

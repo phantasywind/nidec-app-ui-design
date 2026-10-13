@@ -1036,8 +1036,7 @@ export function LiteEditableGrid<Row>({
       },
       h('span', { 'aria-hidden': true, className: 'nidec-ui-lite-grid__section-chevron' }),
       h('span', { className: 'nidec-ui-lite-grid__section-label' }, section.label),
-      summary ? h('span', { className: 'nidec-ui-lite-grid__section-summary' }, summary) : null,
-      h('span', { 'aria-hidden': true, className: 'nidec-ui-lite-grid__section-count' }, section.count))));
+      summary ? h('span', { className: 'nidec-ui-lite-grid__section-summary' }, summary) : null)));
       continue;
     }
     const row = rows[layout.rowAt(index)] as Row;

@@ -700,24 +700,6 @@
     white-space: nowrap;
   }
 
-  :where([data-nidec-ui]) .nidec-ui-lite-grid__section-count {
-    align-items: center;
-    background: var(--colorBrandBackground);
-    border-radius: var(--borderRadiusCircular);
-    color: var(--colorNeutralForegroundOnBrand);
-    display: inline-flex;
-    flex-shrink: 0;
-    font-size: var(--fontSizeBase100);
-    font-variant-numeric: tabular-nums;
-    justify-content: center;
-    margin-inline-start: auto;
-    min-block-size: 20px;
-    min-inline-size: 20px;
-    padding-inline: var(--spacingHorizontalXXS);
-    position: sticky;
-    inset-inline-end: var(--spacingHorizontalM);
-  }
-
   :where([data-nidec-ui]) .nidec-ui-lite-grid__row[data-depth="1"] > .nidec-ui-lite-grid__cell:first-child {
     padding-inline-start: calc(var(--spacingHorizontalS) + var(--spacingHorizontalXXL));
   }
