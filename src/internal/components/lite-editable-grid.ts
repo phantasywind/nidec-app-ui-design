@@ -177,6 +177,27 @@ function CellEditor<Row>(props: EditorProps<Row>) {
   });
   const fieldRef = useRef<HTMLInputElement & HTMLTextAreaElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
+  // React removes the editor at once; a detached copy of a popup editor fades out in its place.
+  useLayoutEffect(() => {
+    const wrapper = wrapperRef.current;
+    const parent = wrapper?.parentElement;
+    if (!wrapper || !parent || column.kind === 'text' || column.kind === 'none') return undefined;
+    return () => {
+      const ghost = wrapper.cloneNode(true) as HTMLElement;
+      ghost.classList.add('nidec-ui-lite-grid__editor--exit');
+      ghost.setAttribute('aria-hidden', 'true');
+      ghost.removeAttribute('id');
+      for (const node of ghost.querySelectorAll('[id]')) node.removeAttribute('id');
+      const text = wrapper.querySelector('textarea');
+      const ghostText = ghost.querySelector('textarea');
+      if (text && ghostText) ghostText.value = text.value;
+      parent.appendChild(ghost);
+      if (text && ghostText) ghostText.scrollTop = text.scrollTop;
+      setTimeout(() => ghost.remove(), 200);
+    };
+  }, [column.kind]);
 
   const comboOptions = column.kind === 'combobox'
     ? (seed === undefined && draft === initialText ? options : filterLiteGridOptions(options, draft))
@@ -362,6 +383,7 @@ function CellEditor<Row>(props: EditorProps<Row>) {
     'data-editor': column.kind,
     onBlur,
     onKeyDown,
+    ref: wrapperRef,
     style,
   }, content);
 }

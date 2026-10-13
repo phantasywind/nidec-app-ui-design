@@ -12,7 +12,7 @@ Column editors, chosen per column with `editor`:
 
 Keyboard: arrow keys, Home and End, Ctrl+Home and Ctrl+End, Page Up and Page Down move the active cell; Enter, F2, double-click or typing starts editing; Delete clears; Ctrl+C and Ctrl+V copy and paste one cell. Clicking an active select or combobox cell opens its list.
 
-Visual states follow the shared rules: grey row hover, light-green active cell and selected option, a red outline and tooltip message for a value that fails `validate`.
+Visual states follow the shared rules: grey row hover, light-green active cell and selected option, a red outline and tooltip message for a value that fails `validate`. The active cell and editor use a thin brand border close to the table lines. Lists and the long-text panel fade and slide in and fade out; reduced motion turns this off.
 
 Limits that keep it light: every row has the same 32px height, there is no sorting, grouping, column resizing or multi-cell selection, and Chinese and other IME input starts after Enter, F2 or a double-click. Pass a stable `columns` array.
 
