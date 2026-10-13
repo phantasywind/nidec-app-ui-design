@@ -37,3 +37,7 @@ The grouped editable variant inherits the plain grid's final Actions-column cont
 ## Evidence boundary
 
 The reference CPQ page was quote-controlled and read-only. Browser interaction confirmed the two-level disclosure and unchanged sibling groups, not any CPQ editing or saving behavior. Locke accepted the shared, business-neutral preview on 2026-09-28; that visual decision does not establish CPQ editing behavior or separate consumer acceptance.
+
+## Lightweight grouped editing
+
+`LiteEditableGrid` (unpublished, 2026-10-13) takes `getRowGroup(row)` returning one or two labels and then draws its own section rows: chevron, semibold label, optional `getGroupSummary` text, with no count badge (on Locke's review; the row count stays in the section's accessible name), with the first column of grouped rows indented by level. Collapse state is uncontrolled (`defaultCollapsedGroups`) or controlled (`collapsedGroups`, `onCollapsedGroupsChange`); a group key is its labels joined with ` / `. Click a section or press Enter, Space or F2 on it to toggle; Left collapses and Right expands. Section rows are never editable. Only rows in view are rendered, so grouping keeps the same scrolling cost as the flat grid: the 5,000-row preview with every group expanded (5,036 display rows) scrolls with a 16.7 ms median frame and 35 rows in the DOM. Use it instead of `GroupedTableSectionRow` with a Fluent Table when the grouped collection is long; the Table composition remains for short groups that need checkboxes, badges or row actions inside cells.

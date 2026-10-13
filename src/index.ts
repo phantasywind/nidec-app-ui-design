@@ -12,6 +12,10 @@ export { GroupedTableSectionRow } from './internal/components/grouped-table';
 export type { GroupedTableSectionRowProps } from './internal/components/grouped-table';
 export { EditableGrid, EditableGridRowActionGroup } from './internal/components/editable-grid';
 export type { EditableGridProps, EditableGridRowActionGroupProps } from './internal/components/editable-grid';
+export { LiteEditableGrid } from './internal/components/lite-editable-grid';
+export type {
+  LiteEditableGridProps, LiteEditableGridColumn, LiteEditableGridEditor, LiteEditableGridOption, LiteEditableGridCellChange,
+} from './internal/components/lite-editable-grid';
 export { ViewModeToggle } from './internal/components/view-mode-toggle';
 export type { ViewMode, ViewModeToggleProps } from './internal/components/view-mode-toggle';
 export { SegmentedControl } from './internal/components/segmented-control';

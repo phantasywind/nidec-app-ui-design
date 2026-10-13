@@ -62,3 +62,11 @@ The application must also decide what happens when users change row, filter, pag
 - Fluent `Table` or `DataGrid`: consumer-composed rows and cells under the above contract.
 
 For an inherently hierarchical collection, [Grouped Table and Grouped Editable Grid](grouped-table.md) adds disclosure-only section rows without changing the leaf-row editing contract.
+
+## Lightweight grid for long collections
+
+`LiteEditableGrid` (unpublished, 2026-10-13) is the lightweight body for the same frame when a collection is long. It renders cells as plain text, keeps only the rows in view (plus a small overscan) in the DOM, and mounts one native editor for the cell being edited. Columns choose a dedicated editor: `text`, `longText` (multi-line panel over the cell), `select` (fixed list), `combobox` (filtered list, freeform by default), `multiselect` (checklist; values shown as tags with a remove mark) or `none` (read-only, on a faint grey with muted text). Rows have one fixed 32px height.
+
+Use it inside `EditableGrid` instead of a Table with per-row Fluent inputs when the collection has hundreds or thousands of rows. Keep the Table model for short collections that need badges, icons or row actions inside cells. It has no sorting, grouping, column resizing or multi-cell selection; IME input starts after Enter, F2 or a double-click. The consumer still owns rows, `onCellChange`, validation rules, parsing, persistence and save.
+
+Measured in Chromium (cloud container) for 2,000 rows by 5 columns: LiteEditableGrid mounts in about 17 ms with 154 elements, a Fluent Table with plain text cells in about 450 ms with 12,003 elements, and a Fluent Table with an Input in every cell in about 1.9 s with 32,003 elements. Scrolling the 20,000-row preview 20 rows per frame keeps a median frame of 16.7 ms (p95 19.1 ms) with 35 rows in the DOM.

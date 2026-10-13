@@ -411,6 +411,501 @@
     outline-offset: calc(0px - var(--strokeWidthThin));
   }
 
+  :where([data-nidec-ui]) .nidec-ui-lite-grid {
+    background: var(--colorNeutralBackground1);
+    color: var(--colorNeutralForeground1);
+    contain: content;
+    font-family: var(--fontFamilyBase);
+    font-size: var(--fontSizeBase300);
+    line-height: var(--lineHeightBase300);
+    min-width: 0;
+    overflow: auto;
+    overscroll-behavior: contain;
+    position: relative;
+  }
+
+  /* Light scrollbars on every surface of the grid, whatever the host page's color scheme. */
+  :where([data-nidec-ui]) .nidec-ui-lite-grid,
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__listbox,
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__editor-textarea {
+    color-scheme: light;
+    scrollbar-color: var(--colorNeutralStroke1) var(--colorNeutralBackground1);
+    scrollbar-width: thin;
+  }
+
+  /* The active cell's brand border shows where focus is, so the grid itself draws no outline. */
+  :where([data-nidec-ui]) .nidec-ui-lite-grid:focus-visible {
+    outline: none;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__header,
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__row {
+    display: grid;
+    grid-template-columns: var(--nidec-ui-lite-grid-columns);
+    height: var(--nidec-ui-lite-grid-row-height);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__header {
+    background: var(--colorNeutralBackground2);
+    font-weight: var(--fontWeightSemibold);
+    position: sticky;
+    top: 0;
+    z-index: 2;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__body {
+    position: relative;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__window {
+    will-change: transform;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__row:hover {
+    background: var(--colorNeutralBackground1Hover);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__header-cell,
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__cell {
+    border-block-end: var(--strokeWidthThin) solid var(--colorNeutralStroke2);
+    box-sizing: border-box;
+    min-width: 0;
+    overflow: hidden;
+    padding-block: calc((var(--nidec-ui-lite-grid-row-height) - var(--strokeWidthThin) - var(--lineHeightBase300)) / 2);
+    padding-inline: var(--spacingHorizontalS);
+    position: relative;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__header-cell {
+    border-block-end-color: var(--colorNeutralStroke1);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__header-cell[data-align="end"],
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__cell[data-align="end"],
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__editor[data-align="end"] .nidec-ui-lite-grid__editor-input {
+    font-variant-numeric: tabular-nums;
+    text-align: end;
+  }
+
+  /* Read-only cells sit on a faint grey with muted text; editable cells hint at an input on hover. */
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__cell[aria-readonly="true"] {
+    background: var(--colorNeutralBackground2);
+    color: var(--colorNeutralForeground3);
+    cursor: default;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__cell:not([aria-readonly="true"]) {
+    cursor: text;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__cell[data-editor="select"],
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__cell[data-editor="combobox"],
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__cell[data-editor="multiselect"] {
+    cursor: pointer;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__cell:not([aria-readonly="true"]):hover {
+    box-shadow: inset 0 0 0 var(--strokeWidthThin) var(--colorNeutralStroke1Hover);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__cell[data-editor="select"],
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__cell[data-editor="combobox"],
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__cell[data-editor="multiselect"],
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__editor-value,
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__editor-tags {
+    padding-inline-end: var(--spacingHorizontalXXL);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__cell[data-editor="select"]::after,
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__cell[data-editor="combobox"]::after,
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__cell[data-editor="multiselect"]::after,
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__editor-value::after,
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__editor-tags::after {
+    border-block-end: var(--strokeWidthThin) solid currentColor;
+    border-inline-end: var(--strokeWidthThin) solid currentColor;
+    color: var(--colorNeutralForeground3);
+    content: "";
+    height: 0.375rem;
+    inset-block-start: calc(50% - 0.3125rem);
+    inset-inline-end: var(--spacingHorizontalM);
+    position: absolute;
+    transform: rotate(45deg);
+    width: 0.375rem;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__cell[aria-invalid="true"] {
+    outline: var(--strokeWidthThin) solid var(--colorStatusDangerBorder2);
+    outline-offset: calc(0px - var(--strokeWidthThick));
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__cell[aria-selected="true"] {
+    background: var(--colorBrandBackground2);
+    color: var(--colorBrandForeground1);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid:focus .nidec-ui-lite-grid__cell[aria-selected="true"],
+  :where([data-nidec-ui]) .nidec-ui-lite-grid:focus .nidec-ui-lite-grid__cell[aria-selected="true"]:hover {
+    box-shadow: inset 0 0 0 var(--strokeWidthThin) var(--colorBrandStroke1);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__editor {
+    background: var(--colorNeutralBackground1);
+    box-shadow: inset 0 0 0 var(--strokeWidthThin) var(--colorBrandStroke1);
+    box-sizing: border-box;
+    height: var(--nidec-ui-lite-grid-row-height);
+    position: absolute;
+    z-index: 3;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__editor-input,
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__editor-textarea {
+    background: transparent;
+    border: 0;
+    box-sizing: border-box;
+    color: var(--colorNeutralForeground1);
+    font: inherit;
+    margin: 0;
+    outline: none;
+    padding-block: 0;
+    padding-inline: var(--spacingHorizontalS);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__editor-input {
+    height: 100%;
+    width: 100%;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__editor-value {
+    color: var(--colorNeutralForeground1);
+    height: 100%;
+    overflow: hidden;
+    padding-block: calc((var(--nidec-ui-lite-grid-row-height) - var(--lineHeightBase300)) / 2);
+    padding-inline-start: var(--spacingHorizontalS);
+    position: relative;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__editor-textarea,
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__listbox {
+    background: var(--colorNeutralBackground1);
+    border-radius: var(--borderRadiusMedium);
+    box-shadow: var(--shadow16);
+    inset-inline-start: 0;
+    min-width: max(100%, 15rem);
+    position: absolute;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__editor-textarea {
+    height: 10rem;
+    inset-block-start: 0;
+    padding-block: var(--spacingVerticalS);
+    resize: none;
+    width: max(100%, 22rem);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__editor-textarea:focus {
+    box-shadow: var(--shadow16), inset 0 0 0 var(--strokeWidthThin) var(--colorBrandStroke1);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__editor-textarea[data-placement="above"] {
+    inset-block-start: auto;
+    inset-block-end: 0;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__listbox {
+    box-sizing: border-box;
+    inset-block-start: calc(100% + var(--spacingVerticalXXS));
+    max-height: 15rem;
+    outline: none;
+    overflow-y: auto;
+    padding: var(--spacingVerticalXS);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__listbox[data-placement="above"] {
+    inset-block-start: auto;
+    inset-block-end: calc(100% + var(--spacingVerticalXXS));
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__section {
+    background: var(--colorNeutralBackground2);
+    cursor: pointer;
+    display: grid;
+    grid-template-columns: var(--nidec-ui-lite-grid-columns);
+    height: var(--nidec-ui-lite-grid-row-height);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__section[data-level="1"] {
+    background: var(--colorNeutralBackground1);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__section:hover {
+    background: var(--colorNeutralBackground1Hover);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__section-cell {
+    align-items: center;
+    border-block-end: var(--strokeWidthThin) solid var(--colorNeutralStroke2);
+    box-sizing: border-box;
+    display: flex;
+    gap: var(--spacingHorizontalS);
+    grid-column: 1 / -1;
+    min-width: 0;
+    padding-inline: var(--spacingHorizontalS) var(--spacingHorizontalM);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__section[data-level="1"] .nidec-ui-lite-grid__section-cell {
+    padding-inline-start: calc(var(--spacingHorizontalS) + var(--spacingHorizontalXXL));
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__section-cell[aria-selected="true"] {
+    background: var(--colorBrandBackground2);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid:focus .nidec-ui-lite-grid__section-cell[aria-selected="true"] {
+    box-shadow: inset 0 0 0 var(--strokeWidthThin) var(--colorBrandStroke1);
+  }
+
+  /* CSS chevron: points right when collapsed, down when expanded, and turns smoothly. */
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__section-chevron {
+    border-block-end: var(--strokeWidthThin) solid currentColor;
+    border-inline-end: var(--strokeWidthThin) solid currentColor;
+    color: var(--colorNeutralForeground2);
+    flex-shrink: 0;
+    height: 0.375rem;
+    margin-inline: var(--spacingHorizontalXS);
+    position: sticky;
+    inset-inline-start: var(--spacingHorizontalS);
+    transform: rotate(-45deg);
+    transition: transform var(--durationFast) var(--curveEasyEase);
+    width: 0.375rem;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__section-cell[aria-expanded="true"] .nidec-ui-lite-grid__section-chevron {
+    transform: rotate(45deg);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__section-label {
+    font-weight: var(--fontWeightSemibold);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__section-summary {
+    color: var(--colorNeutralForeground2);
+    font-size: var(--fontSizeBase200);
+    white-space: nowrap;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__row[data-depth="1"] > .nidec-ui-lite-grid__cell:first-child {
+    padding-inline-start: calc(var(--spacingHorizontalS) + var(--spacingHorizontalXXL));
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__row[data-depth="2"] > .nidec-ui-lite-grid__cell:first-child {
+    padding-inline-start: calc(var(--spacingHorizontalS) + var(--spacingHorizontalXXL) + var(--spacingHorizontalXXL));
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :where([data-nidec-ui]) .nidec-ui-lite-grid__section-chevron {
+      transition: none;
+    }
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__tag {
+    align-items: center;
+    background: var(--colorBrandBackground2);
+    border-radius: var(--borderRadiusMedium);
+    box-sizing: border-box;
+    color: var(--colorBrandForeground2);
+    display: inline-flex;
+    font-size: var(--fontSizeBase200);
+    gap: var(--spacingHorizontalXXS);
+    height: var(--lineHeightBase300);
+    line-height: var(--lineHeightBase200);
+    margin-inline-end: var(--spacingHorizontalXS);
+    max-width: 10rem;
+    padding-inline: var(--spacingHorizontalXXS) var(--spacingHorizontalSNudge);
+    vertical-align: top;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__tag--count {
+    background: var(--colorNeutralBackground3);
+    color: var(--colorNeutralForeground2);
+    padding-inline: var(--spacingHorizontalSNudge);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__tag-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__tag-remove {
+    border-radius: var(--borderRadiusSmall);
+    cursor: pointer;
+    flex-shrink: 0;
+    height: 0.875rem;
+    position: relative;
+    width: 0.875rem;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__tag-remove::before,
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__tag-remove::after {
+    border-inline-start: var(--strokeWidthThin) solid currentColor;
+    content: "";
+    height: 0.5rem;
+    inset-block-start: 0.1875rem;
+    inset-inline-start: calc(50% - 0.5px);
+    position: absolute;
+    transform: rotate(45deg);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__tag-remove::after {
+    transform: rotate(-45deg);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__tag-remove:hover {
+    color: var(--colorBrandForeground1);
+    outline: var(--strokeWidthThin) solid var(--colorBrandStroke2);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__editor[data-editor="multiselect"] {
+    height: auto;
+    min-height: var(--nidec-ui-lite-grid-row-height);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__editor-tags {
+    box-sizing: border-box;
+    display: flex;
+    flex-wrap: wrap;
+    min-height: var(--nidec-ui-lite-grid-row-height);
+    padding-block: calc((var(--nidec-ui-lite-grid-row-height) - var(--lineHeightBase300)) / 2);
+    padding-inline-start: var(--spacingHorizontalS);
+    position: relative;
+    row-gap: var(--spacingVerticalXS);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__editor-tags .nidec-ui-lite-grid__tag {
+    max-width: 100%;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__editor-tags::after {
+    inset-block-start: calc(var(--nidec-ui-lite-grid-row-height) / 2 - 0.3125rem);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__option.nidec-ui-lite-grid__option--check {
+    padding-inline-start: calc(var(--spacingHorizontalS) + 1.5rem);
+    position: relative;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__option--check::before {
+    border: var(--strokeWidthThin) solid var(--colorNeutralStrokeAccessible);
+    border-radius: var(--borderRadiusSmall);
+    box-sizing: border-box;
+    content: "";
+    height: 1rem;
+    inset-block-start: calc(50% - 0.5rem);
+    inset-inline-start: var(--spacingHorizontalS);
+    position: absolute;
+    width: 1rem;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__option--check[aria-selected="true"]::before {
+    background: var(--colorBrandBackground);
+    border-color: var(--colorBrandBackground);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__option--check[aria-selected="true"]::after {
+    border-block-end: var(--strokeWidthThick) solid var(--colorNeutralForegroundOnBrand);
+    border-inline-end: var(--strokeWidthThick) solid var(--colorNeutralForegroundOnBrand);
+    content: "";
+    height: 0.5rem;
+    inset-block-start: calc(50% - 0.375rem);
+    inset-inline-start: calc(var(--spacingHorizontalS) + 0.3125rem);
+    position: absolute;
+    transform: rotate(45deg);
+    width: 0.25rem;
+  }
+
+  @keyframes nidec-ui-lite-grid-drop-down { from { opacity: 0; transform: translateY(calc(0px - var(--spacingVerticalS))); } }
+  @keyframes nidec-ui-lite-grid-drop-up { from { opacity: 0; transform: translateY(var(--spacingVerticalS)); } }
+  @keyframes nidec-ui-lite-grid-fade-in { from { opacity: 0; } }
+  @keyframes nidec-ui-lite-grid-fade-out { to { opacity: 0; } }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__editor {
+    animation: nidec-ui-lite-grid-fade-in var(--durationFaster) var(--curveDecelerateMid);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__listbox,
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__editor-textarea {
+    animation: nidec-ui-lite-grid-drop-down var(--durationNormal) var(--curveDecelerateMid);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__listbox[data-placement="above"],
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__editor-textarea[data-placement="above"] {
+    animation-name: nidec-ui-lite-grid-drop-up;
+  }
+
+  /* A detached copy of the closed editor fades out over the committed cell. */
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__editor.nidec-ui-lite-grid__editor--exit {
+    animation: nidec-ui-lite-grid-fade-out var(--durationFast) var(--curveEasyEase) forwards;
+    background: transparent;
+    box-shadow: none;
+    pointer-events: none;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__editor--exit .nidec-ui-lite-grid__editor-input,
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__editor--exit .nidec-ui-lite-grid__editor-value,
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__editor--exit .nidec-ui-lite-grid__editor-tags {
+    visibility: hidden;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__editor--exit .nidec-ui-lite-grid__listbox,
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__editor--exit .nidec-ui-lite-grid__editor-textarea {
+    animation: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :where([data-nidec-ui]) .nidec-ui-lite-grid__editor,
+    :where([data-nidec-ui]) .nidec-ui-lite-grid__listbox,
+    :where([data-nidec-ui]) .nidec-ui-lite-grid__editor-textarea {
+      animation: none;
+    }
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__option,
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__option-empty {
+    border-radius: var(--borderRadiusMedium);
+    cursor: default;
+    overflow: hidden;
+    padding: var(--spacingVerticalSNudge) var(--spacingHorizontalS);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__option-empty {
+    color: var(--colorNeutralForeground3);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__option:hover,
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__option[data-active="true"] {
+    background: var(--colorNeutralBackground1Hover);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__option[aria-selected="true"],
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__option[aria-selected="true"]:hover {
+    background: var(--colorBrandBackground2);
+    color: var(--colorBrandForeground1);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__option[data-active="true"] {
+    outline: var(--strokeWidthThin) solid var(--colorNeutralStroke1);
+    outline-offset: calc(0px - var(--strokeWidthThin));
+  }
+
   @media (max-width: 720px) {
     :where([data-nidec-ui]) .nidec-ui-editable-grid__header {
       align-items: start;
