@@ -12,6 +12,10 @@ import { withClass } from './with-class';
 export type RecordIdentityCellLayoutProps = Omit<FluentTableCellLayoutProps,
   'appearance' | 'children' | 'description'> & {
   primary: ReactNode;
+  /**
+   * @deprecated One column shows one field in every table-type component.
+   * Use only for an exception approved separately; put the field in its own column instead.
+   */
   secondary?: ReactNode;
 };
 

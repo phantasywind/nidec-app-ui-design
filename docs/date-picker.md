@@ -32,6 +32,10 @@ import '@phantasywind/nidec-app-ui-design/styles.css';
 - `minDate`、`maxDate`、禁用日期、默认日期和“今天”的业务含义由应用决定；共享包不猜测这些规则。
 - 本地化的月份、星期、首周规则和错误文字由应用按其语言环境提供，不在共享包中硬编码 CPQ、EPM 或其他领域词汇。
 
+## 业务日期预设：BusinessDatePicker
+
+无时区的业务日期（如交期）使用同一入口的 `BusinessDatePicker`（尚未发布，随下一个版本提供）。值为 `yyyy-MM-dd` 字符串或 `null`，显示为 `22 Oct 2026`，可键盘输入 `2026-10-22`、`22 Oct 2026`、`22 October 2026`，一周从周一开始，占位符为 `e.g. 22 Oct 2026`。转换不经过 UTC。入口同时导出 `businessDateToDate`、`dateToBusinessDate`、`formatBusinessDate`、`parseBusinessDate`。默认文字为英文；其他语言覆盖 `formatDate`、`parseDateFromString` 和 `strings`。表格行内使用 `size="small"`。
+
 ## 表单与交互
 
 - 使用 `Field` 提供可见标签、提示和验证消息；图标不能替代字段名称。

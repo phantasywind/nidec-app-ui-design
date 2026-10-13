@@ -60,10 +60,16 @@ export function StageNavigator(props: StageNavigatorProps) {
   return ProcessStageIndicator({ ...props, className: withClass('nidec-ui-stage-navigator', props.className) });
 }
 
+/**
+ * `revisit`: reached before, then sent back so it must be done again (for
+ * example after a return to an earlier stage). It stays viewable, unlike upcoming.
+ */
+export type BusinessProcessStageStatus = ProcessStageStatus | 'revisit';
+
 export type BusinessProcessStageDefinition = Readonly<{
   id: string;
   label: string;
-  status: ProcessStageStatus;
+  status: BusinessProcessStageStatus;
   statusLabel: string;
   description?: string;
 }>;
@@ -173,7 +179,8 @@ export function BusinessProcessFlow({ 'aria-label': ariaLabel, stages, viewedSta
       },
         createElement('span', { className: 'nidec-ui-business-process-flow__marker', 'aria-hidden': true }, index + 1),
         createElement('span', { className: 'nidec-ui-business-process-flow__copy' },
-          createElement('strong', null, stage.label),
+          // Long names wrap onto a second line; the title shows the full name if it is still cut.
+          createElement('strong', { title: stage.label }, stage.label),
           stage.description === undefined ? null : createElement('small', null, stage.description),
           createElement('span', { className: 'nidec-ui-visually-hidden' }, stage.statusLabel)));
       return createElement('li', {

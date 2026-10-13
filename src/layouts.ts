@@ -106,22 +106,39 @@ export function ApplicationFrame({
 export type ApplicationTopBarProps = Omit<ComponentPropsWithoutRef<'div'>, 'children'> & {
   location: ReactNode;
   utilities?: ReactNode;
+  /** Optional second row under the top bar, usually a Breadcrumb ending in the current record. */
+  breadcrumb?: ReactNode;
 };
 
-export function ApplicationTopBar({ location, utilities, className, ...props }: ApplicationTopBarProps) {
-  return createElement('div', { ...props, className: withClass('nidec-ui-application-topbar', className) },
-    createElement('div', { className: 'nidec-ui-application-topbar__location' }, location),
-    utilities === undefined ? null : createElement('div', { className: 'nidec-ui-application-topbar__utilities' }, utilities));
+export function ApplicationTopBar({ location, utilities, breadcrumb, className, ...props }: ApplicationTopBarProps) {
+  return createElement('div', {
+    ...props,
+    className: withClass(`nidec-ui-application-topbar${breadcrumb === undefined ? '' : ' nidec-ui-application-topbar--with-breadcrumb'}`, className),
+  },
+  createElement('div', { className: 'nidec-ui-application-topbar__location' }, location),
+  utilities === undefined ? null : createElement('div', { className: 'nidec-ui-application-topbar__utilities' }, utilities),
+  breadcrumb === undefined ? null : createElement('div', { className: 'nidec-ui-application-topbar__breadcrumb' }, breadcrumb));
 }
 
 export type ApplicationNavigationProps = Omit<ComponentPropsWithoutRef<'nav'>, 'children'> & {
   'aria-label': string;
   children: ReactNode;
+  /** Pinned to the bottom of the navigation: system-level groups, the version or an environment note. */
+  footer?: ReactNode;
 };
 
-export function ApplicationNavigation({ 'aria-label': ariaLabel, children, className, ...props }: ApplicationNavigationProps) {
+export function ApplicationNavigation({ 'aria-label': ariaLabel, children, footer, className, ...props }: ApplicationNavigationProps) {
   if (!ariaLabel.trim()) throw new Error('ApplicationNavigation requires a non-empty aria-label.');
-  return createElement('nav', { ...props, 'aria-label': ariaLabel, className: withClass('nidec-ui-application-navigation', className) }, children);
+  if (footer === undefined) {
+    return createElement('nav', { ...props, 'aria-label': ariaLabel, className: withClass('nidec-ui-application-navigation', className) }, children);
+  }
+  return createElement('nav', {
+    ...props,
+    'aria-label': ariaLabel,
+    className: withClass('nidec-ui-application-navigation nidec-ui-application-navigation--with-footer', className),
+  },
+  createElement('div', { className: 'nidec-ui-application-navigation__main' }, children),
+  createElement('div', { className: 'nidec-ui-application-navigation__footer' }, footer));
 }
 
 export type ApplicationNavigationGroupProps = Omit<ComponentPropsWithoutRef<'section'>, 'children' | 'aria-label'> & {
@@ -141,18 +158,22 @@ export type ApplicationNavigationItemProps = Omit<ComponentPropsWithoutRef<'a'>,
   label: string;
   icon?: ReactNode;
   current?: boolean;
+  /** Trailing count or status, for example a CounterBadge with the number of items waiting. */
+  badge?: ReactNode;
 };
 
-export function ApplicationNavigationItem({ href, label, icon, current = false, className, ...props }: ApplicationNavigationItemProps) {
+export function ApplicationNavigationItem({ href, label, icon, current = false, badge, className, ...props }: ApplicationNavigationItemProps) {
   if (!href.trim() || !label.trim()) throw new Error('ApplicationNavigationItem requires a non-empty href and label.');
+  const modifiers = badge === undefined ? '' : ` nidec-ui-application-navigation__item--with-badge${icon === undefined ? ' nidec-ui-application-navigation__item--no-icon' : ''}`;
   return createElement('a', {
     ...props,
     'aria-current': current ? 'page' : undefined,
-    className: withClass('nidec-ui-application-navigation__item', className),
+    className: withClass(`nidec-ui-application-navigation__item${modifiers}`, className),
     href,
   },
   icon === undefined ? null : createElement('span', { 'aria-hidden': true, className: 'nidec-ui-application-navigation__icon' }, icon),
-  createElement('span', { className: 'nidec-ui-application-navigation__label' }, label));
+  createElement('span', { className: 'nidec-ui-application-navigation__label' }, label),
+  badge === undefined ? null : createElement('span', { className: 'nidec-ui-application-navigation__badge' }, badge));
 }
 
 export type AuthenticationLayoutProps = Omit<ComponentPropsWithoutRef<'section'>, 'children' | 'title' | 'form'> & {
@@ -197,6 +218,12 @@ export type DirectoryWorkspaceProps = Omit<ComponentPropsWithoutRef<'section'>, 
   resultsLabel: string;
   pagination?: ReactNode;
   details?: ReactNode;
+  /**
+   * Heading of the results module, usually with the record count. When given,
+   * the toolbar, results and pagination sit together inside one white module.
+   */
+  resultsTitle?: ReactNode;
+  resultsActions?: ReactNode;
 };
 
 export function DirectoryWorkspace({
@@ -208,16 +235,29 @@ export function DirectoryWorkspace({
   resultsLabel,
   pagination,
   details,
+  resultsTitle,
+  resultsActions,
   className,
   ...props
 }: DirectoryWorkspaceProps) {
   if (!ariaLabel.trim() || !resultsLabel.trim()) throw new Error('DirectoryWorkspace requires non-empty workspace and results labels.');
+  const body = [
+    createElement('div', { className: 'nidec-ui-directory-workspace__toolbar', key: 'toolbar' }, toolbar),
+    createElement('div', { 'aria-label': resultsLabel, className: 'nidec-ui-directory-workspace__results', key: 'results', role: 'region' }, results),
+    pagination === undefined ? null : createElement('div', { className: 'nidec-ui-directory-workspace__pagination', key: 'pagination' }, pagination),
+  ];
   return createElement('section', { ...props, 'aria-label': ariaLabel, className: withClass('nidec-ui-directory-workspace', className) },
     createElement('div', { className: 'nidec-ui-directory-workspace__header' }, header),
     scope === undefined ? null : createElement('div', { className: 'nidec-ui-directory-workspace__scope' }, scope),
-    createElement('div', { className: 'nidec-ui-directory-workspace__toolbar' }, toolbar),
-    createElement('div', { 'aria-label': resultsLabel, className: 'nidec-ui-directory-workspace__results', role: 'region' }, results),
-    pagination === undefined ? null : createElement('div', { className: 'nidec-ui-directory-workspace__pagination' }, pagination),
+    // Same markup and classes as WorkspaceSection; layouts stay a self-contained entry.
+    ...(resultsTitle === undefined ? body : [createElement('section', {
+      className: 'nidec-ui-workspace-section nidec-ui-directory-workspace__module', key: 'module',
+    },
+    createElement('header', { className: 'nidec-ui-workspace-section__header' },
+      createElement('div', { className: 'nidec-ui-workspace-section__copy' },
+        createElement('h2', { className: 'nidec-ui-workspace-section__title' }, resultsTitle)),
+      resultsActions === undefined ? null : createElement('div', { className: 'nidec-ui-workspace-section__actions' }, resultsActions)),
+    createElement('div', { className: 'nidec-ui-workspace-section__content nidec-ui-directory-workspace__module-content' }, ...body))]),
     details === undefined ? null : createElement('div', { className: 'nidec-ui-directory-workspace__details' }, details));
 }
 

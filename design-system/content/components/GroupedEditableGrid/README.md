@@ -7,3 +7,5 @@ Pass `getRowGroup(row)` returning one label (one level) or two labels (section a
 - The first column of grouped rows is indented by level. All editors, read-only styling and states are those of LiteEditableGrid.
 
 `Business Rule Pending` for each application: whether counts mean total or filtered rows, and how hidden validation issues are handled at save. The consumer owns group identity and membership, rows, validation and persistence.
+
+- One column shows one field. Do not stack two fields in one column; an exception needs separate approval (shared rule, see the page selection guide).

@@ -22,8 +22,24 @@ export { SegmentedControl } from './internal/components/segmented-control';
 export type { SegmentedControlOption, SegmentedControlProps } from './internal/components/segmented-control';
 export { InlineModeTabs } from './internal/components/inline-mode-tabs';
 export type { InlineModeTabOption, InlineModeTabsProps } from './internal/components/inline-mode-tabs';
-export { PageHeader, RecordManagementWorkspace, WorkspaceSection } from './internal/components/workspace';
-export type { PageHeaderProps, RecordManagementWorkspaceProps, WorkspaceSectionProps } from './internal/components/workspace';
+export { PageHeader, RecordManagementWorkspace, WorkspaceSection, WorkspaceStack } from './internal/components/workspace';
+export type { PageHeaderProps, RecordManagementWorkspaceProps, WorkspaceSectionProps, WorkspaceStackProps } from './internal/components/workspace';
+export { SingleSelectDropdown } from './internal/components/single-select-dropdown';
+export type {
+  SingleSelectDropdownOption, SingleSelectDropdownProps, SingleSelectDropdownSelectData,
+} from './internal/components/single-select-dropdown';
+export { Pagination } from './internal/components/pagination';
+export type { PaginationProps } from './internal/components/pagination';
+export { FactList } from './internal/components/fact-list';
+export type { FactListItem, FactListProps } from './internal/components/fact-list';
+export { FormDrawer } from './internal/components/form-drawer';
+export type { FormDrawerProps } from './internal/components/form-drawer';
+export { SectionNavigation } from './internal/components/section-navigation';
+export type { SectionNavigationItem, SectionNavigationProps } from './internal/components/section-navigation';
+export { StepStatusIcon } from './internal/components/step-status';
+export type { StepStatus, StepStatusIconProps } from './internal/components/step-status';
+export { TableScrollRegion } from './internal/components/table-scroll-region';
+export type { TableScrollRegionProps } from './internal/components/table-scroll-region';
 export { CollectionList, CollectionListItem } from './internal/components/collection-list';
 export type { CollectionListProps, CollectionListItemProps } from './internal/components/collection-list';
 export { RecordIdentityCellLayout, RecordTableHeader, RecordDataGridHeader } from './internal/components/record-table';
@@ -37,7 +53,7 @@ export type { CardGalleryProps, CardGalleryItemProps, ActionableCardGalleryItemP
 export { ProcessStageIndicator, StageNavigator, BusinessProcessFlow, BusinessProcessStageDetail } from './internal/components/process-stage';
 export type {
   ProcessStageStatus, ProcessStageDefinition, ProcessStageIndicatorProps, StageNavigatorProps,
-  BusinessProcessStageDefinition, BusinessProcessFlowProps, BusinessProcessStageCheck, BusinessProcessStageDetailProps,
+  BusinessProcessStageDefinition, BusinessProcessStageStatus, BusinessProcessFlowProps, BusinessProcessStageCheck, BusinessProcessStageDetailProps,
 } from './internal/components/process-stage';
 
 export {

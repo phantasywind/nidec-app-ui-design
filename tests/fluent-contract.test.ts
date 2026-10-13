@@ -39,7 +39,8 @@ const compositePatterns = [
   'RecordIdentityCellLayout', 'RecordTableHeader', 'RecordDataGridHeader', 'TableActionIconButton',
   'EditableGrid', 'EditableGridRowActionGroup', 'LiteEditableGrid', 'GroupedTableSectionRow',
   'RecordSelectionRegion', 'RecordSelectionDataGrid', 'RecordSelectionDataGridRow', 'SegmentedControl', 'InlineModeTabs', 'ViewModeToggle',
-  'PageHeader', 'RecordManagementWorkspace', 'WorkspaceSection',
+  'PageHeader', 'RecordManagementWorkspace', 'WorkspaceSection', 'WorkspaceStack',
+  'SingleSelectDropdown', 'Pagination', 'FactList', 'FormDrawer', 'SectionNavigation', 'StepStatusIcon', 'TableScrollRegion',
 ] as const;
 
 describe('Fluent public boundary', () => {
@@ -48,14 +49,12 @@ describe('Fluent public boundary', () => {
     for (const name of [...compositions, ...platformSurfaces, ...commonContentControls]) expect(shared[name]).toBe(upstream[name]);
   });
   it('forwards an explicit theme and establishes a host', () => {
-    const element = shared.NidecProvider({theme:upstream.webLightTheme, id:'host', children:'Fixture'});
-    expect(element.type).toBe(upstream.FluentProvider);
-    expect(element.props.theme).toBe(upstream.webLightTheme);
     const html = renderToStaticMarkup(createElement(shared.NidecProvider, {
       theme: upstream.webLightTheme, id:'host', children:'Fixture',
     }));
     expect(html).toContain('data-nidec-ui=""');
     expect(html).toContain('id="host"');
+    expect(html).toContain(`--colorBrandBackground: ${upstream.webLightTheme.colorBrandBackground}`);
   });
 });
 // @ts-expect-error No implicit production theme.

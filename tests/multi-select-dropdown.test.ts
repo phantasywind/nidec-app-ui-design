@@ -53,6 +53,25 @@ describe('MultiSelectDropdown', () => {
     expect(source).toMatch(/'&\[aria-checked="true"\]:not\(\[aria-disabled="true"\]\)': \{\s*backgroundColor: tokens\.colorBrandBackground2,\s*color: tokens\.colorBrandForeground1,/);
   });
 
+  it('can list the selection as removable tags below a short trigger, with Clear all', () => {
+    const html = render({ tagPlacement: 'below', selectedOptions: ['a', 'c'], placeholder: 'Pick' });
+    expect(html).toContain('nidec-ui-multi-select-dropdown--tags-below');
+    expect(html).toContain('value="2 selected"');
+    expect(html).toContain('role="toolbar"');
+    expect(html).toContain('aria-label="Remove Alpha"');
+    expect(html).toContain('aria-label="Remove Gamma"');
+    expect(html).toContain('>Clear all<');
+    expect(html).not.toContain('nidec-ui-multi-select-dropdown__overflow');
+    expect(render({ tagPlacement: 'below', placeholder: 'Pick' })).not.toContain('Clear all');
+  });
+
+  it('searches with a multiselect Combobox only when tags are below', () => {
+    const html = render({ tagPlacement: 'below', searchable: true, selectedOptions: ['b'] });
+    expect(html).toContain('fui-Combobox');
+    expect(html).toContain('placeholder="1 selected"');
+    expect(() => render({ searchable: true })).toThrow('tagPlacement="below"');
+  });
+
   it('rejects ambiguous option data and unknown selections', () => {
     expect(() => render({ options: [{ value: 'a', text: 'Alpha' }, { value: 'a', text: 'Again' }] })).toThrow('must be unique');
     expect(() => render({ options: [{ value: ' ', text: 'Blank' }] })).toThrow('non-empty values and text');

@@ -10,6 +10,14 @@
 - 普通单选使用白色列表面板、浅绿悬停、浅绿选中、深绿文字与勾选标记。焦点轮廓来自绿色主题；强制颜色模式遵循系统可访问配色。
 - 使用共享 `Option` 保证样式随组件进入 portal；不要用应用全局 option CSS 或修改全部中性色 token 来模拟选项状态。
 
+## 单选：SingleSelectDropdown
+
+从固定列表选一个值时优先使用 `SingleSelectDropdown`（主入口导入，尚未发布，随下一个版本提供）。少于 `searchThreshold`（默认 12）项时渲染 `Dropdown`，达到阈值时渲染可输入筛选的 `Combobox`，应用无需自己切换。
+
+- 选项通过 `options`（`{ value, text, disabled? }`）传入；`selectedOption` / `defaultSelectedOption` 为选中键或 `null`；`onOptionSelect(event, { optionValue, optionText })`。
+- 输入只筛选，不改变选择；关闭列表时输入框恢复为已选文字。无匹配时显示不可选的 `noMatchText`（默认 `No matches`）。
+- Fluent Combobox 在输入不匹配时会触发 `optionValue` 为空的选择事件，且可能在 Tab 时选中已被筛掉的选项；组件忽略这两种情况，回调只收到真实选项。
+
 ## 多选：MultiSelectDropdown
 
 从固定短列表中选择多个值时使用 `MultiSelectDropdown`（主入口导入，尚未发布，随下一个版本提供）。它是 Fluent `Dropdown` 的 `multiselect` 模式，选项使用共享 `Option`，触发框以标签显示已选值。
@@ -19,7 +27,8 @@
 - 弹层在勾选时保持打开，每个选项带复选标记；悬停为共享中性灰，选中为浅绿底、深绿文字。Fluent 多选选项以 `aria-checked` 而非 `aria-selected` 标记，共享 `Option` 对两者使用相同的选中色，`Combobox` 多选同样适用。
 - 触发框按 `options` 顺序显示 `brand` 外观、extra-small 尺寸的标签；超过 `maxVisibleTags`（默认 2）的部分折叠为一个计数标签，文字由 `formatOverflowText` 决定（默认 `+N`）。标签不是按钮，取消选择在列表中取消勾选；读屏读出完整的逗号分隔列表。
 - small 尺寸下标签（20px）高于文字行（16px），组件以 −2px 纵向外边距保持控件高度不变。这是唯一的尺寸例外，目的为保持 small 控件高度，仅作用于触发框内的标签行。
-- 多选模式不支持 `clearable`；需要一次清空时由应用提供单独操作。可搜索的长列表多选使用 `Combobox` 的 `multiselect`；需要同时看到全部选项时使用 Checkbox。
+- `tagPlacement="below"`：触发框只显示“N selected”，已选值以小号可删除标签显示在下方并自动换行，后跟“Clear all”；加 `searchable` 可输入筛选（多选 Combobox，无匹配时显示不可选提示）。删除标签和清除全部同样通过 `onOptionSelect` 回报完整选择。
+- 默认（标签在触发框内）模式不支持 `clearable`；需要一次清空时使用 `tagPlacement="below"` 或由应用提供单独操作。可搜索的长列表多选使用 `Combobox` 的 `multiselect`；需要同时看到全部选项时使用 Checkbox。
 - 哪些键有效、数量上限、默认值和提交内容由应用决定。
 
 `Select` 仍作为兼容出口保留，不再推荐用于要求统一外观的新页面。原生弹出菜单受系统和浏览器控制，不能承诺跨平台绿色高亮一致。

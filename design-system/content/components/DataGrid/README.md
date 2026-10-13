@@ -30,3 +30,5 @@ The consumer provides stable row ids, the selected-record authority, the form th
   </RecordSelectionDataGrid>
 </RecordSelectionRegion>
 ```
+
+- One column shows one field. Do not stack two fields in one column; an exception needs separate approval (shared rule, see the page selection guide).

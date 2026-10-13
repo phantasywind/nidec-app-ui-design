@@ -6,7 +6,7 @@ Table: `size` (`extra-small`, `small`, `medium`), `sortable` and `noNativeElemen
 
 For a record table:
 
-- Use `RecordTableHeader` in place of `TableHeader`. Give the primary column `RecordIdentityCellLayout` with a semantic `Link` as `primary`, and optionally `secondary` text. That Link is the only way into the record; clicking other cells must not open it.
+- Use `RecordTableHeader` in place of `TableHeader`. Give the primary column `RecordIdentityCellLayout` with a semantic `Link` as `primary`. Each column shows one field: do not stack a second field under the first (the `secondary` slot is only for an exception Locke has approved separately). That Link is the only way into the record; clicking other cells must not open it.
 - Keep status, owner and metadata in their own columns. Show a status with Badge.
 - Put direct row commands in `TableCellActions` as `TableActionIconButton` with a Tooltip. Several or rare commands go into a Menu.
 - Keep horizontal overflow inside the table region, not the page.
