@@ -106,7 +106,7 @@ Put commands that advance or return a process in separate, clearly labelled Butt
 ## Dense editing and grouped data
 
 - Many rows edited repeatedly in one session, with batch save: EditableGrid.
-- Hundreds to thousands of rows edited cell by cell (text, long text, select, combobox): LiteEditableGrid inside the EditableGrid frame.
+- Hundreds to thousands of rows edited cell by cell (text, long text, select, combobox): LiteEditableGrid inside the EditableGrid frame; with `getRowGroup` it becomes the Grouped Editable Grid.
 - A naturally grouped collection with show and hide: GroupedTableSectionRow, in a Grouped Table or a Grouped Editable Grid.
 - A few records to scan or compare: Table. A compact short list: CollectionList.
 

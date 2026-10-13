@@ -7,7 +7,7 @@ import { describe, expect, it } from 'vitest';
 import { LiteEditableGrid } from '../src/index';
 import type { LiteEditableGridColumn, LiteEditableGridProps } from '../src/index';
 import {
-  computeRenderRange, filterLiteGridOptions, LITE_GRID_ROW_HEIGHT, splitLiteGridValues,
+  buildLiteGridLayout, computeRenderRange, filterLiteGridOptions, LITE_GRID_ROW_HEIGHT, splitLiteGridValues,
 } from '../src/internal/components/lite-editable-grid';
 
 const repositoryRoot = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -76,6 +76,47 @@ describe('LiteEditableGrid', () => {
       'aria-label': 'Tags', getRowId: row => row.id, onCellChange: () => undefined, rows: [],
       columns: [{ key: 'regions', header: 'Regions', editor: 'multiselect', options: [{ value: 'a,b', text: 'AB' }] }],
     }))).toThrow('must not contain a comma');
+  });
+
+  it('lays out two-level groups in first-appearance order and hides collapsed rows', () => {
+    const items = [
+      { id: 'a', path: ['Electrical', 'Drives'] }, { id: 'b', path: ['Mechanical'] },
+      { id: 'c', path: ['Electrical', 'Cables'] }, { id: 'd', path: ['Electrical', 'Drives'] }, { id: 'e', path: [] as string[] },
+    ];
+    const describe = (collapsed: string[]) => {
+      const layout = buildLiteGridLayout(items, item => item.path, new Set(collapsed));
+      return Array.from({ length: layout.count }, (_, position) => {
+        const section = layout.sectionAt(position);
+        return section ? `${section.key}(${section.count})` : `${items[layout.rowAt(position)]!.id}@${layout.depthAt(position)}`;
+      });
+    };
+    expect(describe([])).toEqual([
+      'Electrical(3)', 'Electrical / Drives(2)', 'a@2', 'd@2', 'Electrical / Cables(1)', 'c@2', 'Mechanical(1)', 'b@1', 'e@0',
+    ]);
+    expect(describe(['Electrical / Drives'])).toEqual([
+      'Electrical(3)', 'Electrical / Drives(2)', 'Electrical / Cables(1)', 'c@2', 'Mechanical(1)', 'b@1', 'e@0',
+    ]);
+    expect(describe(['Electrical'])).toEqual(['Electrical(3)', 'Mechanical(1)', 'b@1', 'e@0']);
+    expect(() => buildLiteGridLayout([{ path: ['a', 'b', 'c'] }], item => item.path, new Set())).toThrow('two group levels');
+  });
+
+  it('renders section rows with an accessible count, summary and expansion state', () => {
+    type Grouped = { id: string; group: string; code: string };
+    const groupedRows: Grouped[] = [{ id: '1', group: 'Electrical', code: 'A' }, { id: '2', group: 'Mechanical', code: 'B' }];
+    const html = renderToStaticMarkup(createElement(LiteEditableGrid<Grouped>, {
+      'aria-label': 'Grouped', getRowId: row => row.id, onCellChange: () => undefined, rows: groupedRows,
+      columns: [{ key: 'code', header: 'Code' }],
+      getRowGroup: row => [row.group],
+      defaultCollapsedGroups: ['Mechanical'],
+      getGroupSummary: group => (group.label === 'Mechanical' ? '1 modified' : undefined),
+    }));
+    expect(html).toContain('aria-rowcount="4"');
+    expect(html).toContain('aria-label="Electrical, 1 row"');
+    expect(html).toContain('aria-label="Mechanical, 1 row, 1 modified"');
+    expect(html).toMatch(/aria-expanded="true"[^>]*aria-label="Electrical/);
+    expect(html).toMatch(/aria-expanded="false"[^>]*aria-label="Mechanical/);
+    expect(html).toContain('>A<');
+    expect(html).not.toContain('>B<');
   });
 
   it('filters combobox options by contained text', () => {
