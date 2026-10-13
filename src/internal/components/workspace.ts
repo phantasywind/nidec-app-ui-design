@@ -2,19 +2,23 @@ import { createElement } from 'react';
 import type { ComponentPropsWithoutRef, ReactNode } from 'react';
 import { withClass } from './with-class';
 
-export type PageHeaderProps = Omit<ComponentPropsWithoutRef<'header'>, 'children'> & {
+export type PageHeaderProps = Omit<ComponentPropsWithoutRef<'header'>, 'children' | 'title'> & {
   title: ReactNode;
+  /** Shown beside the title, for example a status Badge. */
+  titleAdornment?: ReactNode;
   description?: ReactNode;
   eyebrow?: ReactNode;
   actions?: ReactNode;
 };
 
 /** Page-level identity and commands; the surrounding application shell remains consumer-owned. */
-export function PageHeader({ title, description, eyebrow, actions, className, ...props }: PageHeaderProps) {
+export function PageHeader({ title, titleAdornment, description, eyebrow, actions, className, ...props }: PageHeaderProps) {
+  const heading = createElement('h1', { className: 'nidec-ui-page-header__title' }, title);
   return createElement('header', { ...props, className: withClass('nidec-ui-page-header', className) },
     createElement('div', { className: 'nidec-ui-page-header__copy' },
       eyebrow === undefined ? null : createElement('div', { className: 'nidec-ui-page-header__eyebrow' }, eyebrow),
-      createElement('h1', { className: 'nidec-ui-page-header__title' }, title),
+      titleAdornment === undefined ? heading : createElement('div', { className: 'nidec-ui-page-header__heading' },
+        heading, createElement('div', { className: 'nidec-ui-page-header__adornment' }, titleAdornment)),
       description === undefined ? null : createElement('div', { className: 'nidec-ui-page-header__description' }, description)),
     actions === undefined ? null : createElement('div', { className: 'nidec-ui-page-header__actions' }, actions));
 }
@@ -60,7 +64,7 @@ export function RecordManagementWorkspace({
     createElement('div', { className: 'nidec-ui-record-workspace__primary' }, primary)));
 }
 
-export type WorkspaceSectionProps = Omit<ComponentPropsWithoutRef<'section'>, 'children'> & {
+export type WorkspaceSectionProps = Omit<ComponentPropsWithoutRef<'section'>, 'children' | 'title'> & {
   title: ReactNode;
   description?: ReactNode;
   actions?: ReactNode;
@@ -76,4 +80,17 @@ export function WorkspaceSection({ title, description, actions, children, classN
         description === undefined ? null : createElement('div', { className: 'nidec-ui-workspace-section__description' }, description)),
       actions === undefined ? null : createElement('div', { className: 'nidec-ui-workspace-section__actions' }, actions)),
     createElement('div', { className: 'nidec-ui-workspace-section__content' }, children));
+}
+
+export type WorkspaceStackProps = Omit<ComponentPropsWithoutRef<'div'>, 'children'> & {
+  children: ReactNode;
+};
+
+/**
+ * Vertical stack of page modules (PageHeader, page-level MessageBar, section
+ * navigation, WorkspaceSection) with the shared module gap, so pages do not
+ * add their own margins between modules.
+ */
+export function WorkspaceStack({ children, className, ...props }: WorkspaceStackProps) {
+  return createElement('div', { ...props, className: withClass('nidec-ui-workspace-stack', className) }, children);
 }

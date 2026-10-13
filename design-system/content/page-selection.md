@@ -24,7 +24,7 @@ Choose the page layout by the user's main task, then compose the listed componen
 ## Directory
 
 - **Use for:** finding, comparing and opening independent records, each with its own destination or a contextual Sheet.
-- **Components:** PageHeader, Toolbar with SearchBox, optional ViewModeToggle, then Table or CardGallery, pagination, and optionally OverlayDrawer. Wrap the whole in DirectoryWorkspace.
+- **Components:** PageHeader, Toolbar with SearchBox, optional ViewModeToggle, then Table (in a TableScrollRegion when it is wide) or CardGallery, Pagination, and optionally FormDrawer. Wrap the whole in DirectoryWorkspace, with `resultsTitle` so the toolbar, results and pagination share one white module.
 - **Rules:** one identity Link in the table's primary column; a whole-card target for a card with one destination; icon-only row actions or a Menu; switching List and Card keeps the query, filters, sort, page and selection.
 - **Do not use when:** selecting a row only updates an editor already on the same page.
 
@@ -38,7 +38,7 @@ Choose the page layout by the user's main task, then compose the listed componen
 ## Record workspace
 
 - **Use for:** understanding and working on one stable record while its sections change.
-- **Components:** PageHeader, RecordManagementWorkspace, WorkspaceSection, Tabs or StageNavigator for peer views, and an optional context rail with CollectionList.
+- **Components:** PageHeader (status Badge in `titleAdornment`), SectionNavigation under the header when the sections are stacked on one page, RecordManagementWorkspace, WorkspaceSection with FactList for read-only facts, Tabs or StageNavigator for peer views, and an optional context rail with CollectionList.
 - **Rules:** one `h1`; at most one primary header action; the rail sits right above 900 px and moves above the content at 900 px and below; Tabs are not workflow.
 
 ## Master data (Form + List)
@@ -51,7 +51,7 @@ Choose the page layout by the user's main task, then compose the listed componen
 ## Form page
 
 - **Use for:** creating or editing one record on a dedicated page, with a single submit.
-- **Components:** PageHeader, WorkspaceSection for each group of fields, Field with Input, Textarea, Dropdown, MultiSelectDropdown, Combobox, DatePicker, SpinButton, RadioGroup, Checkbox or Switch, MessageBar for submission feedback, and Button for the actions.
+- **Components:** PageHeader, WorkspaceSection for each group of fields, Field with Input, Textarea, SingleSelectDropdown (or Dropdown), MultiSelectDropdown, Combobox, BusinessDatePicker (or DatePicker), SpinButton, RadioGroup, Checkbox or Switch, MessageBar for submission feedback, and Button for the actions.
 - **Rules:** a real `form`; one heading; fields grouped into titled sections; every field has a visible label and required fields are marked; errors appear next to the field in words, and a failed submit may add a summary at the start of the form; the actions sit at the end of the form, with the one primary submit first and Cancel or Reset after it; a busy submit disables duplicate submission and keeps the label; leaving with unsaved work asks first.
 - **Do not use when:** selecting a row loads the editor on the same page (Master data), or the page also has sections, tabs and a status to track (Record workspace).
 - **The application owns:** fields, validation rules, defaults, persistence, permissions and what happens after saving.
@@ -67,7 +67,9 @@ Choose the page layout by the user's main task, then compose the listed componen
 
 These rules apply to every page type above. They cover where things go, not what they mean.
 
-**Region order, top to bottom:** page identity (the single `h1` in PageHeader); page-level feedback (MessageBar); the primary work area built from WorkspaceSection modules; an optional context rail. Put status and metadata in the same section as the content they govern.
+**Region order, top to bottom:** page identity (the single `h1` in PageHeader); page-level feedback (MessageBar); section navigation if any; the primary work area built from WorkspaceSection modules; an optional context rail. Put status and metadata in the same section as the content they govern.
+
+**Spacing between modules:** 12 px (`spacingVerticalM`). Put the modules in a WorkspaceStack instead of adding margins to each page; do not stack the stack gap on top of other margins.
 
 **Where actions go**
 
@@ -88,7 +90,7 @@ Do not repeat the same action in the header and the form footer. A disabled acti
 
 **Choosing a surface**
 - Dialog: a short confirmation or one decision, with focus returning to its trigger.
-- Sheet (OverlayDrawer): detailed viewing or editing of a record without leaving a list; guard closing with unsaved work.
+- Sheet (FormDrawer, built on OverlayDrawer): detailed viewing or editing of a record without leaving a list; `medium` for a short form, `large` for a wide one; guard closing with unsaved work in `onDismiss`.
 - Dedicated page: a flow that needs its own route, sections and submit.
 
 **Reflow:** moving regions at 900 px and below must not change route, selection, unsaved work or business state.
@@ -103,12 +105,15 @@ Do not repeat the same action in the header and the form footer. A disabled acti
 
 Put commands that advance or return a process in separate, clearly labelled Buttons or Menu items.
 
+Independent steps that are each done or not, with no current stage (a checklist or production steps), use StepStatusIcon beside each step's name, not BusinessProcessFlow.
+
 ## Dense editing and grouped data
 
 - Many rows edited repeatedly in one session, with batch save: EditableGrid.
 - Hundreds to thousands of rows edited cell by cell (text, long text, select, combobox): LiteEditableGrid inside the EditableGrid frame; with `getRowGroup` it becomes the Grouped Editable Grid.
 - A naturally grouped collection with show and hide: GroupedTableSectionRow, in a Grouped Table or a Grouped Editable Grid.
 - A few records to scan or compare: Table. A compact short list: CollectionList.
+- A wide Table scrolls sideways inside a TableScrollRegion, which never adds a vertical scrollbar. For many small inputs in table rows, use LiteEditableGrid rather than Fluent controls in Table cells.
 
 ## Always
 
@@ -128,6 +133,8 @@ ApplicationFrame is the stable authenticated shell: a navigation region, a top b
 It uses ApplicationTopBar and ApplicationNavigation (with ApplicationNavigationGroup and ApplicationNavigationItem). The frame does not insert a second page title, a business Toolbar or a global loading state, and it owns no routing, permissions or account behaviour.
 
 - Keep the navigation and top bar white and flat, separated from the content by one light border. The page area is white too; hierarchy comes from spacing and discrete white modules, not a grey canvas.
+- The top bar can have two rows. The first carries the application name, the environment as plain small text (only outside production) and the account; the second, from ApplicationTopBar's `breadcrumb`, is the location ending in the current record. The logo stays in the navigation brand area.
+- The navigation is one viewport tall and sticky. Its `footer` holds system destinations, the version or an environment note, pinned to the bottom.
 - Wide desktop shows persistent navigation. Compact desktop may collapse navigation to an accessible icon rail, keeping names and the current state; pass `compactBrand` when the full brand does not fit. Narrow screens use an accessible overlay.
 - Provide distinct navigation, banner and main landmarks, one page `h1`, and a logical keyboard order when regions move.
 - Reflow must not change route, selection, dirty state or authentication.
@@ -138,7 +145,9 @@ The consumer provides the brand, destinations, routes, breadcrumbs, account data
 
 DirectoryWorkspace is the layout for finding, comparing and opening independent records, or for processing a bounded work queue.
 
-Regions in order: PageHeader (at most one primary action); an optional scope; a Toolbar with search, filters, sort, refresh and an optional ViewModeToggle; one results region (Table, CardGallery, or an explicit loading, empty or error state); pagination; and an optional contextual Sheet. Put no unrelated summary cards between the Toolbar and its results.
+Regions in order: PageHeader (at most one primary action); an optional scope; a Toolbar with search, filters, sort, refresh and an optional ViewModeToggle; one results region (Table, CardGallery, or an explicit loading, empty or error state); Pagination; and an optional contextual Sheet. Put no unrelated summary cards between the Toolbar and its results.
+
+Pass `resultsTitle` (usually the name with the record count, such as "Records (60)") to wrap the toolbar, results and pagination in one white WorkspaceSection module, with optional `resultsActions` in its header. Without it the regions sit directly on the page, as before.
 
 - A table has one identity Link in its primary column; the row itself is not a hidden link. A card with one destination is a single whole-card target with no inner link; use a non-whole-card presentation when a record needs several direct actions.
 - Direct row commands are icon-only buttons; several or low-frequency ones go into a Menu.

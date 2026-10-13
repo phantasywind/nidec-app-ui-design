@@ -17,7 +17,8 @@ export type SegmentedControlProps = Omit<ComponentPropsWithoutRef<'div'>,
   'children' | 'onChange' | 'role'> & {
   'aria-label': string;
   options: readonly SegmentedControlOption[];
-  value: string;
+  /** The selected option's value, or null when no option is selected. */
+  value: string | null;
   onValueChange: (event: MouseEvent | KeyboardEvent, value: string) => void;
   size?: 'small' | 'medium';
   disabled?: boolean;
@@ -58,12 +59,12 @@ export function SegmentedControl({
   if (options.length < 2) throw new Error('SegmentedControl requires at least two options.');
   if (new Set(options.map(option => option.value)).size !== options.length) throw new Error('SegmentedControl option values must be unique.');
   if (options.some(option => !option.value.trim() || !option.label.trim())) throw new Error('SegmentedControl options require non-empty values and labels.');
-  if (!options.some(option => option.value === value)) throw new Error('SegmentedControl value must match an option.');
+  if (value !== null && !options.some(option => option.value === value)) throw new Error('SegmentedControl value must match an option or be null.');
 
   return createElement(FluentToolbar, {
     ...props,
     'aria-label': ariaLabel,
-    checkedValues: { [segmentedControlName]: [value] },
+    checkedValues: { [segmentedControlName]: value === null ? [] : [value] },
     className: withClass('nidec-ui-segmented-control', className),
     onCheckedValueChange: (event, data) => {
       const nextValue = data.checkedItems[0];

@@ -9,24 +9,24 @@
 | 分类 / 标识 | 部件 | 推荐场景 | 选择与禁止事项 |
 | --- | --- | --- | --- |
 | 表单 / `text` | Input · Textarea · Field | 输入名称、编号、描述及字段校验 | 长说明用 Textarea；标签、提示和错误统一放在 Field 内 |
-| 表单 / `date` | DatePicker | 业务日期录入、范围限制和禁用日期 | 日期含义、时区、格式与可选范围由应用决定 |
+| 表单 / `date` | DatePicker · BusinessDatePicker | 业务日期录入、范围限制和禁用日期 | 无时区日期用 BusinessDatePicker（值 `yyyy-MM-dd`，显示 `22 Oct 2026`）；日期含义、格式与可选范围由应用决定 |
 | 表单 / `choice` | RadioGroup · Checkbox · Switch | 互斥选择、多项选择和即时开关 | 互斥选 Radio；批量选 Checkbox；即时二态选 Switch |
-| 表单 / `select` | Dropdown · MultiSelectDropdown · Combobox · Option | 从固定或较长选项集合中选择一个或多个值 | 短列表单选用 Dropdown，多选用 MultiSelectDropdown；搜索或输入匹配用 Combobox |
+| 表单 / `select` | SingleSelectDropdown · Dropdown · MultiSelectDropdown · Combobox · Option | 从固定或较长选项集合中选择一个或多个值 | 单选优先 SingleSelectDropdown（12 项及以上自动可搜索）；多选用 MultiSelectDropdown；自由输入用 Combobox |
 | 表单 / `number` | SpinButton · Slider | 精确数量输入或有范围的连续调整 | 精确值用 SpinButton；估计区间用 Slider，单位与精度归应用 |
 | 表单 / `actions` | Button · IconButton · TableActionIconButton · Menu | 主次操作、行末操作和低频菜单 | 导航用 Link；图标按钮必须有可访问名称和 Tooltip |
 | 表单 / `modes` | SegmentedControl · InlineModeTabs | 同级模式选择、字段内部输入来源切换 | 局部编辑来源用胶囊；页面导航用 Tabs |
-| 表单 / `feedback` | MessageBar · Badge · Tag · Spinner · Skeleton | 状态、局部提示、加载和进度 | 错误就近显示；Badge 不是操作按钮；加载时保留布局 |
+| 表单 / `feedback` | MessageBar · Badge · Tag · Spinner · Skeleton · StepStatusIcon | 状态、局部提示、加载和进度 | 错误就近显示；Badge 不是操作按钮；加载时保留布局；独立步骤的完成状态用 StepStatusIcon |
 | 表单 / `hints` | Tooltip · InfoLabel · Popover | 简短说明、字段帮助和上下文信息 | 重要错误不能只存在悬停提示；复杂编辑使用 Sheet |
-| 表单 / `overlays` | Dialog · OverlayDrawer | 确认短任务或不离开目录编辑记录 | Dialog 用于聚焦确认；Sheet 用于详细编辑；处理焦点与未保存关闭 |
+| 表单 / `overlays` | Dialog · FormDrawer · OverlayDrawer | 确认短任务或不离开目录编辑记录 | Dialog 用于聚焦确认；Sheet 用 FormDrawer（标题、关闭按钮、右对齐底部操作）；未保存关闭在 `onDismiss` 守卫 |
 | 表单 / `login` | AuthenticationLayout · Field · Input | 登录入口的字段、错误和提交状态 | 只是界面组合；SSO、MFA、凭据与登录跳转由应用处理 |
-| 页面 / `shell` | ApplicationFrame · ApplicationTopBar · ApplicationNavigation | 带侧栏和稳定顶部区域的企业应用 | 白色平面导航；当前项标记与路由一致；窄屏使用移动导航 |
+| 页面 / `shell` | ApplicationFrame · ApplicationTopBar · ApplicationNavigation | 带侧栏和稳定顶部区域的企业应用 | 白色平面导航；当前项标记与路由一致；窄屏使用移动导航；面包屑行用 `breadcrumb`，导航底部用 `footer`，计数用 `badge` |
 | 页面 / `breadcrumb` | Breadcrumb · BreadcrumbItem | 显示记录与上级目录的位置关系 | 当前项不可重复跳转；不要用面包屑表达流程状态 |
-| 页面 / `header` | PageHeader | 页面身份、简短说明与页面级操作 | 一个页面一个主标题；行操作留在对应行 |
-| 页面 / `layout` | WorkspaceSection · RecordManagementWorkspace · DirectoryWorkspace · VersionedWorkspaceLayout | 白色模块、主内容与辅助信息的布局 | 已有外框内不嵌套重复边框；辅助信息放侧栏并在窄屏重排 |
+| 页面 / `header` | PageHeader · SectionNavigation | 页面身份、简短说明、页面级操作与页内分区导航 | 一个页面一个主标题；状态徽标放 `titleAdornment`；行操作留在对应行 |
+| 页面 / `layout` | WorkspaceSection · WorkspaceStack · FactList · RecordManagementWorkspace · DirectoryWorkspace · VersionedWorkspaceLayout | 白色模块、主内容与辅助信息的布局 | 模块间距 12px 用 WorkspaceStack；只读键值用 FactList；已有外框内不嵌套重复边框；辅助信息放侧栏并在窄屏重排 |
 | 页面 / `tabs` | TabList · Tab | 同一对象的并列内容视图 | 不能代替业务流程；为 Tab 绑定对应内容面板 |
-| 页面 / `toolbar` | Toolbar · SearchBox · ViewModeToggle | 集合搜索、筛选、刷新与翻页 | 查询改变重置页码；视图切换保留搜索、筛选及分页 |
+| 页面 / `toolbar` | Toolbar · SearchBox · ViewModeToggle · Pagination | 集合搜索、筛选、刷新与翻页 | 查询改变重置页码；视图切换保留搜索、筛选及分页 |
 | 页面 / `collection` | CollectionList · CollectionListItem | 少量记录或信息条目的紧凑展示 | 需要按列比较时用 Table；不得混合行导航与重复主入口 |
-| 页面 / `table` | Table · DataGrid · RecordIdentityCellLayout · RecordSelectionDataGrid | 多列比较、记录入口或同屏编辑选择 | 独立目录用主列链接；Form + List 使用整行选择 |
+| 页面 / `table` | Table · DataGrid · TableScrollRegion · RecordIdentityCellLayout · RecordSelectionDataGrid | 多列比较、记录入口或同屏编辑选择 | 独立目录用主列链接；Form + List 使用整行选择；宽表放入 TableScrollRegion 横向滚动 |
 | 页面 / `cards` | CardGallery · ActionableCardGalleryItem · ViewModeToggle | 记录摘要与同一集合的卡片视图 | 导航卡片整体点击；展示卡片无内嵌重复边框和阴影 |
 | 特殊部件 / `stage` | StageNavigator | 可提前查看的同级准备工作区 | 选中外圈只表示查看位置；节点底色保留自身状态 |
 | 特殊部件 / `bpf` | BusinessProcessFlow · BusinessProcessStageDetail | 有实际业务进度的流程阶段，点击已到达阶段弹出阶段详情卡 | 只允许查看已到达阶段；查看位置不能改变真实流程位置；详情卡中的条件与操作归应用 |

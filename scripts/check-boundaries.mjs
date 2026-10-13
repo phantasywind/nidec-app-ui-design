@@ -176,7 +176,8 @@ if (distFiles.length > 0) {
     'RecordIdentityCellLayout', 'RecordTableHeader', 'RecordDataGridHeader', 'TableActionIconButton',
     'EditableGrid', 'EditableGridRowActionGroup', 'LiteEditableGrid', 'GroupedTableSectionRow',
     'RecordSelectionRegion', 'RecordSelectionDataGrid', 'RecordSelectionDataGridRow', 'SegmentedControl', 'InlineModeTabs', 'ViewModeToggle',
-    'PageHeader', 'RecordManagementWorkspace', 'WorkspaceSection',
+    'PageHeader', 'RecordManagementWorkspace', 'WorkspaceSection', 'WorkspaceStack',
+    'SingleSelectDropdown', 'Pagination', 'FactList', 'FormDrawer', 'SectionNavigation', 'StepStatusIcon', 'TableScrollRegion',
     'SearchBox', 'SpinButton', 'Slider',
     'ToggleButton', 'MenuButton', 'SplitButton',
     'Label', 'InfoLabel', 'Divider',
@@ -199,6 +200,7 @@ if (distFiles.length > 0) {
   const datePickerExports = await import(pathToFileURL(join(distPath, 'date-picker.js')).href);
   const approvedDatePickerExports = [
     'DatePicker', 'datePickerClassNames', 'defaultDatePickerErrorStrings', 'defaultDatePickerStrings',
+    'BusinessDatePicker', 'businessDateToDate', 'dateToBusinessDate', 'formatBusinessDate', 'parseBusinessDate',
   ].sort();
   assert(JSON.stringify(Object.keys(datePickerExports).sort()) === JSON.stringify(approvedDatePickerExports), 'Only approved DatePicker runtime exports are allowed.');
 
