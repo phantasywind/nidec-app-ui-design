@@ -2,13 +2,13 @@
 
 Shared, versioned UI design system for Nidec applications.
 
-## Version 0.2.0 and adoption
+## Version 0.3.0 and adoption
 
-`0.2.0` is the latest published version (released 2026-10-13), a minor release after `0.1.2`: new root and `/date-picker` exports, new props on existing components, and visual changes, with no removed export and no change to the exact Fluent or React versions applications install. Its checksum and evidence are in the [release record](docs/releases/0.2.0.md); `0.1.2` remains the rollback point ([record](docs/releases/0.1.2.md)).
+This source prepares `0.3.0`, a minor release after `0.2.0`: new exports and props, two lightweight editable grids and three button types, with two breaking changes (LiteEditableGrid `rowHeight` defaults to `auto`; `outline`, `subtle` and `transparent` button appearances and `ToggleButton`, `MenuButton`, `SplitButton` are removed) and no change to the exact Fluent or React versions applications install. Release availability and checksum are tracked in the [release record](docs/releases/0.3.0.md). Until publication completes, `0.2.0` remains the latest published version ([record](docs/releases/0.2.0.md)); do not treat local qualification as publication.
 
 The English preview groups Forms, Page building blocks, Specialized components and Examples. Start with the [component catalog](docs/component-catalog.md), [Dropdown / Combobox contract](docs/dropdown-and-combobox.md) and [adoption guide](docs/consumer-ui-adoption.md). Migrated regions must remove legacy skins and typography overrides, and explicitly control field/action container widths.
 
-The npm package contains dist and README, not the full docs. Version-aligned documents will be available at [the v0.2.0 tag](https://github.com/phantasywind/nidec-app-ui-design/tree/v0.2.0/docs) after publication. Do not substitute main-branch documents for another package version.
+The npm package contains dist and README, not the full docs. Version-aligned documents will be available at [the v0.3.0 tag](https://github.com/phantasywind/nidec-app-ui-design/tree/v0.3.0/docs) after publication. Do not substitute main-branch documents for another package version.
 
 Preview: run `npm run build` in the repository, then in `fixtures/react-composite-patterns-consumer` set `NIDEC_UI_LOCAL_PREVIEW=1` and run `node ../../node_modules/vite/bin/vite.js build`. Preview types: `node ../../node_modules/typescript/bin/tsc -p tsconfig.preview.json` (local examples checked; upstream declaration checking skipped).
 
@@ -22,7 +22,7 @@ CPQ and EPM are the initial reference consumers used to establish and verify the
 - [ADR-0001: Repository and distribution governance](docs/decisions/0001-repository-and-distribution-governance.md)
 - [Gated delivery roadmap](docs/roadmap.md)
 
-Version 0.1.0 removed the RC suffix, version 0.1.2 refined its visuals and version 0.2.0 adds components and props. None implies independent application acceptance, deployment or Production approval. Previous RC releases remain immutable rollback references. This README corrects the stale version instructions embedded in rc.4.
+Version 0.1.0 removed the RC suffix, version 0.1.2 refined its visuals, version 0.2.0 added components and props, and version 0.3.0 adds editable grids and narrows the button types. None implies independent application acceptance, deployment or Production approval. Previous RC releases remain immutable rollback references. This README corrects the stale version instructions embedded in rc.4.
 
 ## Fluent React package
 
@@ -229,7 +229,7 @@ save-exact=true
 ```
 
 ```powershell
-npm install --save-exact @phantasywind/nidec-app-ui-design@0.2.0 @fluentui/react-components@9.74.7
+npm install --save-exact @phantasywind/nidec-app-ui-design@0.3.0 @fluentui/react-components@9.74.7
 ```
 
 The application must already use a qualified exact React/React DOM 19.2.x pair. Do not use `latest`, ranges, Git URLs, or `main`. A built application does not contact GitHub at runtime.
