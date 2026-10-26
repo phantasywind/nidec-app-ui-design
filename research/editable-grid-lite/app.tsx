@@ -13,7 +13,7 @@ import './research.css';
 
 type Kind = 'readonly' | 'text' | 'longText' | 'number' | 'select' | 'multiselect';
 type Height = '32' | '40' | '48' | 'auto';
-type Frame = 'grey' | 'filled' | 'ghost' | 'inset' | 'cell' | 'underline';
+type Frame = 'text' | 'text-white' | 'grey' | 'filled' | 'ghost' | 'inset' | 'cell' | 'underline';
 type Scenario = 'current' | 'lite-row' | 'lite-cell';
 type Line = { id: string; code: string; description: string; category: string; qty: string; price: string; regions: string[] };
 type Column = { key: keyof Line | 'amount'; header: string; width: number; kind: Kind; align?: 'end'; options?: readonly { value: string; text: string }[] };
@@ -221,7 +221,7 @@ const params = new URLSearchParams(location.search);
 const heights: Height[] = ['32', '40', '48', 'auto'];
 const heightLabel = (h: Height) => (h === 'auto' ? '自动行高（长文本换行）' : `${h}px 固定行高`);
 const scenarioLabel: Record<Scenario, string> = { current: '现状：单元格里放 Fluent 小号控件', 'lite-row': '轻量：整行编辑（单元格即控件）', 'lite-cell': '轻量：单格编辑（现有 LiteEditableGrid 方式）' };
-const frameLabel: Record<Frame, string> = { grey: '白行灰格', filled: '白底无框', ghost: '无框（仅聚焦）', inset: '内缩输入框', cell: '整格边框', underline: '仅下划线' };
+const frameLabel: Record<Frame, string> = { text: '绿字加粗（绿行）', 'text-white': '绿字加粗（白行）', grey: '白行灰格', filled: '白底无框', ghost: '无框（仅聚焦）', inset: '内缩输入框', cell: '整格边框', underline: '仅下划线' };
 
 function Grid({ scenario, height, frame, editingId = '2', ...rest }: { scenario: Scenario; height: Height; frame: Frame; editingId?: string; focusCol?: string; openList?: string; showError?: boolean }) {
   const body = scenario === 'current'
@@ -237,7 +237,7 @@ function Grid({ scenario, height, frame, editingId = '2', ...rest }: { scenario:
 function Playground() {
   const [scenario, setScenario] = useState<Scenario>((params.get('scenario') as Scenario) ?? 'lite-row');
   const [height, setHeight] = useState<Height>((params.get('h') as Height) ?? '40');
-  const [frame, setFrame] = useState<Frame>((params.get('frame') as Frame) ?? 'grey');
+  const [frame, setFrame] = useState<Frame>((params.get('frame') as Frame) ?? 'text');
   const [compare, setCompare] = useState(params.get('compare') !== '0');
   const key = `${scenario}-${height}-${frame}`;
   return <div className="rs-page">
