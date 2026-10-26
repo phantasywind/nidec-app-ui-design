@@ -8,6 +8,10 @@ export type SectionNavigationItem = Readonly<{
   label: string;
   /** Optional count shown after the label, for example the number of fields or open items. */
   count?: number;
+  /** With `count`, shows "count/total", for example filled fields out of all fields in the section. */
+  total?: number;
+  /** Accessible wording for the count, for example "3 of 8 fields filled". */
+  countLabel?: string;
   /** Optional trailing status marker, such as a StepStatusIcon or a Badge. */
   status?: ReactNode;
   href?: string;
@@ -18,6 +22,8 @@ export type SectionNavigationProps = Omit<ComponentPropsWithoutRef<'nav'>, 'chil
   items: readonly SectionNavigationItem[];
   /** Horizontal: a row of links under the record header. Vertical: a list of section groups. */
   orientation?: 'horizontal' | 'vertical';
+  /** Keeps the navigation in view while the page scrolls (top offset `--nidec-ui-section-navigation-top`, default 0). */
+  sticky?: boolean;
   /** Controlled current section. Without it the last clicked section is current. */
   currentId?: string;
   /**
@@ -36,6 +42,7 @@ export function SectionNavigation({
   'aria-label': ariaLabel,
   items,
   orientation = 'horizontal',
+  sticky = false,
   currentId,
   onSectionSelect,
   className,
@@ -61,7 +68,7 @@ export function SectionNavigation({
   return createElement('nav', {
     ...props,
     'aria-label': ariaLabel,
-    className: withClass(`nidec-ui-section-navigation nidec-ui-section-navigation--${orientation}`, className),
+    className: withClass(`nidec-ui-section-navigation nidec-ui-section-navigation--${orientation}${sticky ? ' nidec-ui-section-navigation--sticky' : ''}`, className),
   }, createElement('ul', { className: 'nidec-ui-section-navigation__list' }, items.map(item => createElement('li', { key: item.id },
     createElement('a', {
       'aria-current': item.id === activeId ? 'location' : undefined,
@@ -70,6 +77,9 @@ export function SectionNavigation({
       onClick: (event: MouseEvent<HTMLAnchorElement>) => onClick(event, item),
     },
     createElement('span', { className: 'nidec-ui-section-navigation__label' }, item.label),
-    item.count === undefined ? null : createElement('span', { className: 'nidec-ui-section-navigation__count' }, String(item.count)),
+    item.count === undefined ? null : createElement('span', {
+      className: 'nidec-ui-section-navigation__count',
+      ...(item.countLabel ? { 'aria-label': item.countLabel, role: 'img' } : {}),
+    }, item.total === undefined ? String(item.count) : `${item.count}/${item.total}`),
     item.status === undefined ? null : createElement('span', { className: 'nidec-ui-section-navigation__status' }, item.status))))));
 }

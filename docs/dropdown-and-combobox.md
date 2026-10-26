@@ -12,7 +12,7 @@
 
 ## 单选：SingleSelectDropdown
 
-从固定列表选一个值时优先使用 `SingleSelectDropdown`（主入口导入，尚未发布，随下一个版本提供）。少于 `searchThreshold`（默认 12）项时渲染 `Dropdown`，达到阈值时渲染可输入筛选的 `Combobox`，应用无需自己切换。
+从固定列表选一个值时优先使用 `SingleSelectDropdown`（主入口导入）。少于 `searchThreshold`（默认 12）项时渲染 `Dropdown`，达到阈值时渲染可输入筛选的 `Combobox`，应用无需自己切换。
 
 - 选项通过 `options`（`{ value, text, disabled? }`）传入；`selectedOption` / `defaultSelectedOption` 为选中键或 `null`；`onOptionSelect(event, { optionValue, optionText })`。
 - 输入只筛选，不改变选择；关闭列表时输入框恢复为已选文字。无匹配时显示不可选的 `noMatchText`（默认 `No matches`）。
@@ -20,7 +20,7 @@
 
 ## 多选：MultiSelectDropdown
 
-从固定短列表中选择多个值时使用 `MultiSelectDropdown`（主入口导入，尚未发布，随下一个版本提供）。它是 Fluent `Dropdown` 的 `multiselect` 模式，选项使用共享 `Option`，触发框以标签显示已选值。
+从固定短列表中选择多个值时使用 `MultiSelectDropdown`（主入口导入）。它是 Fluent `Dropdown` 的 `multiselect` 模式，选项使用共享 `Option`，触发框以标签显示已选值。
 
 - 选项通过 `options`（`{ value, text, disabled? }` 数组）传入，不接受子元素；`value` 为唯一键，`text` 为显示名称。重复或空值、以及不在 `options` 中的已选键都会直接报错。
 - `selectedOptions` / `defaultSelectedOptions` 表达选中键；`onOptionSelect` 中 `data.selectedOptions` 为完整选择，`data.optionValue` 为本次切换的键。
@@ -30,6 +30,16 @@
 - `tagPlacement="below"`：触发框只显示“N selected”，已选值以小号可删除标签显示在下方并自动换行，后跟“Clear all”；加 `searchable` 可输入筛选（多选 Combobox，无匹配时显示不可选提示）。删除标签和清除全部同样通过 `onOptionSelect` 回报完整选择。
 - 默认（标签在触发框内）模式不支持 `clearable`；需要一次清空时使用 `tagPlacement="below"` 或由应用提供单独操作。可搜索的长列表多选使用 `Combobox` 的 `multiselect`；需要同时看到全部选项时使用 Checkbox。
 - 哪些键有效、数量上限、默认值和提交内容由应用决定。
+
+## 宽度、窄列与高度
+
+- `SingleSelectDropdown` 与 `MultiSelectDropdown` 默认宽 250px，所在容器更窄时（表格窄列、条件网格、表单网格的一格）自动收缩到容器宽度，下拉箭头不被裁掉，已选文字与输入文字以省略号结束。需要占满一列时传 `style={{ width: '100%' }}` 或 `className`；不要再用 `.fui-Dropdown` / `.fui-Combobox` / `.fui-Combobox__input` 的 `min-width: 0` 覆盖。
+- 直接使用 Fluent `Dropdown` / `Combobox` 时仍是 Fluent 默认的 250px 最小宽度；在窄列里请换成上面两个组件。
+- 同一 `size` 下 Dropdown、Combobox 与 Input 等高（small 24px、medium 32px，2026-10-26 在包内实测）。行内编辑行统一用 `size="small"`。若应用里出现高低不一，先检查应用自己的包装组件是否给其中一个改了尺寸或内边距。
+
+## 打开下拉时页面不再跳到顶部
+
+Fluent 打开下拉或用方向键移动时，会把当前选项滚进可见区：它向上寻找第一个“内容比自身高”的祖先。选项少的列表自身不滚动，若页面设置了 `html { height: 100% }`，查找会一路到 `<html>`，把整页滚到顶部附近。`NidecProvider` 的弹层宿主把下拉列表的外层定为这个祖先（零高、不裁剪），所以页面不再跳动；长列表仍在列表内部滚动。条件：下拉必须在 `NidecProvider` 内（弹层挂到包的宿主上）。应用里为此加的全局补丁（如 EPM 的 `dropdownScrollFix.ts`）可以删除。
 
 `Select` 仍作为兼容出口保留，不再推荐用于要求统一外观的新页面。原生弹出菜单受系统和浏览器控制，不能承诺跨平台绿色高亮一致。
 

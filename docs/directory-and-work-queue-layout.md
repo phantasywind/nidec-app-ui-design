@@ -26,7 +26,11 @@ Do not insert unrelated summary Cards between the Toolbar and its results.
 - A Card Gallery record with one destination uses the entire Card as the single entry target. Do not retain an inner green title Link for the same destination.
 - Navigation-type Cards use real link semantics. Command-type Cards use button semantics and support pointer, Enter and Space activation.
 - Initial whole-card entries contain no nested links or buttons. When a record requires multiple direct operations, use a non-whole-card presentation with explicit actions or an overflow Menu.
-- Direct row commands use governed icon-only action buttons. Multiple or low-frequency commands collapse into a labelled overflow Menu.
+- Direct row commands use governed icon-only action buttons. Multiple or low-frequency commands collapse into a labelled overflow Menu (`MoreActionsMenu`).
+- Each row has exactly one entry: the identity `RecordLink` in the primary column. Do not add a second Open button, a clickable status or a linked secondary field for the same record.
+- The default order is the one users scan by (usually identity or most recent change), stated in the column header's sort indicator; pages hold 25 rows by default with `Pagination` below the results.
+- Boolean fields edited in place use `Switch`; Active / Inactive shown read-only uses `ActiveBadge`.
+- Controls edited inside a row use the small size and share one height (Input, Dropdown, Combobox, SpinButton, date and number fields are all 24px), so a row does not change height when one cell enters editing. Editable grids follow their own contract, under separate review.
 
 ## Work-queue distinction
 

@@ -1,5 +1,6 @@
 import { createElement } from 'react';
 import type { ComponentPropsWithoutRef, ReactNode } from 'react';
+import { CountBadge } from './record-patterns';
 import { withClass } from './with-class';
 
 export type PageHeaderProps = Omit<ComponentPropsWithoutRef<'header'>, 'children' | 'title'> & {
@@ -66,20 +67,41 @@ export function RecordManagementWorkspace({
 
 export type WorkspaceSectionProps = Omit<ComponentPropsWithoutRef<'section'>, 'children' | 'title'> & {
   title: ReactNode;
+  /** Number of items in the module, shown after the title as a CountBadge; zero is shown too. */
+  count?: number;
+  /** Accessible name for the count when the title alone does not say what is counted. */
+  countLabel?: string;
   description?: ReactNode;
+  /**
+   * Controls that belong in the title row, such as a version selector and a
+   * status badge. The title then uses body text size so the row reads as one
+   * line of controls; commands still go in `actions`.
+   */
+  headerContent?: ReactNode;
   actions?: ReactNode;
   children: ReactNode;
 };
 
 /** Standard white bordered module for one workspace region; nested content must not add a redundant surface. */
-export function WorkspaceSection({ title, description, actions, children, className, ...props }: WorkspaceSectionProps) {
-  return createElement('section', { ...props, className: withClass('nidec-ui-workspace-section', className) },
-    createElement('header', { className: 'nidec-ui-workspace-section__header' },
-      createElement('div', { className: 'nidec-ui-workspace-section__copy' },
-        createElement('h2', { className: 'nidec-ui-workspace-section__title' }, title),
-        description === undefined ? null : createElement('div', { className: 'nidec-ui-workspace-section__description' }, description)),
-      actions === undefined ? null : createElement('div', { className: 'nidec-ui-workspace-section__actions' }, actions)),
-    createElement('div', { className: 'nidec-ui-workspace-section__content' }, children));
+export function WorkspaceSection({
+  title, count, countLabel, description, headerContent, actions, children, className, ...props
+}: WorkspaceSectionProps) {
+  const heading = createElement('h2', { className: 'nidec-ui-workspace-section__title' }, title,
+    count === undefined ? null : createElement(CountBadge, {
+      count, className: 'nidec-ui-workspace-section__count', ...(countLabel ? { 'aria-label': countLabel } : {}),
+    }));
+  const toolbarHeader = headerContent !== undefined;
+  return createElement('section', {
+    ...props,
+    className: withClass(`nidec-ui-workspace-section${toolbarHeader ? ' nidec-ui-workspace-section--toolbar-header' : ''}`, className),
+  },
+  createElement('header', { className: 'nidec-ui-workspace-section__header' },
+    createElement('div', { className: 'nidec-ui-workspace-section__copy' },
+      toolbarHeader ? createElement('div', { className: 'nidec-ui-workspace-section__heading' }, heading,
+        createElement('div', { className: 'nidec-ui-workspace-section__header-content' }, headerContent)) : heading,
+      description === undefined ? null : createElement('div', { className: 'nidec-ui-workspace-section__description' }, description)),
+    actions === undefined ? null : createElement('div', { className: 'nidec-ui-workspace-section__actions' }, actions)),
+  createElement('div', { className: 'nidec-ui-workspace-section__content' }, children));
 }
 
 export type WorkspaceStackProps = Omit<ComponentPropsWithoutRef<'div'>, 'children'> & {

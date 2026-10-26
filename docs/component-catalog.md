@@ -12,25 +12,25 @@
 | 表单 / `date` | DatePicker · BusinessDatePicker | 业务日期录入、范围限制和禁用日期 | 无时区日期用 BusinessDatePicker（值 `yyyy-MM-dd`，显示 `22 Oct 2026`）；日期含义、格式与可选范围由应用决定 |
 | 表单 / `choice` | RadioGroup · Checkbox · Switch | 互斥选择、多项选择和即时开关 | 互斥选 Radio；批量选 Checkbox；即时二态选 Switch |
 | 表单 / `select` | SingleSelectDropdown · Dropdown · MultiSelectDropdown · Combobox · Option | 从固定或较长选项集合中选择一个或多个值 | 单选优先 SingleSelectDropdown（12 项及以上自动可搜索）；多选用 MultiSelectDropdown；自由输入用 Combobox |
-| 表单 / `number` | SpinButton · Slider | 精确数量输入或有范围的连续调整 | 精确值用 SpinButton；估计区间用 Slider，单位与精度归应用 |
-| 表单 / `actions` | Button · IconButton · TableActionIconButton · Menu | 主次操作、行末操作和低频菜单 | 导航用 Link；图标按钮必须有可访问名称和 Tooltip |
-| 表单 / `modes` | SegmentedControl · InlineModeTabs | 同级模式选择、字段内部输入来源切换 | 局部编辑来源用胶囊；页面导航用 Tabs |
-| 表单 / `feedback` | MessageBar · Badge · Tag · Spinner · Skeleton · StepStatusIcon | 状态、局部提示、加载和进度 | 错误就近显示；Badge 不是操作按钮；加载时保留布局；独立步骤的完成状态用 StepStatusIcon |
+| 表单 / `number` | BusinessNumberInput · SpinButton · Slider | 业务数字（重量、金额、比例）、小整数步进、有范围的连续调整 | 业务数字用 BusinessNumberInput（可空、小数位、范围、单位、千分位）；小整数步进用 SpinButton；不再用 `Input type="number"`；表单字段同宽放 FormGrid |
+| 表单 / `actions` | Button · IconButton · TableActionIconButton · Menu · MoreActionsMenu | 主次操作、行末操作和低频菜单 | 导航用 Link；图标按钮必须有可访问名称和 Tooltip；不可用的命令置灰不隐藏，用 `disabledReason` 说明原因；低频动作收进 MoreActionsMenu |
+| 表单 / `modes` | SegmentedControl · InlineModeTabs | 同级模式选择、字段内部输入来源切换 | 局部编辑来源用胶囊；页面导航用 Tabs；SegmentedControl 选项值不能为空字符串，“全部”用 `'all'`，未选用 `value={null}` |
+| 表单 / `feedback` | MessageBar · Badge · Tag · Spinner · Skeleton · StepStatusIcon · CountBadge · ActiveBadge · RowEndStatus · EmptyState | 状态、数量、局部提示、加载、进度和空列表 | 错误就近显示；Badge 不是操作按钮，不换行；加载时保留布局；独立步骤的完成状态用 StepStatusIcon；数量用 CountBadge；行末状态用 RowEndStatus；空列表用 EmptyState |
 | 表单 / `hints` | Tooltip · InfoLabel · Popover | 简短说明、字段帮助和上下文信息 | 重要错误不能只存在悬停提示；复杂编辑使用 Sheet |
 | 表单 / `overlays` | Dialog · FormDrawer · OverlayDrawer | 确认短任务或不离开目录编辑记录 | 表单和清单一律用 FormDrawer；居中 Dialog 只用于简短确认、填写原因和提醒；未保存关闭在 `onDismiss` 守卫 |
 | 表单 / `login` | AuthenticationLayout · Field · Input | 登录入口的字段、错误和提交状态 | 只是界面组合；SSO、MFA、凭据与登录跳转由应用处理 |
 | 页面 / `shell` | ApplicationFrame · ApplicationTopBar · ApplicationNavigation | 带侧栏和稳定顶部区域的企业应用 | 白色平面导航；当前项标记与路由一致；窄屏使用移动导航；面包屑行用 `breadcrumb`，导航底部用 `footer`，计数用 `badge` |
 | 页面 / `breadcrumb` | Breadcrumb · BreadcrumbItem | 显示记录与上级目录的位置关系 | 当前项不可重复跳转；不要用面包屑表达流程状态 |
-| 页面 / `header` | PageHeader · SectionNavigation | 页面身份、简短说明、页面级操作与页内分区导航 | 一个页面一个主标题；状态徽标放 `titleAdornment`；行操作留在对应行 |
-| 页面 / `layout` | WorkspaceSection · WorkspaceStack · FactList · RecordManagementWorkspace · DirectoryWorkspace · VersionedWorkspaceLayout | 白色模块、主内容与辅助信息的布局 | 模块间距 12px 用 WorkspaceStack；只读键值用 FactList；已有外框内不嵌套重复边框；辅助信息放侧栏并在窄屏重排 |
+| 页面 / `header` | PageHeader · SectionNavigation | 页面身份、简短说明、页面级操作与页内分区导航 | 一个页面一个主标题；状态徽标放 `titleAdornment`；行操作留在对应行；分区导航可显示“已填/总数”并用 `sticky` 吸顶 |
+| 页面 / `layout` | WorkspaceSection · WorkspaceStack · FactList · FormGrid · ChangeHistoryTable · StickySaveBar · UnsavedChangesProvider · RecordManagementWorkspace · DirectoryWorkspace · VersionedWorkspaceLayout | 白色模块、表单网格、变更历史、未保存提醒、主内容与辅助信息的布局 | 模块间距 12px 用 WorkspaceStack；标题后数量用 `count`，标题行控件用 `headerContent`；只读键值用 FactList；表单字段用 FormGrid 同宽对齐；历史放抽屉；已有外框内不嵌套重复边框；辅助信息放侧栏并在窄屏重排。见[记录列表与表单的共用件](record-patterns.md) |
 | 页面 / `tabs` | TabList · Tab | 同一对象的并列内容视图 | 不能代替业务流程；为 Tab 绑定对应内容面板 |
 | 页面 / `toolbar` | Toolbar · SearchBox · ViewModeToggle · Pagination | 集合搜索、筛选、刷新与翻页 | 查询改变重置页码；视图切换保留搜索、筛选及分页 |
 | 页面 / `collection` | CollectionList · CollectionListItem | 少量记录或信息条目的紧凑展示 | 需要按列比较时用 Table；不得混合行导航与重复主入口 |
-| 页面 / `table` | Table · DataGrid · TableScrollRegion · RecordIdentityCellLayout · RecordSelectionDataGrid | 多列比较、记录入口或同屏编辑选择 | 独立目录用主列链接；Form + List 使用整行选择；宽表放入 TableScrollRegion 横向滚动；一列只显示一个字段，不在同一列叠放两个字段（特例需单独批准） |
+| 页面 / `table` | Table · DataGrid · TableScrollRegion · RecordIdentityCellLayout · RecordSelectionDataGrid | 多列比较、记录入口或同屏编辑选择 | 独立目录用主列链接；Form + List 使用整行选择；宽表放入 TableScrollRegion 横向滚动（`pinnedScrollbar` 滚动条吸底、`maxHeight` 固定表头、`frozenColumns` 冻结左列）；身份列用 RecordLink；长文字用 TruncatedText；数字列加 `numericColumnClassName`；矩阵格用 MatrixCellButton；一列只显示一个字段，不在同一列叠放两个字段（特例需单独批准）。见[表格视口与单元格写法](table-viewport.md) |
 | 页面 / `cards` | CardGallery · ActionableCardGalleryItem · ViewModeToggle | 记录摘要与同一集合的卡片视图 | 导航卡片整体点击；展示卡片无内嵌重复边框和阴影 |
 | 特殊部件 / `stage` | StageNavigator | 可提前查看的同级准备工作区 | 选中外圈只表示查看位置；节点底色保留自身状态 |
 | 特殊部件 / `bpf` | BusinessProcessFlow · BusinessProcessStageDetail | 有实际业务进度的流程阶段，点击已到达阶段弹出阶段详情卡 | 只允许查看已到达阶段；查看位置不能改变真实流程位置；详情卡中的条件与操作归应用 |
-| 特殊部件 / `editable-grid` | EditableGrid · EditableGridRowActionGroup | 大量行、频繁修改、批量保存 | 列、校验、选中、草稿、保存与冲突归应用；行末操作冻结 |
+| 特殊部件 / `editable-grid` | EditableGrid · EditableGridRowActionGroup | 大量行、频繁修改、批量保存 | 列、校验、选中、草稿、保存与冲突归应用；行末操作冻结。可编辑表的统一方向（轻量型）正在单独研究，结论出来前本轮不改 |
 | 特殊部件 / `editable-grid` | LiteEditableGrid（可选两级折叠分组） | 数百至数万行的轻量单元格编辑（文本、长文本、下拉、Combobox、多选标签） | 单元格为纯文本，只渲染可见行，仅编辑中的单元格挂载编辑器；固定行高，无排序、分组和多选；数据、校验与保存归应用 |
 | 特殊部件 / `grouped-table` | GroupedTableSectionRow · EditableGrid | 自然分组的多行集合和高频编辑 | 分组只控制展开；选中和编辑发生在叶子行，折叠保留草稿 |
 | 样例 / `directory` | DirectoryWorkspace | 查找、筛选、比较并打开记录 | 主列链接或整卡入口打开 Sheet；返回保留目录状态 |
@@ -43,6 +43,10 @@
 ## 尺寸与状态
 
 输入、选择与按钮采用所支持的 Fluent size 选项；表单默认 medium，密集行编辑 small。局部 InlineModeTabs 保持已批准的小胶囊；SegmentedControl 在本地候选默认 small，显式 medium 仍可用。图标行操作使用 TableActionIconButton 固定 small。不能给全部控件强加统一高度。
+
+多行文本框（Textarea）不要把高度压到单行输入框的 24px：内容高度在有显示缩放的屏幕上取整后会比框高出不到 1px，右上角出现小滚动条。使用 Fluent 默认高度（small 40px）；必须更矮时不低于 28px（行高 16px + 上下内边距 + 边框 + 2px 余量）。
+
+状态徽标（Badge）在包范围内不换行；表格里放徽标的列按最长的状态名给宽度，不要让徽标折成两行高的胶囊。
 
 Field 支持提示、必填与校验反馈；原生 readonly 仅用于支持该属性的输入，不以 disabled 冒充可复制的只读数据。Checkbox 的 mixed 表示部分选择；Radio 表示互斥；Switch 表示二态切换。加载使用 Spinner/Skeleton，进度使用 ProgressBar；按钮 busy 由应用禁用并显示进度，避免重复提交。空集合和请求错误使用就近可见反馈。
 
@@ -80,6 +84,7 @@ Field 支持提示、必填与校验反馈；原生 readonly 仅用于支持该�
 ## 文档与版本
 
 - [应用接入与原 UI 替换](consumer-ui-adoption.md)
+- [记录列表与表单的共用件](record-patterns.md)、[表格视口与单元格写法](table-viewport.md)
 - [页面原型](page-archetypes.md)、[阶段选择](stage-pattern-selection.md)、[Editable Grid](editable-grid.md)、[分组表格](grouped-table.md)
 - [rc.4 发布记录](releases/0.1.0-rc.4.md)
 - [rc.4 对应源文档](https://github.com/phantasywind/nidec-app-ui-design/tree/v0.1.0-rc.4/docs)

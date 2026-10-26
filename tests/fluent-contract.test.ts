@@ -41,6 +41,9 @@ const compositePatterns = [
   'RecordSelectionRegion', 'RecordSelectionDataGrid', 'RecordSelectionDataGridRow', 'SegmentedControl', 'InlineModeTabs', 'ViewModeToggle',
   'PageHeader', 'RecordManagementWorkspace', 'WorkspaceSection', 'WorkspaceStack',
   'SingleSelectDropdown', 'Pagination', 'FactList', 'FormDrawer', 'SectionNavigation', 'StepStatusIcon', 'TableScrollRegion',
+  'numericColumnClassName', 'TruncatedText', 'MatrixCellButton', 'RecordLink', 'CountBadge', 'ActiveBadge', 'RowEndStatus', 'EmptyState',
+  'MoreActionsMenu', 'BusinessNumberInput', 'FormGrid', 'FormGridItem', 'ChangeHistoryTable',
+  'UnsavedChangesProvider', 'useUnsavedChanges', 'useConfirmDiscard', 'StickySaveBar',
 ] as const;
 
 describe('Fluent public boundary', () => {

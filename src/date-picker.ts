@@ -4,7 +4,7 @@
  * Formatting, parsing, date boundaries, localization and business-calendar
  * rules remain explicit consumer inputs. See docs/date-picker.md.
  */
-import { createElement } from 'react';
+import { createElement, useRef, useState } from 'react';
 import type { ReactElement } from 'react';
 import { DatePicker as FluentDatePicker } from '@fluentui/react-datepicker-compat';
 import type { DatePickerProps as FluentDatePickerProps } from '@fluentui/react-datepicker-compat';
@@ -61,10 +61,27 @@ export function parseBusinessDate(text: string): Date | null {
   return businessDateToDate(`${match[3]}-${pad(month + 1)}-${pad(Number(match[1]))}`);
 }
 
+/** Why typed text was not accepted: it is not a date, or it falls outside `minDate` / `maxDate`. */
+export type BusinessDateInvalidReason = 'invalid-input' | 'out-of-bounds';
+
+export type BusinessDateInvalidInput = Readonly<{
+  /** The text as the user typed it. */
+  text: string;
+  reason: BusinessDateInvalidReason;
+  /** The parsed date for an out-of-bounds entry, so the message can name it; null when the text is not a date. */
+  value: BusinessDateValue | null;
+}>;
+
 export type BusinessDatePickerProps = Omit<FluentDatePickerProps, 'value' | 'onSelectDate'> & {
   /** `yyyy-MM-dd`, or null for no date. */
   value: BusinessDateValue | null;
   onValueChange: (value: BusinessDateValue | null) => void;
+  /**
+   * Typed text was rejected. The value is unchanged, and the field is marked
+   * invalid until an accepted date replaces the text. Show the reason, for
+   * example in the surrounding Field's `validationMessage`.
+   */
+  onInvalidInput?: (input: BusinessDateInvalidInput) => void;
 };
 
 /**
@@ -73,19 +90,44 @@ export type BusinessDatePickerProps = Omit<FluentDatePickerProps, 'value' | 'onS
  * display dates, and starts weeks on Monday. Every DatePicker prop, including
  * `formatDate`, `parseDateFromString`, `firstDayOfWeek` and `strings`, can
  * still be overridden for another locale.
+ *
+ * Fluent ignores a typed date outside `minDate` / `maxDate` without saying so:
+ * the text stays while the value does not change. Here the field is marked
+ * invalid and `onInvalidInput` reports the text, so the form never saves the
+ * old value silently. `calendar={{ maxDate }}` only greys out calendar days.
  */
-export function BusinessDatePicker({ value, onValueChange, ...props }: BusinessDatePickerProps): ReactElement {
+export function BusinessDatePicker({
+  value, onValueChange, onInvalidInput, onValidationResult, parseDateFromString = parseBusinessDate, ...props
+}: BusinessDatePickerProps): ReactElement {
   const date = value === null ? null : businessDateToDate(value);
   if (value !== null && date === null) throw new Error(`BusinessDatePicker value must be a real yyyy-MM-dd date: ${value}.`);
+  const [invalid, setInvalid] = useState(false);
+  const lastParsed = useRef<{ text: string; date: Date | null }>({ text: '', date: null });
   return createElement(FluentDatePicker, {
     allowTextInput: true,
     // Fluent DayOfWeek.Monday.
     firstDayOfWeek: 1 as NonNullable<FluentDatePickerProps['firstDayOfWeek']>,
     formatDate: (input?: Date) => (input ? formatBusinessDate(input) : ''),
-    parseDateFromString: parseBusinessDate,
     placeholder: 'e.g. 22 Oct 2026',
     ...props,
-    onSelectDate: (selected: Date | null | undefined) => onValueChange(selected ? dateToBusinessDate(selected) : null),
+    ...(invalid ? { 'aria-invalid': true } : {}),
+    parseDateFromString: (text: string) => {
+      const parsed = parseDateFromString(text);
+      lastParsed.current = { text, date: parsed && !Number.isNaN(parsed.getTime()) ? parsed : null };
+      return parsed;
+    },
+    onValidationResult: data => {
+      onValidationResult?.(data);
+      const reason = data.error === 'invalid-input' || data.error === 'out-of-bounds' ? data.error : undefined;
+      setInvalid(reason !== undefined);
+      if (reason === undefined) return;
+      const parsed = reason === 'out-of-bounds' ? lastParsed.current.date : null;
+      onInvalidInput?.({ text: lastParsed.current.text, reason, value: parsed ? dateToBusinessDate(parsed) : null });
+    },
+    onSelectDate: (selected: Date | null | undefined) => {
+      setInvalid(false);
+      onValueChange(selected ? dateToBusinessDate(selected) : null);
+    },
     value: date,
   });
 }

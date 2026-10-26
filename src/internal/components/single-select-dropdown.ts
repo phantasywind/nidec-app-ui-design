@@ -1,11 +1,42 @@
 import { createElement, useState } from 'react';
 import type { ReactElement } from 'react';
-import { Combobox as FluentCombobox, Dropdown as FluentDropdown } from '@fluentui/react-components';
+import { Combobox as FluentCombobox, Dropdown as FluentDropdown, makeStyles, mergeClasses } from '@fluentui/react-components';
 import type {
   ComboboxProps as FluentComboboxProps, DropdownProps as FluentDropdownProps, SelectionEvents,
 } from '@fluentui/react-components';
 import { Option } from './option';
-import { withClass } from './with-class';
+
+/**
+ * Fluent fixes Dropdown and Combobox at 250px minimum, so in a narrow table
+ * column or form grid cell they overflow into the next column and the arrow is
+ * cut off. Here the control is 250px wide where there is room and shrinks to its
+ * container otherwise; the typed text and the selected text end in an ellipsis.
+ * A `className` or `style` width (for example `100%` in a form grid) still wins.
+ */
+export const useShrinkableSelectStyles = makeStyles({
+  // A fixed default width rather than a percentage minimum: a percentage of a
+  // shrink-to-fit parent (a Field in a flex row) would collapse to the text.
+  root: {
+    maxWidth: '100%',
+    minWidth: 0,
+    // FormGrid sets the variable so the control fills its field.
+    width: 'var(--nidec-ui-select-width, 250px)',
+  },
+  input: {
+    minWidth: 0,
+    textOverflow: 'ellipsis',
+  },
+  // The value column may shrink below its text, so the expand arrow keeps its place.
+  button: {
+    gridTemplateColumns: '[content] minmax(0, 1fr) [icon] auto [end]',
+    minWidth: 0,
+  },
+  buttonText: {
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
+    whiteSpace: 'nowrap',
+  },
+});
 
 export type SingleSelectDropdownOption = Readonly<{
   value: string;
@@ -49,6 +80,7 @@ export function SingleSelectDropdown({
   className,
   ...props
 }: SingleSelectDropdownProps): ReactElement {
+  const shrinkable = useShrinkableSelectStyles();
   const [uncontrolled, setUncontrolled] = useState<string | null>(defaultSelectedOption);
   const [query, setQuery] = useState<string | null>(null);
   if (new Set(options.map(option => option.value)).size !== options.length) throw new Error('SingleSelectDropdown option values must be unique.');
@@ -75,7 +107,7 @@ export function SingleSelectDropdown({
   }, option.text);
   const shared = {
     ...props,
-    className: withClass('nidec-ui-single-select-dropdown', className),
+    className: mergeClasses('nidec-ui-single-select-dropdown', shrinkable.root, className),
     selectedOptions: selected === undefined ? [] : [selected.value],
   };
 
@@ -83,6 +115,10 @@ export function SingleSelectDropdown({
     return createElement(FluentDropdown, {
       ...shared,
       value: selected?.text ?? '',
+      button: selected === undefined ? { className: shrinkable.button } : {
+        className: shrinkable.button,
+        children: createElement('span', { className: shrinkable.buttonText }, selected.text),
+      },
       onOptionSelect: (event, data) => select(event, data.optionValue),
     }, options.map(renderOption));
   }
@@ -92,6 +128,7 @@ export function SingleSelectDropdown({
   return createElement(FluentCombobox, {
     ...shared,
     value: query ?? selected?.text ?? '',
+    input: { className: shrinkable.input },
     onChange: event => setQuery(event.target.value),
     onOpenChange: (_event, data) => {
       if (!data.open) setQuery(null);
