@@ -15,7 +15,10 @@ export type { EditableGridProps, EditableGridRowActionGroupProps } from './inter
 export { LiteEditableGrid } from './internal/components/lite-editable-grid';
 export type {
   LiteEditableGridProps, LiteEditableGridColumn, LiteEditableGridEditor, LiteEditableGridOption, LiteEditableGridCellChange,
+  LiteEditableGridGroup, LiteEditableGridRowHeight,
 } from './internal/components/lite-editable-grid';
+export { LiteRowEditGrid } from './internal/components/lite-row-edit-grid';
+export type { LiteRowEditGridProps, LiteRowEditGridRowChange } from './internal/components/lite-row-edit-grid';
 export { ViewModeToggle } from './internal/components/view-mode-toggle';
 export type { ViewMode, ViewModeToggleProps } from './internal/components/view-mode-toggle';
 export { SegmentedControl } from './internal/components/segmented-control';
@@ -46,6 +49,8 @@ export type {
   RecordLinkProps, CountBadgeProps, ActiveBadgeProps, RowEndStatusProps, EmptyStateProps, MoreActionsItem, MoreActionsMenuProps,
 } from './internal/components/record-patterns';
 export { BusinessNumberInput } from './internal/components/number-input';
+export { formatCurrency } from './internal/components/currency';
+export type { FormatCurrencyOptions } from './internal/components/currency';
 export type { BusinessNumberInputProps, BusinessNumberInvalidInput } from './internal/components/number-input';
 export { FormGrid, FormGridItem } from './internal/components/form-grid';
 export type { FormGridProps, FormGridItemProps } from './internal/components/form-grid';

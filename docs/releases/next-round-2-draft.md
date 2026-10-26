@@ -1,6 +1,6 @@
 # Next release: second-round feedback (draft)
 
-Status: DRAFT, not released. The version number is set when the editable-grid study ends; Locke decided on 2026-10-26 that the next version waits for it. Nothing here is available from GitHub Packages until then.
+Status: DRAFT, not released. The editable-grid study ended on 2026-10-26 and its changes are listed below; the version number is set at release. Nothing here is available from GitHub Packages until then.
 
 ## Change type
 
@@ -42,12 +42,24 @@ Locke decided on 2026-10-26 that there are three button types: primary, attentio
 | `ToggleButton`, `MenuButton`, `SplitButton` (and their props types) are no longer exported. | Use `MoreActionsMenu` for a menu, a Button for a command, `SegmentedControl` for a choice. |
 | `MultiSelectDropdown` "Clear all" is a small secondary button instead of a transparent text button. | Nothing. |
 
-## Held for the editable-grid study
+## Editable grids (study decided 2026-10-26)
 
-Not in this release: row height and in-cell controls of `EditableGrid` and `LiteEditableGrid`, their viewport, selection and lock details. Applications keep their current editable-grid workarounds until the study is decided.
+Locke decided on 2026-10-26 that every editable table uses one of two lightweight grids: LiteEditableGrid (cell edit, preferred, for BOM templates and project BOMs) or the new LiteRowEditGrid (row edit, for long uniform data such as component master and cost management). A Fluent Table with Fluent inputs inside `EditableGrid` still works but is no longer recommended.
+
+| Export or prop | Change | Replaces in applications |
+| --- | --- | --- |
+| New `LiteRowEditGrid` (`onRowChange`, `rowHeight` 32/40/48, `height`, `maxHeight`, `canEditRow`, `onActiveRowChange`) | Row edit: Enter, F2 or a double-click edits the current row; leaving the row or Enter saves it with one `onRowChange`, Esc discards. No actions column. Fixed rows with virtual scrolling for thousands of rows; no groups. The editing row is light green with regular-weight values and an underline on the focused field, without per-cell boxes. | Table rows with Fluent `Input` / `Dropdown` in the active row and their confirm and cancel actions, local row-height and control-size overrides. |
+| `LiteEditableGrid` `rowHeight` default **`auto`** (was 32), also 32/40/48; `onActiveRowChange` | **Behaviour change:** without a `rowHeight`, rows now wrap their text and every row is rendered (about 300 rows). **Grids with thousands of rows must pass a fixed `rowHeight`** to keep virtual scrolling. The editor is a white field without a frame, and the edited row turns light green. | Local row-height overrides. |
+| Column `editor: 'number'` | Decimal keyboard, end-aligned. | `text` columns with local alignment. |
+| New `formatCurrency(amount, currency, { display, decimals })`; column `format(value, row)` in both lightweight grids | Currency rule (Locke, 2026-10-26): symbol before the number with one space, thousands separators, fixed decimals (`$ 100.00`); symbols for USD and CNY only, ISO code for every other currency (`JPY 1,200`). `format` changes only the resting cell text. | Local currency formatting and amounts without a symbol. |
+| `EditableGrid` `title` and `toolbar` optional, `density="compact"`, `maxHeight` | No empty header or toolbar strip; compact frame; sticky header under a capped height that can follow the window. | Empty-title workarounds, CSS hiding the empty toolbar, local sticky-header CSS. |
+| `EditableGrid` action column | Only the header cell marked `nidec-ui-editable-grid__action-column` is pinned, no longer whatever header is last. **Applications using a Table must add the class to their Actions `TableHeaderCell`.** The editing-row action cell colour is limited to EditableGrid. | Local overrides that un-pinned the last column. |
+
+A date editor inside the grid comes in a later round.
 
 ## What applications should do
 
 - Update the exact pin when the version is released; dependencies are unchanged.
+- Pass `rowHeight={32}` to any existing LiteEditableGrid with more than a few hundred rows before updating. Move editable tables to LiteEditableGrid (BOM-type lines) or LiteRowEditGrid (long uniform data) one at a time, and add `nidec-ui-editable-grid__action-column` to the Actions header of any Table kept inside `EditableGrid`.
 - Re-inspect Dropdown and Combobox width in forms and toolbars, Business Process Flows at 900px, and tables that use local sticky CSS.
 - Remove the local workarounds listed above one at a time, checking the result each time.
