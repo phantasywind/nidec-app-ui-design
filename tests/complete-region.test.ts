@@ -6,7 +6,7 @@ import { Button, Body1, Caption1, Subtitle2, Field, Input, MessageBar, MessageBa
 import type { ButtonProps, OverlayDrawerProps } from '../src/index';
 
 describe('Complete-region primitives', () => {
-  it.each(['primary', 'secondary', 'outline', 'subtle', 'transparent'] as const)(
+  it.each(['primary', 'secondary'] as const)(
     'forwards %s without changing native action semantics', appearance => {
       const element = Button({ children: 'Save', appearance, size: 'small', shape: 'rounded' });
       expect(element.props.appearance).toBe(appearance);

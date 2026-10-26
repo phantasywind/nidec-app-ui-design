@@ -14,7 +14,6 @@
     search: value('input[type="search"]'),
     spin: value('[role="spinbutton"]'),
     slider: value('input[type="range"]'),
-    togglePressed: document.querySelector('.fui-ToggleButton')?.getAttribute('aria-pressed') ?? null,
     popoverText: text('.fui-PopoverSurface'),
     activeElement: document.activeElement?.getAttribute('aria-label') || document.activeElement?.textContent?.trim() || document.activeElement?.tagName,
     fluentRules: [...document.styleSheets].reduce((total, sheet) => {

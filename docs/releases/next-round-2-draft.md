@@ -4,7 +4,7 @@ Status: DRAFT, not released. The version number is set when the editable-grid st
 
 ## Change type
 
-Expected minor: new exports and new props on existing components, plus visual fixes. No export is removed and the exact Fluent, React and date-picker versions are unchanged.
+Expected minor: new exports and new props on existing components, plus visual fixes. The button types are narrowed and three Fluent re-exports are removed (see Button types below); the exact Fluent, React and date-picker versions are unchanged.
 
 ## Fixes
 
@@ -30,6 +30,17 @@ Expected minor: new exports and new props on existing components, plus visual fi
 | `BusinessNumberInput` | `Input type="number"` and local number parsing. |
 | `ChangeHistoryTable` | Local history tables. |
 | `UnsavedChangesProvider`, `useUnsavedChanges`, `useConfirmDiscard`, `StickySaveBar` | Local `beforeunload` handlers, discard dialogs and sticky save bars. |
+
+## Button types
+
+Locke decided on 2026-10-26 that there are three button types: primary, attention and secondary.
+
+| Change | What applications do |
+| --- | --- |
+| `Button` `appearance` takes `primary`, `attention` (new, amber) or `secondary` (default). `outline`, `subtle` and `transparent` no longer compile. | Replace them with `secondary`, or `attention` for starting a change or sending back. |
+| `IconButton` `appearance` takes `primary` or `secondary`. | Replace `subtle` / `transparent` with the default. Row actions keep `TableActionIconButton`. |
+| `ToggleButton`, `MenuButton`, `SplitButton` (and their props types) are no longer exported. | Use `MoreActionsMenu` for a menu, a Button for a command, `SegmentedControl` for a choice. |
+| `MultiSelectDropdown` "Clear all" is a small secondary button instead of a transparent text button. | Nothing. |
 
 ## Held for the editable-grid study
 

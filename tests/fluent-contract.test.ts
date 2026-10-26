@@ -28,7 +28,6 @@ const platformSurfaces = [
 ] as const;
 const commonContentControls = [
   'SearchBox', 'SpinButton', 'Slider',
-  'ToggleButton', 'MenuButton', 'SplitButton',
   'Label', 'InfoLabel', 'Divider',
   'Avatar', 'AvatarGroup', 'AvatarGroupItem', 'AvatarGroupPopover', 'Persona',
   'Tag', 'TagGroup', 'Popover', 'PopoverTrigger', 'PopoverSurface',

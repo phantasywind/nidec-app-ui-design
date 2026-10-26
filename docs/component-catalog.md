@@ -57,7 +57,7 @@ Field 支持提示、必填与校验反馈；原生 readonly 仅用于支持该�
 | 公共能力 | 对应页面 / 使用边界 |
 | --- | --- |
 | Text、Body1、Caption1、Subtitle2、Label、Divider | 文本输入与字段；正文、次级说明、字段标签及分隔。不要用原生标题默认粗体代替指定角色。 |
-| ToggleButton、MenuButton、SplitButton、MenuTrigger、MenuPopover、MenuList、MenuItem、MenuDivider | 按钮与图标操作；切换动作、主动作带备选项、低频操作菜单。不要把互斥字段选项伪装成命令菜单。 |
+| MenuTrigger、MenuPopover、MenuList、MenuItem、MenuDivider | 按钮与图标操作；低频操作菜单（常用 `MoreActionsMenu`）。按钮只有主按钮、提醒按钮、非主按钮三种（2026-10-26），ToggleButton、MenuButton、SplitButton 不再导出。不要把互斥字段选项伪装成命令菜单。 |
 | Option、OptionGroup | 下拉与可搜索选择；选项分组，键值与过滤由应用提供。 |
 | MessageBarBody、MessageBarTitle、MessageBarActions、CounterBadge、PresenceBadge、TagGroup | 反馈与状态；分别用于消息结构、数量、在线状态与标签集合；状态语义由应用决定。 |
 | DialogTrigger、DialogSurface、DialogBody、DialogTitle、DialogContent、DialogActions | Dialog 与 Sheet；保持标题、焦点陷阱、Escape 和触发器返回焦点。 |
