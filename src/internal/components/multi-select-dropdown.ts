@@ -8,6 +8,7 @@ import type {
   ComboboxProps as FluentComboboxProps, DropdownProps as FluentDropdownProps, OptionOnSelectData, SelectionEvents,
 } from '@fluentui/react-components';
 import { Option } from './option';
+import { useShrinkableSelectStyles } from './single-select-dropdown';
 import { withClass } from './with-class';
 
 export type MultiSelectDropdownOption = Readonly<{
@@ -131,6 +132,7 @@ export function MultiSelectDropdown({
 }: MultiSelectDropdownProps): ReactElement {
   const styles = useMultiSelectDropdownStyles();
   const belowStyles = useBelowStyles();
+  const shrinkable = useShrinkableSelectStyles();
   const [uncontrolledSelection, setUncontrolledSelection] = useState<string[]>(() => [...(defaultSelectedOptions ?? [])]);
   const [query, setQuery] = useState('');
   if (new Set(options.map(option => option.value)).size !== options.length) throw new Error('MultiSelectDropdown option values must be unique.');
@@ -170,7 +172,8 @@ export function MultiSelectDropdown({
       ? createElement(FluentCombobox, {
         ...props,
         ...(size === undefined ? {} : { size }),
-        className: mergeClasses('nidec-ui-multi-select-dropdown__trigger', belowStyles.trigger),
+        className: mergeClasses('nidec-ui-multi-select-dropdown__trigger', shrinkable.root, belowStyles.trigger),
+        input: { className: shrinkable.input },
         multiselect: true,
         selectedOptions: selection,
         value: query,
@@ -186,7 +189,11 @@ export function MultiSelectDropdown({
       : createElement(FluentDropdown, {
         ...props,
         ...(size === undefined ? {} : { size }),
-        className: mergeClasses('nidec-ui-multi-select-dropdown__trigger', belowStyles.trigger),
+        className: mergeClasses('nidec-ui-multi-select-dropdown__trigger', shrinkable.root, belowStyles.trigger),
+        button: summary === '' ? { className: shrinkable.button } : {
+          className: shrinkable.button,
+          children: createElement('span', { className: shrinkable.buttonText }, summary),
+        },
         multiselect: true,
         selectedOptions: selection,
         value: summary,
@@ -245,8 +252,8 @@ export function MultiSelectDropdown({
   return createElement(FluentDropdown, {
     ...props,
     ...(size === undefined ? {} : { size }),
-    ...(triggerContent === undefined ? {} : { button: { children: triggerContent } }),
-    className: withClass('nidec-ui-multi-select-dropdown', className),
+    button: triggerContent === undefined ? { className: shrinkable.button } : { className: shrinkable.button, children: triggerContent },
+    className: mergeClasses('nidec-ui-multi-select-dropdown', shrinkable.root, className),
     multiselect: true,
     selectedOptions: selection,
     onOptionSelect: (event, data) => {

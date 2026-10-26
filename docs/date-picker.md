@@ -34,7 +34,21 @@ import '@phantasywind/nidec-app-ui-design/styles.css';
 
 ## 业务日期预设：BusinessDatePicker
 
-无时区的业务日期（如交期）使用同一入口的 `BusinessDatePicker`（尚未发布，随下一个版本提供）。值为 `yyyy-MM-dd` 字符串或 `null`，显示为 `22 Oct 2026`，可键盘输入 `2026-10-22`、`22 Oct 2026`、`22 October 2026`，一周从周一开始，占位符为 `e.g. 22 Oct 2026`。转换不经过 UTC。入口同时导出 `businessDateToDate`、`dateToBusinessDate`、`formatBusinessDate`、`parseBusinessDate`。默认文字为英文；其他语言覆盖 `formatDate`、`parseDateFromString` 和 `strings`。表格行内使用 `size="small"`。
+无时区的业务日期（如交期）使用同一入口的 `BusinessDatePicker`。值为 `yyyy-MM-dd` 字符串或 `null`，显示为 `22 Oct 2026`，可键盘输入 `2026-10-22`、`22 Oct 2026`、`22 October 2026`，一周从周一开始，占位符为 `e.g. 22 Oct 2026`。转换不经过 UTC。入口同时导出 `businessDateToDate`、`dateToBusinessDate`、`formatBusinessDate`、`parseBusinessDate`。默认文字为英文；其他语言覆盖 `formatDate`、`parseDateFromString` 和 `strings`。表格行内使用 `size="small"`。
+
+### 允许范围与手工输入
+
+- `minDate` / `maxDate`：日历置灰，**手工输入超出范围时也拒绝**。Fluent 原生的做法是不改值、也不提示，输入框里留着用户的文字，保存时会悄悄存成旧值。`BusinessDatePicker` 在这种情况下把输入框标为无效（红色边框，`aria-invalid`），并调用 `onInvalidInput({ text, reason, value })`：`reason` 为 `out-of-bounds`（`value` 是解析出的日期）或 `invalid-input`（`value` 为 `null`）。应用把原因写进外层 `Field` 的 `validationMessage`；用户输入可接受的日期后无效标记自动清除。
+- `calendar={{ maxDate }}`：只让日历置灰，手工输入照常接受，由服务端判断。只在“界面提示、服务端裁决”时使用。
+
+```tsx
+const [error, setError] = useState<string>();
+<Field label="Actual date" validationMessage={error}>
+  <BusinessDatePicker value={value} maxDate={today}
+    onValueChange={next => { setError(undefined); setValue(next); }}
+    onInvalidInput={({ reason }) => setError(reason === 'out-of-bounds' ? 'The date cannot be later than today.' : 'Enter a date such as 22 Oct 2026.')} />
+</Field>
+```
 
 ## 表单与交互
 

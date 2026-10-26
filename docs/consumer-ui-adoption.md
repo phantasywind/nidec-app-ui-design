@@ -87,6 +87,8 @@ Copy the required container styles along with JSX. These classes belong to the e
 
 Use Fluent typography roles. Do not reintroduce legacy rem scaling, global bold rules or native heading defaults across controls. The candidate uses regular secondary module headings while page headings and selected primary identities retain semibold. Follow the exact version contract.
 
+Link weight: an identity link that must stand out uses `RecordLink weight="semibold"`, not a local bold class over Fluent `Link`. Keep `Button` children a plain string; put icons in the `icon` slot and the reason a command is unavailable in `disabledReason`, not in extra child elements.
+
 Inspect button width, min-width and flex as well as parent Grid tracks, Flex direction and stretch alignment. The directory example reserves 15rem for search so its clear button cannot shift adjacent controls. This is layout, not a replacement control skin.
 
 ## Overlays and closing
@@ -108,6 +110,13 @@ Use Dialog Trigger/Surface/Title/Content/Actions and OverlayDrawer Header/Body/F
 ```
 
 The application implements open, busy, dirty and requestClose. Apply one closing policy to every entry point. Prevent duplicate submission and accidental closing while saving. Check initial focus, Tab containment, Escape, backdrop closing and returned focus. Verify custom portals and CSP separately.
+
+## Class merging and tests
+
+- To add an application class to a package or Fluent component, merge with `mergeClasses` from `@fluentui/react-components` (or pass `className`, which the package merges). Do not overwrite Fluent's own classes by string concatenation in a slot, and do not restyle the package's internal `nidec-ui-*` class names; ask for a prop instead.
+- Fluent styles are unlayered atomic CSS and beat rules in the package's `@layer nidec-ui`. An application override of a Fluent property needs `makeStyles` or a documented CSS custom property (for example `--nidec-ui-select-width`), not a higher-specificity global selector.
+- jsdom tests of a `FormDrawer`: Fluent marks the rest of the page `aria-hidden` while the drawer is open, and the drawer content mounts after its open motion starts. Query inside the drawer (`within(screen.getByRole('dialog'))`) and perform one user action inside it, such as focusing the first field, before asserting on its contents. Queries against the page behind it will fail by design.
+- jsdom has no layout. `TableScrollRegion` frozen columns, the pinned scrollbar and `TruncatedText` tooltips depend on measured sizes; assert on their data attributes in unit tests and check behaviour in a browser.
 
 ## Acceptance and troubleshooting
 

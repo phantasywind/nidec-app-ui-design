@@ -1202,6 +1202,208 @@
     min-width: 0;
   }
 
+  /* Title + count badge; the badge sits on the title's text line. */
+  :where([data-nidec-ui]) .nidec-ui-workspace-section__title:has(> .nidec-ui-workspace-section__count) {
+    align-items: center;
+    column-gap: var(--spacingHorizontalS);
+    display: inline-flex;
+  }
+
+  /* Title row that carries controls: body-size title, controls on the same line, wrapping when narrow. */
+  :where([data-nidec-ui]) .nidec-ui-workspace-section__heading {
+    align-items: center;
+    column-gap: var(--spacingHorizontalM);
+    display: flex;
+    flex-wrap: wrap;
+    min-width: 0;
+    row-gap: var(--spacingVerticalXS);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-workspace-section--toolbar-header .nidec-ui-workspace-section__header {
+    align-items: center;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-workspace-section--toolbar-header .nidec-ui-workspace-section__title {
+    font-size: var(--fontSizeBase300);
+    font-weight: var(--fontWeightSemibold);
+    line-height: var(--lineHeightBase300);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-workspace-section__header-content {
+    align-items: center;
+    column-gap: var(--spacingHorizontalS);
+    display: flex;
+    flex-wrap: wrap;
+    font-size: var(--fontSizeBase300);
+    line-height: var(--lineHeightBase300);
+    min-width: 0;
+    row-gap: var(--spacingVerticalXS);
+  }
+
+  /* Form field group: equal widths, top-aligned rows, controls fill their field. */
+  :where([data-nidec-ui]) .nidec-ui-form-grid {
+    --nidec-ui-select-width: 100%;
+    align-items: start;
+    column-gap: var(--spacingHorizontalL);
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--nidec-ui-form-grid-field-width)), var(--nidec-ui-form-grid-field-width)));
+    max-inline-size: calc(var(--nidec-ui-form-grid-columns)*var(--nidec-ui-form-grid-field-width) + (var(--nidec-ui-form-grid-columns) - 1)*var(--spacingHorizontalL));
+    row-gap: var(--spacingVerticalM);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-form-grid > :where(*) {
+    min-width: 0;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-form-grid__item--wide {
+    grid-column: 1 / -1;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-form-grid :is(.fui-Input, .fui-Textarea, .fui-SpinButton, .fui-DatePicker, .nidec-ui-number-input) {
+    inline-size: 100%;
+  }
+
+  /* Change history: old value struck through and grey, new value as text, reason in italics. */
+  :where([data-nidec-ui]) .nidec-ui-change-history__changes {
+    display: grid;
+    gap: var(--spacingVerticalXXS);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-change-history__field {
+    color: var(--colorNeutralForeground2);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-change-history__from {
+    color: var(--colorNeutralForeground3);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-change-history__reason {
+    font-style: italic;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-change-history :is(td, th) {
+    vertical-align: top;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-change-history__at {
+    inline-size: 9.5rem;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-change-history__actor,
+  :where([data-nidec-ui]) .nidec-ui-change-history__action {
+    inline-size: 8rem;
+  }
+
+  /* Save bar held at the bottom of the window while the page has unsaved edits. */
+  :where([data-nidec-ui]) .nidec-ui-sticky-save-bar {
+    align-items: center;
+    background-color: var(--colorNeutralBackground1);
+    border-block-start: var(--strokeWidthThin) solid var(--colorNeutralStroke2);
+    box-shadow: var(--shadow8);
+    column-gap: var(--spacingHorizontalL);
+    display: flex;
+    flex-wrap: wrap;
+    inset-block-end: 0;
+    justify-content: space-between;
+    padding: var(--spacingVerticalS) var(--spacingHorizontalL);
+    position: sticky;
+    row-gap: var(--spacingVerticalS);
+    z-index: 2;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-sticky-save-bar__message {
+    color: var(--colorNeutralForeground2);
+    font-size: var(--fontSizeBase300);
+    line-height: var(--lineHeightBase300);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-sticky-save-bar__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacingHorizontalS);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-number-input__unit {
+    color: var(--colorNeutralForeground3);
+    white-space: nowrap;
+  }
+
+  /* Count after a title or tab label. */
+  :where([data-nidec-ui]) .nidec-ui-count-badge {
+    flex: none;
+  }
+
+  /* Last cell with the row state at its end. */
+  :where([data-nidec-ui]) .nidec-ui-row-end-status {
+    align-items: center;
+    column-gap: var(--spacingHorizontalS);
+    display: flex;
+    justify-content: space-between;
+    min-width: 0;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-row-end-status__value {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-row-end-status__status {
+    flex: none;
+  }
+
+  /* Empty list: one line of what is missing, an optional hint and next step. */
+  :where([data-nidec-ui]) .nidec-ui-empty-state {
+    color: var(--colorNeutralForeground2);
+    display: grid;
+    gap: var(--spacingVerticalXS);
+    justify-items: center;
+    padding: var(--spacingVerticalXXL) var(--spacingHorizontalL);
+    text-align: center;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-empty-state__title {
+    color: var(--colorNeutralForeground1);
+    font-size: var(--fontSizeBase300);
+    font-weight: var(--fontWeightSemibold);
+    line-height: var(--lineHeightBase300);
+    margin: 0;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-empty-state__description {
+    font-size: var(--fontSizeBase200);
+    line-height: var(--lineHeightBase200);
+    margin: 0;
+    max-inline-size: 48ch;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-empty-state__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacingHorizontalS);
+    justify-content: center;
+    margin-block-start: var(--spacingVerticalS);
+  }
+
+  /* A disabled key command with its reason written under it. */
+  :where([data-nidec-ui]) .nidec-ui-button-with-reason {
+    display: inline-grid;
+    gap: var(--spacingVerticalXXS);
+    justify-items: start;
+    vertical-align: top;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-button-with-reason__text {
+    color: var(--colorNeutralForeground3);
+    font-size: var(--fontSizeBase200);
+    line-height: var(--lineHeightBase200);
+    max-inline-size: 24rem;
+  }
+
   :where([data-nidec-ui]) .nidec-ui-collection-list,
   :where([data-nidec-ui]) .nidec-ui-card-gallery,
   :where([data-nidec-ui]) .nidec-ui-process-stage {
@@ -1615,18 +1817,44 @@
     white-space: nowrap;
   }
 
-  /* Stage names wrap onto at most two lines instead of being cut at one. */
+  /*
+   * Stage names wrap onto at most two lines instead of being cut at one. They
+   * break between words only, never inside one ("Commerci-al"); a single word
+   * wider than the arrow is cut, and the title attribute shows the full name.
+   */
   :where([data-nidec-ui]) .nidec-ui-business-process-flow__copy strong {
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 2;
     display: -webkit-box;
-    overflow-wrap: break-word;
+    hyphens: manual;
+    overflow-wrap: normal;
     white-space: normal;
+    word-break: normal;
   }
 
   /* Every arrow takes the height of the tallest one, so a wrapped name keeps the row even. */
   :where([data-nidec-ui]) .nidec-ui-business-process-flow__stage {
     display: flex;
+  }
+
+  /*
+   * Narrow arrows (many stages at 900px) give the name the marker's room: the
+   * step number hides and the padding tightens, so whole words fit before any
+   * name is cut.
+   */
+  :where([data-nidec-ui]) .nidec-ui-business-process-flow__stage {
+    container-type: inline-size;
+  }
+
+  @container (max-width: 10rem) {
+    :where([data-nidec-ui]) .nidec-ui-business-process-flow__body {
+      grid-template-columns: minmax(0, 1fr);
+      padding-inline: 1.125rem 1rem;
+    }
+
+    :where([data-nidec-ui]) .nidec-ui-business-process-flow__marker {
+      display: none;
+    }
   }
 
   :where([data-nidec-ui]) .nidec-ui-business-process-flow__copy strong {
@@ -1733,6 +1961,31 @@
     display: contents;
   }
 
+  /*
+   * Dropdown and Combobox scroll the active option into view through the first
+   * ancestor that is taller inside than out. A short listbox does not scroll,
+   * so the walk could reach a page whose html is 100% high and scroll it to the
+   * top. The listbox's portal wrapper is that ancestor instead: zero high with
+   * one empty pixel inside, and no clipping, so the listbox stays visible.
+   */
+  :where([data-nidec-ui])[data-nidec-ui-portal-host] > [data-portal-node]:has(> [role="listbox"]) {
+    block-size: 0;
+  }
+
+  :where([data-nidec-ui])[data-nidec-ui-portal-host] > [data-portal-node]:has(> [role="listbox"])::before {
+    block-size: 1px;
+    content: "";
+    display: block;
+  }
+
+  /*
+   * A status badge never wraps: in a narrow table column a two-line pill
+   * breaks the row height. Give the column the width of its longest status.
+   */
+  :where([data-nidec-ui]) .fui-Badge {
+    white-space: nowrap;
+  }
+
   /* Package outline glyphs: paint comes from the surrounding text colour. */
   :where([data-nidec-ui]) .nidec-ui-glyph {
     fill: none;
@@ -1776,6 +2029,144 @@
   :where([data-nidec-ui]) .nidec-ui-table-scroll-region:focus-visible {
     outline: var(--strokeWidthThick) solid var(--colorStrokeFocus2);
     outline-offset: calc(0px - var(--strokeWidthThick));
+  }
+
+  /* Fixed-height viewport: rows scroll inside, the header row stays in view. */
+  :where([data-nidec-ui]) .nidec-ui-table-scroll-region[data-max-height] {
+    overflow-y: auto;
+  }
+
+  /* TableScrollRegion writes the sticky position inline; Fluent's own cell styles would override it here. */
+  :where([data-nidec-ui]) .nidec-ui-table-scroll-region[data-max-height] :is(thead th, .fui-TableHeader .fui-TableHeaderCell, .fui-DataGridHeader .fui-DataGridHeaderCell) {
+    background-color: var(--colorNeutralBackground1);
+    z-index: 2;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-table-scroll-region[data-max-height] .nidec-ui-record-table-header :is(th, .fui-TableHeaderCell, .fui-DataGridHeaderCell) {
+    background-color: var(--colorNeutralBackground2);
+  }
+
+  /* Pinned scrollbar: the region's own bar is hidden and repeated at the bottom of the window. */
+  :where([data-nidec-ui]) .nidec-ui-table-scroll-frame {
+    display: grid;
+    min-width: 0;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-table-scroll-region[data-pinned-scrollbar] {
+    scrollbar-width: none;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-table-scroll-region[data-pinned-scrollbar]::-webkit-scrollbar {
+    block-size: 0;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-table-scroll-region__scrollbar {
+    background-color: var(--colorNeutralBackground1);
+    inset-block-end: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    position: sticky;
+    scrollbar-width: thin;
+    z-index: 3;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-table-scroll-region__scrollbar[hidden] {
+    display: none;
+  }
+
+  /* Frozen leading columns: opaque cells over the scrolled ones, a divider after the last. */
+  :where([data-nidec-ui]) .nidec-ui-table-scroll-region [data-nidec-frozen] {
+    background-color: var(--colorNeutralBackground1);
+    z-index: 1;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-table-scroll-region :is(tr, [role="row"]):hover > [data-nidec-frozen] {
+    background-color: var(--colorNeutralBackground1Hover);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-table-scroll-region :is(tr, [role="row"])[aria-selected="true"] > [data-nidec-frozen] {
+    background-color: var(--colorBrandBackground2);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-table-scroll-region [data-nidec-frozen="last"] {
+    box-shadow: inset -1px 0 0 var(--colorNeutralStroke2);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-table-scroll-region[data-frozen-columns] :is(thead th, .fui-TableHeaderCell, .fui-DataGridHeaderCell)[data-nidec-frozen] {
+    z-index: 3;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-table-scroll-region .nidec-ui-record-table-header [data-nidec-frozen] {
+    background-color: var(--colorNeutralBackground2);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-table-scroll-region[data-frozen-columns] .nidec-ui-grouped-table__section-button {
+    inset-inline-start: 0;
+    position: sticky;
+    z-index: 1;
+  }
+
+  /* One-line text cut with an ellipsis; TruncatedText shows the full text on hover only when cut. */
+  :where([data-nidec-ui]) .nidec-ui-truncated-text {
+    display: block;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Matrix cell: the whole cell is the button; grey hover, light green when matched, brand outline when selected. */
+  :where([data-nidec-ui]) .nidec-ui-matrix-cell {
+    background: transparent;
+    block-size: 100%;
+    border: 0;
+    border-radius: 0;
+    box-sizing: border-box;
+    color: var(--colorNeutralForeground1);
+    cursor: pointer;
+    display: block;
+    font: inherit;
+    inline-size: 100%;
+    min-block-size: 2rem;
+    overflow: hidden;
+    padding: var(--spacingVerticalXS) var(--spacingHorizontalS);
+    text-align: start;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-matrix-cell:where(:not(:disabled)):hover {
+    background: var(--colorNeutralBackground1Hover);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-matrix-cell[data-matched="true"] {
+    background: var(--colorBrandBackground2);
+    color: var(--colorBrandForeground1);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-matrix-cell[aria-current="true"] {
+    box-shadow: inset 0 0 0 var(--strokeWidthThick) var(--colorBrandStroke1);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-matrix-cell:focus-visible {
+    outline: var(--strokeWidthThick) solid var(--colorStrokeFocus2);
+    outline-offset: calc(0px - var(--strokeWidthThick));
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-matrix-cell:disabled {
+    color: var(--colorNeutralForegroundDisabled);
+    cursor: default;
+  }
+
+  /* Numeric columns: header and values aligned to the end, digits in tabular figures. */
+  :where([data-nidec-ui]) .nidec-ui-numeric-column {
+    font-variant-numeric: tabular-nums;
+    text-align: end;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-numeric-column :is(.fui-TableHeaderCell__button, .fui-DataGridHeaderCell__button),
+  :where([data-nidec-ui]) .nidec-ui-numeric-column > .fui-TableCellLayout {
+    justify-content: flex-end;
   }
 
   :where([data-nidec-ui]) .nidec-ui-pagination {
@@ -1924,6 +2315,18 @@
     border-radius: var(--borderRadiusCircular);
     content: "";
     position: absolute;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-section-navigation--sticky {
+    align-self: start;
+    inset-block-start: var(--nidec-ui-section-navigation-top, 0);
+    position: sticky;
+    z-index: 1;
+  }
+
+  /* A sticky row of section links covers the content scrolling under it. */
+  :where([data-nidec-ui]) .nidec-ui-section-navigation--sticky.nidec-ui-section-navigation--horizontal {
+    background-color: var(--colorNeutralBackground1);
   }
 
   :where([data-nidec-ui]) .nidec-ui-section-navigation__count {

@@ -38,8 +38,22 @@ export { SectionNavigation } from './internal/components/section-navigation';
 export type { SectionNavigationItem, SectionNavigationProps } from './internal/components/section-navigation';
 export { StepStatusIcon } from './internal/components/step-status';
 export type { StepStatus, StepStatusIconProps } from './internal/components/step-status';
-export { TableScrollRegion } from './internal/components/table-scroll-region';
+export { TableScrollRegion, numericColumnClassName } from './internal/components/table-scroll-region';
 export type { TableScrollRegionProps } from './internal/components/table-scroll-region';
+export { TruncatedText, MatrixCellButton } from './internal/components/table-cells';
+export { RecordLink, CountBadge, ActiveBadge, RowEndStatus, EmptyState, MoreActionsMenu } from './internal/components/record-patterns';
+export type {
+  RecordLinkProps, CountBadgeProps, ActiveBadgeProps, RowEndStatusProps, EmptyStateProps, MoreActionsItem, MoreActionsMenuProps,
+} from './internal/components/record-patterns';
+export { BusinessNumberInput } from './internal/components/number-input';
+export type { BusinessNumberInputProps, BusinessNumberInvalidInput } from './internal/components/number-input';
+export { FormGrid, FormGridItem } from './internal/components/form-grid';
+export type { FormGridProps, FormGridItemProps } from './internal/components/form-grid';
+export { ChangeHistoryTable } from './internal/components/change-history';
+export type { ChangeHistoryTableProps, ChangeHistoryEntry, ChangeHistoryFieldChange } from './internal/components/change-history';
+export { UnsavedChangesProvider, useUnsavedChanges, useConfirmDiscard, StickySaveBar } from './internal/components/unsaved-changes';
+export type { UnsavedChangesProviderProps, StickySaveBarProps } from './internal/components/unsaved-changes';
+export type { TruncatedTextProps, MatrixCellButtonProps } from './internal/components/table-cells';
 export { CollectionList, CollectionListItem } from './internal/components/collection-list';
 export type { CollectionListProps, CollectionListItemProps } from './internal/components/collection-list';
 export { RecordIdentityCellLayout, RecordTableHeader, RecordDataGridHeader } from './internal/components/record-table';

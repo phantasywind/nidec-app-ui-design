@@ -28,6 +28,7 @@ Routes, labels, grouping, ordering, visibility and RBAC remain application-owned
 - `PageHeader` is the first module. It contains the page identity, concise description and page-level actions.
 - `WorkspaceSection` is the standard content module for forms, directories, tabs, lists, facts and supporting regions.
 - Every module uses a white background, one light neutral border, the shared large radius and consistent internal padding.
+- Peer modules are 12px apart (`spacingVerticalM`). Wrap them in `WorkspaceStack` rather than setting margins or a page-level gap per page.
 - Use vertical whitespace between peer modules. Do not introduce a gray page background, heavy shadows or nested decorative borders to create hierarchy.
 - A `Card` inside a bordered module represents a distinct object or summary but stays flat: no second border and no elevation shadow. `CardGalleryItem` applies this nested treatment by default. A standalone Card may establish its own boundary only when there is no surrounding module boundary.
 - Data tables may meet the inner content edges according to the Data Table contract, but their horizontal overflow remains inside the module.

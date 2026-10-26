@@ -35,6 +35,8 @@ The frame does not insert a second page title, business Toolbar or global loadin
 - Environment information must be explicit text when shown; color alone must not communicate the environment.
 - Help, account and sign-out controls require accessible names and consumer-owned behavior.
 - Do not duplicate page actions or record status in the top bar.
+- When a breadcrumb is shown, the top bar has two rows: the first holds the application name, the environment text and the account and help controls; the second, supplied through `breadcrumb`, holds the location. The page title stays in `PageHeader`, not in the top bar.
+- At narrow widths hide the logo before the application name, and never wrap the environment text; the breadcrumb row may truncate its middle items.
 
 ## Main content and module relationship
 
