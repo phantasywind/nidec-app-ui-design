@@ -8,12 +8,21 @@ import { withClass } from './with-class';
 export type EditableGridProps = Omit<ComponentPropsWithoutRef<'section'>,
   'children' | 'title'> & {
   'aria-label': string;
-  title: ReactNode;
+  /** Visible heading. Leave out when the page already titles the grid; the header is then omitted unless `status` is set. */
+  title?: ReactNode;
   description?: ReactNode;
   status?: ReactNode;
-  toolbar: ReactNode;
+  /** Leave out for no toolbar; no empty strip is drawn. */
+  toolbar?: ReactNode;
   children: ReactNode;
   footer?: ReactNode;
+  /** `compact` tightens the header, toolbar and footer padding for grids placed inside a form or drawer. */
+  density?: 'default' | 'compact';
+  /**
+   * Caps the viewport height (px or a CSS length such as `calc(100vh - 320px)`);
+   * the rows scroll under a sticky column header.
+   */
+  maxHeight?: number | string;
 };
 
 /**
@@ -29,25 +38,32 @@ export function EditableGrid({
   toolbar,
   children,
   footer,
+  density = 'default',
+  maxHeight,
   className,
   ...props
 }: EditableGridProps) {
   if (!ariaLabel.trim()) throw new Error('EditableGrid requires a non-empty aria-label.');
+  const hasCopy = title !== undefined || description !== undefined;
   return createElement('section', {
     ...props,
     'aria-label': ariaLabel,
     className: withClass('nidec-ui-editable-grid', className),
+    'data-density': density === 'compact' ? 'compact' : undefined,
   },
-  createElement('header', { className: 'nidec-ui-editable-grid__header' },
-    createElement('div', { className: 'nidec-ui-editable-grid__copy' },
-      createElement('h2', { className: 'nidec-ui-editable-grid__title' }, title),
-      description === undefined ? null : createElement('div', { className: 'nidec-ui-editable-grid__description' }, description)),
-    status === undefined ? null : createElement('div', { className: 'nidec-ui-editable-grid__status' }, status)),
-  createElement('div', { className: 'nidec-ui-editable-grid__toolbar' }, toolbar),
+  hasCopy || status !== undefined ? createElement('header', { className: 'nidec-ui-editable-grid__header' },
+    hasCopy ? createElement('div', { className: 'nidec-ui-editable-grid__copy' },
+      title === undefined ? null : createElement('h2', { className: 'nidec-ui-editable-grid__title' }, title),
+      description === undefined ? null : createElement('div', { className: 'nidec-ui-editable-grid__description' }, description))
+      : createElement('div', { className: 'nidec-ui-editable-grid__copy' }),
+    status === undefined ? null : createElement('div', { className: 'nidec-ui-editable-grid__status' }, status)) : null,
+  toolbar === undefined || toolbar === null ? null : createElement('div', { className: 'nidec-ui-editable-grid__toolbar' }, toolbar),
   createElement('div', {
     'aria-label': `${ariaLabel} rows`,
     className: 'nidec-ui-editable-grid__viewport',
+    'data-max-height': maxHeight === undefined ? undefined : true,
     role: 'region',
+    style: maxHeight === undefined ? undefined : { maxHeight: typeof maxHeight === 'number' ? `${maxHeight}px` : maxHeight },
     tabIndex: 0,
   }, children),
   footer === undefined ? null : createElement('footer', { className: 'nidec-ui-editable-grid__footer' }, footer));

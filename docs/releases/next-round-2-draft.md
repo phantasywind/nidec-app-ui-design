@@ -1,6 +1,6 @@
 # Next release: second-round feedback (draft)
 
-Status: DRAFT, not released. The version number is set when the editable-grid study ends; Locke decided on 2026-10-26 that the next version waits for it. Nothing here is available from GitHub Packages until then.
+Status: DRAFT, not released. The editable-grid study ended on 2026-10-26 and its changes are listed below; the version number is set at release. Nothing here is available from GitHub Packages until then.
 
 ## Change type
 
@@ -31,12 +31,23 @@ Expected minor: new exports and new props on existing components, plus visual fi
 | `ChangeHistoryTable` | Local history tables. |
 | `UnsavedChangesProvider`, `useUnsavedChanges`, `useConfirmDiscard`, `StickySaveBar` | Local `beforeunload` handlers, discard dialogs and sticky save bars. |
 
-## Held for the editable-grid study
+## Editable grids (study decided 2026-10-26)
 
-Not in this release: row height and in-cell controls of `EditableGrid` and `LiteEditableGrid`, their viewport, selection and lock details. Applications keep their current editable-grid workarounds until the study is decided.
+Locke decided on 2026-10-26 that every editable table uses LiteEditableGrid. A Fluent Table with Fluent inputs inside `EditableGrid` still works but is no longer recommended.
+
+| Export or prop | Change | Replaces in applications |
+| --- | --- | --- |
+| `LiteEditableGrid` `editMode="row"`, `onRowChange`, `rowHeight` 32/40/48/`auto`, `maxHeight`, `editingRowId`, `onEditingRowChange`, `canEditRow`, `renderRowActions`, `actionsHeader`, `formatRowActionLabel` | Row edit mode: one row edits at a time and is confirmed or cancelled as a whole. The editing row keeps the light green row; editable values turn green and semibold with an underline on the focused field, without per-cell boxes. | Table rows with Fluent `Input` / `Dropdown` in the active row, local row-height and control-size overrides. |
+| `LiteEditableGrid` `rowHeight` 32/40/48, `onActiveRowChange` (cell mode) | Cell mode can use taller rows; the current row shows the brand edge. | Local row-height overrides. |
+| Column `editor: 'number'` | Decimal keyboard, end-aligned. | `text` columns with local alignment. |
+| `EditableGrid` `title` and `toolbar` optional, `density="compact"`, `maxHeight` | No empty header or toolbar strip; compact frame; sticky header under a capped height that can follow the window. | Empty-title workarounds, CSS hiding the empty toolbar, local sticky-header CSS. |
+| `EditableGrid` action column | Only the header cell marked `nidec-ui-editable-grid__action-column` is pinned, no longer whatever header is last. **Applications using a Table must add the class to their Actions `TableHeaderCell`.** The editing-row action cell colour is limited to EditableGrid. | Local overrides that un-pinned the last column. |
+
+A date editor inside the grid comes in a later round.
 
 ## What applications should do
 
 - Update the exact pin when the version is released; dependencies are unchanged.
+- Move editable tables to LiteEditableGrid row mode one at a time, and add `nidec-ui-editable-grid__action-column` to the Actions header of any Table kept inside `EditableGrid`.
 - Re-inspect Dropdown and Combobox width in forms and toolbars, Business Process Flows at 900px, and tables that use local sticky CSS.
 - Remove the local workarounds listed above one at a time, checking the result each time.

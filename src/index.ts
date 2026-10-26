@@ -15,6 +15,8 @@ export type { EditableGridProps, EditableGridRowActionGroupProps } from './inter
 export { LiteEditableGrid } from './internal/components/lite-editable-grid';
 export type {
   LiteEditableGridProps, LiteEditableGridColumn, LiteEditableGridEditor, LiteEditableGridOption, LiteEditableGridCellChange,
+  LiteEditableGridCellModeProps, LiteEditableGridRowModeProps, LiteEditableGridRowChange, LiteEditableGridRowHeight,
+  LiteEditableGridRowActionLabel,
 } from './internal/components/lite-editable-grid';
 export { ViewModeToggle } from './internal/components/view-mode-toggle';
 export type { ViewMode, ViewModeToggleProps } from './internal/components/view-mode-toggle';

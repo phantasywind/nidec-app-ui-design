@@ -1,242 +1,58 @@
 import { createElement as h, memo, useCallback, useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import type {
-  ClipboardEvent, ComponentPropsWithoutRef, CSSProperties, FocusEvent, KeyboardEvent, MouseEvent, ReactElement,
+  ClipboardEvent, CSSProperties, FocusEvent, KeyboardEvent, MouseEvent, ReactElement,
 } from 'react';
 import { lockIcon } from './icons';
+import {
+  buildLiteGridLayout, displayText, filterLiteGridOptions, isTypedEditor, prepareLiteGridColumns, readValue, renderTags,
+  splitLiteGridValues,
+} from './lite-grid-shared';
+import type {
+  LiteEditableGridBaseProps, LiteEditableGridCellChange, LiteEditableGridOption, PreparedColumn,
+} from './lite-grid-shared';
+import { RowEditGrid } from './lite-row-edit-grid';
+import type { LiteEditableGridRowModeProps } from './lite-row-edit-grid';
 import { withClass } from './with-class';
 
-/** Row and header height in px. Fixed so that virtual scrolling needs no measurement. */
+export { buildLiteGridLayout, filterLiteGridOptions, splitLiteGridValues } from './lite-grid-shared';
+export type { LiteEditableGridRowChange, LiteEditableGridRowModeProps, LiteEditableGridRowActionLabel } from './lite-row-edit-grid';
+export type {
+  LiteEditableGridCellChange, LiteEditableGridColumn, LiteEditableGridEditor, LiteEditableGridGroup, LiteEditableGridOption,
+} from './lite-grid-shared';
+
+/** Default row and header height in px. Rows have one fixed height so that virtual scrolling needs no measurement. */
 export const LITE_GRID_ROW_HEIGHT = 32;
-const DEFAULT_COLUMN_WIDTH = 160;
 const DEFAULT_OVERSCAN = 10;
 const LIST_POPUP_HEIGHT = 240;
 const LONG_TEXT_POPUP_HEIGHT = 160;
 
-export type LiteEditableGridEditor = 'text' | 'longText' | 'select' | 'combobox' | 'multiselect' | 'none';
+/** Fixed row heights a grid can use: compact (32), standard (40) and comfortable (48). */
+export type LiteEditableGridRowHeight = 32 | 40 | 48;
 
-export type LiteEditableGridOption = Readonly<{ value: string; text: string }>;
-
-export type LiteEditableGridColumn<Row> = Readonly<{
-  /** Stable column key; also the default property read from each row. */
-  key: string;
-  header: string;
-  /** Width in px. Default 160. The last column stretches to fill spare width. */
-  width?: number;
-  /** Dedicated cell editor. Default `text`; `none` makes the column read-only. */
-  editor?: LiteEditableGridEditor;
-  align?: 'start' | 'end';
-  /** Choices for `select`, `combobox` and `multiselect`. A cell shows the text of the option whose value it holds. */
-  options?: readonly LiteEditableGridOption[];
-  /** `multiselect` only: tags shown in a cell before the rest collapse into a count tag. Default 2. */
-  maxVisibleTags?: number;
-  /** `multiselect` only: accessible name of a tag's remove button. Default `Remove <text>`. */
-  formatRemoveLabel?: (text: string) => string;
-  /** `combobox` only: accept typed text that matches no option. Default true. */
-  freeform?: boolean;
-  /**
-   * Reads the cell value. Default `String(row[key] ?? '')`; for `multiselect`
-   * an array value is joined with commas, so option values must not contain one.
-   */
-  getValue?: (row: Row) => string;
-  /** Returns a message when the value is invalid; the cell is then marked and the message is its tooltip. */
-  validate?: (value: string, row: Row) => string | undefined;
-}>;
-
-export type LiteEditableGridCellChange<Row> = Readonly<{
-  rowId: string;
-  rowIndex: number;
-  columnKey: string;
-  /** New value; for `multiselect` the selected option values joined with commas. */
-  value: string;
-  /** `multiselect` only: the selected option values in option order. */
-  values?: readonly string[];
-  row: Row;
-}>;
-
-/** One collapsible section of a grouped grid, as passed to `getGroupSummary`. */
-export type LiteEditableGridGroup = Readonly<{
-  /** The path labels joined with ` / `; the key used in `collapsedGroups`. */
-  key: string;
-  path: readonly string[];
-  label: string;
-  level: 0 | 1;
-  /** Indices into `rows` of every row in the section, sublevels included. */
-  rowIndexes: readonly number[];
-  expanded: boolean;
-}>;
-
-export type LiteEditableGridProps<Row> = Omit<ComponentPropsWithoutRef<'div'>,
-  'children' | 'role' | 'onChange' | 'onCopy' | 'onPaste'> & {
-  'aria-label': string;
-  /** Keep this array stable (module constant or useMemo); a new array re-renders every visible row. */
-  columns: readonly LiteEditableGridColumn<Row>[];
-  rows: readonly Row[];
-  getRowId: (row: Row) => string;
+/** Props of the default cell edit mode: one cell edits at a time and each change is reported on its own. */
+export type LiteEditableGridCellModeProps<Row> = LiteEditableGridBaseProps<Row> & {
+  editMode?: 'cell';
   onCellChange: (change: LiteEditableGridCellChange<Row>) => void;
-  /** Viewport block size: px number or any CSS length. Default `28rem`. */
-  height?: number | string;
+  /** Row height in px. Default 32. */
+  rowHeight?: LiteEditableGridRowHeight;
   /** Rows rendered beyond each edge of the viewport. Default 10. */
   overscan?: number;
-  /**
-   * Groups rows under collapsible section rows: return one label (one level)
-   * or two labels (a section and a subsection). Sections appear in the order
-   * of their first row; an empty path leaves the row outside any section.
-   */
-  getRowGroup?: (row: Row) => readonly string[];
-  /** Controlled set of collapsed group keys (path labels joined with ` / `). */
-  collapsedGroups?: ReadonlySet<string>;
-  /** Initially collapsed group keys when `collapsedGroups` is not controlled. */
-  defaultCollapsedGroups?: Iterable<string>;
-  onCollapsedGroupsChange?: (collapsed: ReadonlySet<string>) => void;
-  /** Text after a section label, such as "2 modified"; also part of its accessible name. */
-  getGroupSummary?: (group: LiteEditableGridGroup) => string | undefined;
-  /** Accessible wording of a section's row count. Default `1 row` / `N rows`. */
-  formatGroupCount?: (count: number) => string;
+  /** Called when the active cell moves to another row, or leaves the rows; the row then carries a brand edge. */
+  onActiveRowChange?: (rowId: string | undefined) => void;
 };
-
-type Section = LiteEditableGridGroup & { count: number };
-
-type Layout = Readonly<{
-  count: number;
-  /** Row index at a display position, or -1 for a section row. */
-  rowAt: (position: number) => number;
-  sectionAt: (position: number) => Section | undefined;
-  depthAt: (position: number) => number;
-}>;
-
-const GROUP_SEPARATOR = ' / ';
-
-/**
- * Display order of a grouped grid: section rows followed by their rows (when
- * expanded), in the order each section's first row appears.
- */
-export function buildLiteGridLayout<Row>(
-  rows: readonly Row[],
-  getRowGroup: ((row: Row) => readonly string[]) | undefined,
-  collapsed: ReadonlySet<string>,
-): Layout {
-  if (!getRowGroup) {
-    return { count: rows.length, rowAt: position => position, sectionAt: () => undefined, depthAt: () => 0 };
-  }
-  type Node = { section: Section | undefined; entries: (Node | number)[]; children: Map<string, Node> };
-  const root: Node = { section: undefined, entries: [], children: new Map() };
-  rows.forEach((row, rowIndex) => {
-    const path = getRowGroup(row);
-    if (path.length > 2) throw new Error('LiteEditableGrid supports at most two group levels.');
-    let node = root;
-    path.forEach((label, depth) => {
-      let child = node.children.get(label);
-      if (!child) {
-        const key = path.slice(0, depth + 1).join(GROUP_SEPARATOR);
-        child = {
-          section: { key, path: path.slice(0, depth + 1), label, level: depth as 0 | 1, rowIndexes: [], expanded: !collapsed.has(key), count: 0 },
-          entries: [],
-          children: new Map(),
-        };
-        node.children.set(label, child);
-        node.entries.push(child);
-      }
-      (child.section!.rowIndexes as number[]).push(rowIndex);
-      child.section!.count += 1;
-      node = child;
-    });
-    node.entries.push(rowIndex);
-  });
-  const positions: number[] = [];
-  const depths: number[] = [];
-  const sections: Section[] = [];
-  const walk = (node: Node, depth: number) => {
-    for (const entry of node.entries) {
-      if (typeof entry === 'number') {
-        positions.push(entry);
-        depths.push(depth);
-      } else {
-        sections.push(entry.section!);
-        positions.push(-sections.length);
-        depths.push(depth);
-        if (entry.section!.expanded) walk(entry, depth + 1);
-      }
-    }
-  };
-  walk(root, 0);
-  return {
-    count: positions.length,
-    rowAt: position => Math.max(-1, positions[position] ?? -1),
-    sectionAt: position => {
-      const value = positions[position];
-      return value !== undefined && value < 0 ? sections[-value - 1] : undefined;
-    },
-    depthAt: position => depths[position] ?? 0,
-  };
-}
 
 type Cell = Readonly<{ row: number; col: number }>;
 type Move = 'none' | 'up' | 'down' | 'left' | 'right';
-
-type PreparedColumn<Row> = LiteEditableGridColumn<Row> & Readonly<{
-  kind: LiteEditableGridEditor;
-  px: number;
-  offset: number;
-  last: boolean;
-  textByValue: ReadonlyMap<string, string> | undefined;
-}>;
-
 /** First (inclusive) and last (exclusive) row indices to render for a scroll position. */
-export function computeRenderRange(scrollTop: number, viewportHeight: number, rowCount: number, overscan: number) {
-  const first = Math.floor(Math.max(0, scrollTop) / LITE_GRID_ROW_HEIGHT);
-  const visible = Math.ceil(Math.max(0, viewportHeight - LITE_GRID_ROW_HEIGHT) / LITE_GRID_ROW_HEIGHT) + 1;
+export function computeRenderRange(
+  scrollTop: number, viewportHeight: number, rowCount: number, overscan: number, rowHeight: number = LITE_GRID_ROW_HEIGHT,
+) {
+  const first = Math.floor(Math.max(0, scrollTop) / rowHeight);
+  const visible = Math.ceil(Math.max(0, viewportHeight - rowHeight) / rowHeight) + 1;
   return {
     start: Math.max(0, Math.min(first, rowCount) - overscan),
     end: Math.min(rowCount, first + visible + overscan),
   };
-}
-
-/** Options whose text contains the query, case-insensitively; an empty query keeps all. */
-export function filterLiteGridOptions(options: readonly LiteEditableGridOption[], query: string) {
-  const needle = query.trim().toLocaleLowerCase();
-  return needle ? options.filter(option => option.text.toLocaleLowerCase().includes(needle)) : options;
-}
-
-function readValue<Row>(column: LiteEditableGridColumn<Row>, row: Row) {
-  if (column.getValue) return column.getValue(row);
-  const raw = (row as Record<string, unknown>)[column.key];
-  if (Array.isArray(raw)) return raw.join(',');
-  return raw === undefined || raw === null ? '' : String(raw);
-}
-
-/** Multiselect values of a comma-joined cell value, kept in option order. */
-export function splitLiteGridValues(value: string, options: readonly LiteEditableGridOption[] = []) {
-  const picked = new Set(value ? value.split(',') : []);
-  const known = options.filter(option => picked.has(option.value)).map(option => option.value);
-  const unknown = [...picked].filter(item => !options.some(option => option.value === item));
-  return [...known, ...unknown];
-}
-
-const removeLabel = <Row>(column: LiteEditableGridColumn<Row>, text: string) =>
-  column.formatRemoveLabel ? column.formatRemoveLabel(text) : `Remove ${text}`;
-
-/** Plain-span tags with a leading remove mark; a count tag stands for the rest. */
-function renderTags<Row>(column: PreparedColumn<Row>, values: readonly string[], limit: number) {
-  const shown = values.slice(0, limit);
-  const tags: ReactElement[] = shown.map(item => {
-    const text = displayText(column, item);
-    return h('span', { className: 'nidec-ui-lite-grid__tag', key: item },
-      h('span', {
-        'aria-label': removeLabel(column, text),
-        className: 'nidec-ui-lite-grid__tag-remove',
-        'data-remove': item,
-        role: 'button',
-      }),
-      h('span', { className: 'nidec-ui-lite-grid__tag-text' }, text));
-  });
-  if (values.length > shown.length) {
-    tags.push(h('span', { className: 'nidec-ui-lite-grid__tag nidec-ui-lite-grid__tag--count', key: '+' }, `+${values.length - shown.length}`));
-  }
-  return tags;
-}
-
-function displayText<Row>(column: PreparedColumn<Row>, value: string) {
-  return column.textByValue?.get(value) ?? value;
 }
 
 const cellId = (gridId: string, row: number, col: number) => `${gridId}-r${row}-c${col}`;
@@ -255,6 +71,7 @@ function RowViewImpl<Row>({ row, rowIndex, depth, columns, activeCol, gridId }: 
   return h('div', {
     'aria-rowindex': rowIndex + 2,
     className: 'nidec-ui-lite-grid__row',
+    'data-current': activeCol >= 0 ? true : undefined,
     'data-depth': depth || undefined,
     'data-row': rowIndex,
     role: 'row',
@@ -353,7 +170,7 @@ function CellEditor<Row>(props: EditorProps<Row>) {
   const fieldRef = useRef<HTMLInputElement & HTMLTextAreaElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
-  useExitFade(wrapperRef, column.kind !== 'text');
+  useExitFade(wrapperRef, column.kind !== 'text' && column.kind !== 'number');
 
   const comboOptions = column.kind === 'combobox'
     ? (seed === undefined && draft === initialText ? options : filterLiteGridOptions(options, draft))
@@ -415,7 +232,7 @@ function CellEditor<Row>(props: EditorProps<Row>) {
     event.stopPropagation();
     if (event.nativeEvent.isComposing) return;
     if (event.key === 'Escape') { event.preventDefault(); return cancel(); }
-    if (column.kind === 'text') {
+    if (column.kind === 'text' || column.kind === 'number') {
       if (event.key === 'Enter') { event.preventDefault(); finish(draft, event.shiftKey ? 'up' : 'down'); }
       else if (event.key === 'Tab') { event.preventDefault(); finish(draft, tabMove(event)); }
       return;
@@ -526,6 +343,7 @@ function CellEditor<Row>(props: EditorProps<Row>) {
       'aria-label': label,
       autoComplete: 'off',
       className: 'nidec-ui-lite-grid__editor-input',
+      inputMode: column.kind === 'number' ? 'decimal' : undefined,
       onChange: (event: { target: { value: string } }) => setDraft(event.target.value),
       ref: fieldRef,
       spellCheck: false,
@@ -662,20 +480,20 @@ function MultiSelectEditor<Row>(props: EditorProps<Row>) {
 }
 
 /**
- * Lightweight spreadsheet-style grid for many editable rows. Cells render as
- * plain text; only the one cell being edited mounts a real editor, and only
- * the rows in view (plus overscan) are in the DOM. Rows have one fixed height.
- * The consumer owns the data, validation rules, persistence and every
- * business meaning of a value.
+ * Cell edit mode: cells render as plain text; only the one cell being edited
+ * mounts a real editor, and only the rows in view (plus overscan) are in the
+ * DOM. Rows have one fixed height.
  */
-export function LiteEditableGrid<Row>({
+function CellEditGrid<Row>({
   'aria-label': ariaLabel,
   columns,
   rows,
   getRowId,
   onCellChange,
   height = '28rem',
+  rowHeight = LITE_GRID_ROW_HEIGHT,
   overscan = DEFAULT_OVERSCAN,
+  onActiveRowChange,
   getRowGroup,
   collapsedGroups,
   defaultCollapsedGroups,
@@ -685,8 +503,9 @@ export function LiteEditableGrid<Row>({
   className,
   style,
   onFocus,
+  editMode: _editMode,
   ...props
-}: LiteEditableGridProps<Row>) {
+}: LiteEditableGridCellModeProps<Row>) {
   if (!ariaLabel.trim()) throw new Error('LiteEditableGrid requires a non-empty aria-label.');
   const gridId = useId().replaceAll(':', '');
   const rootRef = useRef<HTMLDivElement>(null);
@@ -711,32 +530,7 @@ export function LiteEditableGrid<Row>({
     onCollapsedGroupsChange?.(next);
   };
 
-  const prepared = useMemo(() => {
-    if (new Set(columns.map(column => column.key)).size !== columns.length) {
-      throw new Error('LiteEditableGrid column keys must be unique.');
-    }
-    let offset = 0;
-    return columns.map((column, index): PreparedColumn<Row> => {
-      const px = column.width ?? DEFAULT_COLUMN_WIDTH;
-      const kind = column.editor ?? 'text';
-      if ((kind === 'select' || kind === 'combobox' || kind === 'multiselect') && !column.options) {
-        throw new Error(`LiteEditableGrid column "${column.key}" needs options for its ${kind} editor.`);
-      }
-      if (kind === 'multiselect' && column.options?.some(option => option.value.includes(','))) {
-        throw new Error(`LiteEditableGrid multiselect column "${column.key}" option values must not contain a comma.`);
-      }
-      const prepared = {
-        ...column,
-        kind,
-        px,
-        offset,
-        last: index === columns.length - 1,
-        textByValue: column.options ? new Map(column.options.map(option => [option.value, option.text])) : undefined,
-      };
-      offset += px;
-      return prepared;
-    });
-  }, [columns]);
+  const prepared = useMemo(() => prepareLiteGridColumns(columns), [columns]);
   const totalWidth = prepared.reduce((sum, column) => sum + column.px, 0);
   const template = prepared.map(column => column.last ? `minmax(${column.px}px, 1fr)` : `${column.px}px`).join(' ');
 
@@ -758,12 +552,12 @@ export function LiteEditableGrid<Row>({
     setEditing(cell => cell && (cell.row >= itemCount || cell.col >= prepared.length) ? null : cell);
   }, [itemCount, prepared.length]);
 
-  const { start, end } = computeRenderRange(scrollRow * LITE_GRID_ROW_HEIGHT, viewportHeight, itemCount, overscan);
+  const { start, end } = computeRenderRange(scrollRow * rowHeight, viewportHeight, itemCount, overscan, rowHeight);
 
   const onScroll = () => {
     const root = rootRef.current;
     if (!root) return;
-    const first = Math.floor(root.scrollTop / LITE_GRID_ROW_HEIGHT);
+    const first = Math.floor(root.scrollTop / rowHeight);
     if (first !== firstRowRef.current) {
       firstRowRef.current = first;
       setScrollRow(first);
@@ -774,14 +568,23 @@ export function LiteEditableGrid<Row>({
     const root = rootRef.current;
     const column = prepared[cell.col];
     if (!root || !column) return;
-    const top = cell.row * LITE_GRID_ROW_HEIGHT;
-    const view = root.clientHeight - LITE_GRID_ROW_HEIGHT;
+    const top = cell.row * rowHeight;
+    const view = root.clientHeight - rowHeight;
     if (top < root.scrollTop) root.scrollTop = top;
-    else if (top + LITE_GRID_ROW_HEIGHT > root.scrollTop + view) root.scrollTop = top + LITE_GRID_ROW_HEIGHT - view;
+    else if (top + rowHeight > root.scrollTop + view) root.scrollTop = top + rowHeight - view;
     const right = column.offset + column.px;
     if (column.offset < root.scrollLeft) root.scrollLeft = column.offset;
     else if (right > root.scrollLeft + root.clientWidth) root.scrollLeft = right - root.clientWidth;
-  }, [prepared]);
+  }, [prepared, rowHeight]);
+
+  const activeRow = active ? rowFor(active.row) : undefined;
+  const activeRowId = activeRow === undefined ? undefined : getRowId(activeRow);
+  const reportedRowId = useRef<string | undefined>(undefined);
+  useEffect(() => {
+    if (reportedRowId.current === activeRowId) return;
+    reportedRowId.current = activeRowId;
+    onActiveRowChange?.(activeRowId);
+  }, [activeRowId, onActiveRowChange]);
 
   const activate = useCallback((cell: Cell) => {
     setActive(cell);
@@ -834,7 +637,7 @@ export function LiteEditableGrid<Row>({
     rootRef.current?.focus({ preventScroll: true });
   };
 
-  const pageRows = Math.max(1, Math.floor((viewportHeight - LITE_GRID_ROW_HEIGHT) / LITE_GRID_ROW_HEIGHT) - 1);
+  const pageRows = Math.max(1, Math.floor((viewportHeight - rowHeight) / rowHeight) - 1);
 
   const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     if (event.target !== event.currentTarget || !itemCount || !prepared.length) return;
@@ -880,13 +683,13 @@ export function LiteEditableGrid<Row>({
       case 'Delete':
       case 'Backspace':
         event.preventDefault();
-        if (event.key === 'Backspace' && (kind === 'text' || kind === 'longText' || kind === 'combobox')) startEdit(cell, '');
+        if (event.key === 'Backspace' && isTypedEditor(kind)) startEdit(cell, '');
         else change(cell, '');
         return;
       default:
         if (event.key.length === 1 && !ctrl && !event.altKey) {
           event.preventDefault();
-          if (kind === 'text' || kind === 'longText' || kind === 'combobox') startEdit(cell, event.key);
+          if (isTypedEditor(kind)) startEdit(cell, event.key);
           else if (kind === 'select' || kind === 'multiselect') startEdit(cell);
         }
         return;
@@ -988,12 +791,12 @@ export function LiteEditableGrid<Row>({
     const column = prepared[editing.col];
     if (row !== undefined && column) {
       const root = rootRef.current;
-      const rowTop = editing.row * LITE_GRID_ROW_HEIGHT;
+      const rowTop = editing.row * rowHeight;
       const popup = column.kind === 'longText' ? LONG_TEXT_POPUP_HEIGHT
         : column.kind === 'select' || column.kind === 'combobox' || column.kind === 'multiselect' ? LIST_POPUP_HEIGHT : 0;
       const viewTop = root?.scrollTop ?? 0;
-      const viewBottom = viewTop + (root?.clientHeight ?? viewportHeight) - LITE_GRID_ROW_HEIGHT;
-      const below = viewBottom - (rowTop + LITE_GRID_ROW_HEIGHT);
+      const viewBottom = viewTop + (root?.clientHeight ?? viewportHeight) - rowHeight;
+      const below = viewBottom - (rowTop + rowHeight);
       const above = rowTop - viewTop;
       const placement = popup && below < popup && above > below ? 'above' : 'below';
       const editorStyle: CSSProperties = column.last
@@ -1076,7 +879,7 @@ export function LiteEditableGrid<Row>({
       ...style,
       blockSize: typeof height === 'number' ? `${height}px` : height,
       '--nidec-ui-lite-grid-columns': template,
-      '--nidec-ui-lite-grid-row-height': `${LITE_GRID_ROW_HEIGHT}px`,
+      '--nidec-ui-lite-grid-row-height': `${rowHeight}px`,
     } as CSSProperties,
     tabIndex: 0,
   },
@@ -1095,12 +898,33 @@ export function LiteEditableGrid<Row>({
     onDoubleClick: onBodyDoubleClick,
     onMouseDown: onBodyMouseDown,
     role: 'rowgroup',
-    style: { blockSize: `${itemCount * LITE_GRID_ROW_HEIGHT}px`, width },
+    style: { blockSize: `${itemCount * rowHeight}px`, width },
   },
   h('div', {
     className: 'nidec-ui-lite-grid__window',
     role: 'presentation',
-    style: { transform: `translateY(${start * LITE_GRID_ROW_HEIGHT}px)` },
+    style: { transform: `translateY(${start * rowHeight}px)` },
   }, visibleRows),
   editor));
+}
+
+export type LiteEditableGridProps<Row> = LiteEditableGridCellModeProps<Row> | LiteEditableGridRowModeProps<Row>;
+
+/**
+ * Lightweight editable grid. Cells render as plain text and the grid draws
+ * its own editors inside the cells, so an editor always matches the row
+ * height and the text does not move when editing starts.
+ *
+ * - `editMode="cell"` (default): spreadsheet-style, one cell at a time,
+ *   virtual scrolling for thousands of rows, one change per callback.
+ * - `editMode="row"`: one row at a time with confirm and cancel actions,
+ *   for short collections saved row by row; every row is rendered.
+ *
+ * The consumer owns the data, validation rules, persistence and every
+ * business meaning of a value.
+ */
+export function LiteEditableGrid<Row>(props: LiteEditableGridProps<Row>) {
+  return props.editMode === 'row'
+    ? h(RowEditGrid<Row>, props)
+    : h(CellEditGrid<Row>, props);
 }

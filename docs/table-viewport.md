@@ -1,6 +1,6 @@
 # 表格视口、冻结列与单元格写法
 
-适用于普通 `Table` / `DataGrid`、Grouped Table 和矩阵表。可编辑表（`EditableGrid`、`LiteEditableGrid`）的视口和行编辑正在单独研究，结论出来前不在本文范围内。
+适用于普通 `Table` / `DataGrid`、Grouped Table 和矩阵表。可编辑表（`EditableGrid`、`LiteEditableGrid`）的视口、行高和行编辑见 [Editable Grid](editable-grid.md)（2026-10-26 定案）。
 
 ## 表格规则（EPM 与 CPQ 共同遵守）
 

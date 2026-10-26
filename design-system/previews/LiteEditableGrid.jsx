@@ -1,4 +1,4 @@
-// @card group="Specialized components" height=640 width=1100 subtitle="Live component, 5,000 rows"
+// @card group="Specialized components" height=640 width=1100 subtitle="Live component, row and cell edit modes"
 const categories = [
   { value: 'elec', text: 'Electrical' }, { value: 'mech', text: 'Mechanical' }, { value: 'ctrl', text: 'Controls' },
   { value: 'serv', text: 'Service' }, { value: 'pack', text: 'Packaging' },
@@ -14,7 +14,7 @@ const columns = [
   { key: 'description', header: 'Description', editor: 'longText', width: 260 },
   { key: 'category', header: 'Category', editor: 'select', width: 140, options: categories },
   { key: 'supplier', header: 'Supplier', editor: 'combobox', width: 180, options: suppliers },
-  { key: 'quantity', header: 'Quantity', editor: 'text', width: 96, align: 'end',
+  { key: 'quantity', header: 'Quantity', editor: 'number', width: 96,
     validate: v => (/^\d+$/.test(v) ? undefined : 'Enter a whole number') },
   { key: 'unit', header: 'Unit', editor: 'select', width: 80, options: units },
   { key: 'regions', header: 'Regions', editor: 'multiselect', width: 230, options: regions },
@@ -35,23 +35,41 @@ function makeRows(count) {
   }
   return rows;
 }
+const heights = [{ value: '32', label: '32' }, { value: '40', label: '40' }, { value: '48', label: '48' }, { value: 'auto', label: 'Auto' }];
 function Demo() {
+  const [mode, setMode] = useState('row');
+  const [height, setHeight] = useState('40');
   const [count, setCount] = useState('5000');
-  const [rows, setRows] = useState(() => makeRows(5000));
+  const [rows, setRows] = useState(() => makeRows(200));
   const [changed, setChanged] = useState(0);
+  const changeMode = (_, value) => { setMode(value); setRows(makeRows(value === 'row' ? 200 : Number(count))); setChanged(0); };
   const changeCount = (_, value) => { setCount(value); setRows(makeRows(Number(value))); setChanged(0); };
   const onCellChange = ({ rowIndex, columnKey, value, values }) => {
     setRows(current => { const next = current.slice(); next[rowIndex] = { ...current[rowIndex], [columnKey]: values ?? value }; return next; });
     setChanged(n => n + 1);
   };
+  const onRowChange = ({ rowIndex, changes }) => {
+    setRows(current => { const next = current.slice(); const row = { ...current[rowIndex] };
+      for (const c of changes) row[c.columnKey] = c.values ?? c.value; next[rowIndex] = row; return next; });
+    setChanged(n => n + 1);
+  };
   const toolbar = <>
-    <SegmentedControl aria-label="Row count" value={count} onValueChange={changeCount}
-      options={[{ value: '1000', label: '1,000 rows' }, { value: '5000', label: '5,000 rows' }, { value: '20000', label: '20,000 rows' }]} />
-    <span style={{ color: 'var(--colorNeutralForeground2)' }}>Arrow keys move. Enter, F2, double-click or typing edits. Esc cancels. Ctrl+Enter confirms long text.</span>
+    <SegmentedControl aria-label="Edit mode" value={mode} onValueChange={changeMode}
+      options={[{ value: 'row', label: 'Row edit' }, { value: 'cell', label: 'Cell edit' }]} />
+    {mode === 'row'
+      ? <SegmentedControl aria-label="Row height" value={height} onValueChange={(_, value) => setHeight(value)} options={heights} />
+      : <SegmentedControl aria-label="Row count" value={count} onValueChange={changeCount}
+        options={[{ value: '1000', label: '1,000 rows' }, { value: '5000', label: '5,000 rows' }, { value: '20000', label: '20,000 rows' }]} />}
+    <span style={{ color: 'var(--colorNeutralForeground2)' }}>{mode === 'row'
+      ? 'Edit or double-click a row. Enter confirms the row, Esc cancels.'
+      : 'Arrow keys move. Enter, F2, double-click or typing edits. Esc cancels.'}</span>
   </>;
-  return <EditableGrid aria-label="Lightweight line editor" title="Lightweight line editor"
-    description="Cells are plain text; only the cell being edited mounts an editor, and only rows in view are rendered."
-    status={<span>{changed} edits</span>} toolbar={toolbar} footer={<span>{rows.length.toLocaleString('en-US')} lines</span>}>
-    <LiteEditableGrid aria-label="Line records" columns={columns} rows={rows} getRowId={row => row.id} onCellChange={onCellChange} height={420} />
+  const grid = mode === 'row'
+    ? <LiteEditableGrid key="row" aria-label="Line records" editMode="row" columns={columns} rows={rows} getRowId={row => row.id}
+      onRowChange={onRowChange} rowHeight={height === 'auto' ? 'auto' : Number(height)} maxHeight={420} />
+    : <LiteEditableGrid key="cell" aria-label="Line records" columns={columns} rows={rows} getRowId={row => row.id} onCellChange={onCellChange} height={420} />;
+  return <EditableGrid aria-label="Lightweight line editor" density="compact"
+    status={<span>{changed} {mode === 'row' ? 'rows confirmed' : 'edits'}</span>} toolbar={toolbar} footer={<span>{rows.length.toLocaleString('en-US')} lines</span>}>
+    {grid}
   </EditableGrid>;
 }

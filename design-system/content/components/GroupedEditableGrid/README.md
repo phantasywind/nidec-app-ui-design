@@ -4,7 +4,7 @@ Pass `getRowGroup(row)` returning one label (one level) or two labels (section a
 
 - A section row is never editable or selectable as data. Click it, or press Enter, Space or F2 on it, to collapse or expand it; Left collapses and Right expands. Arrow keys move through sections and data rows alike.
 - Collapsing hides descendants only and never discards an edit or a value. Counts include collapsed rows. Show hidden changes or validation issues through the summary text, not colour alone.
-- The first column of grouped rows is indented by level. All editors, read-only styling and states are those of LiteEditableGrid.
+- The first column of grouped rows is indented by level. All editors, read-only styling and states are those of LiteEditableGrid, in both edit modes (`editMode="row"` renders every row, so keep a grouped row-mode grid to about 300 rows).
 
 `Business Rule Pending` for each application: whether counts mean total or filtered rows, and how hidden validation issues are handled at save. The consumer owns group identity and membership, rows, validation and persistence.
 

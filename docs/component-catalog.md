@@ -30,8 +30,8 @@
 | 页面 / `cards` | CardGallery · ActionableCardGalleryItem · ViewModeToggle | 记录摘要与同一集合的卡片视图 | 导航卡片整体点击；展示卡片无内嵌重复边框和阴影 |
 | 特殊部件 / `stage` | StageNavigator | 可提前查看的同级准备工作区 | 选中外圈只表示查看位置；节点底色保留自身状态 |
 | 特殊部件 / `bpf` | BusinessProcessFlow · BusinessProcessStageDetail | 有实际业务进度的流程阶段，点击已到达阶段弹出阶段详情卡 | 只允许查看已到达阶段；查看位置不能改变真实流程位置；详情卡中的条件与操作归应用 |
-| 特殊部件 / `editable-grid` | EditableGrid · EditableGridRowActionGroup | 大量行、频繁修改、批量保存 | 列、校验、选中、草稿、保存与冲突归应用；行末操作冻结。可编辑表的统一方向（轻量型）正在单独研究，结论出来前本轮不改 |
-| 特殊部件 / `editable-grid` | LiteEditableGrid（可选两级折叠分组） | 数百至数万行的轻量单元格编辑（文本、长文本、下拉、Combobox、多选标签） | 单元格为纯文本，只渲染可见行，仅编辑中的单元格挂载编辑器；固定行高，无排序、分组和多选；数据、校验与保存归应用 |
+| 特殊部件 / `editable-grid` | EditableGrid · EditableGridRowActionGroup | 大量行、频繁修改、批量保存 | 列、校验、选中、草稿、保存与冲突归应用；只冻结标记为 Actions 的列。标题、工具栏可省略，`density="compact"`，`maxHeight` 粘性表头。表体统一用 LiteEditableGrid 整行编辑（Locke 10-26），Fluent Table 加控件不再推荐 |
+| 特殊部件 / `editable-grid` | LiteEditableGrid（可选两级折叠分组） | 所有可编辑表：`editMode="row"` 整行编辑（约 300 行内，行高 32/40/48/自动），`cell` 单元格编辑（数千行，虚拟滚动） | 单元格为纯文本、自绘编辑器（文本、数字、长文本、下拉、Combobox、多选标签）；编辑行绿底、绿字加粗、聚焦下划线，无单元格框；无排序和多格选择；数据、校验与保存归应用 |
 | 特殊部件 / `grouped-table` | GroupedTableSectionRow · EditableGrid | 自然分组的多行集合和高频编辑 | 分组只控制展开；选中和编辑发生在叶子行，折叠保留草稿 |
 | 样例 / `directory` | DirectoryWorkspace | 查找、筛选、比较并打开记录 | 主列链接或整卡入口打开 Sheet；返回保留目录状态 |
 | 样例 / `form` | Field · WorkspaceSection | 分区录入、校验、提交与反馈 | 本地合成数据；接口、业务校验及保存策略归应用 |

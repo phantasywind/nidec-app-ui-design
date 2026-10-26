@@ -111,7 +111,7 @@ Independent steps that are each done or not, with no current stage (a checklist 
 ## Dense editing and grouped data
 
 - Many rows edited repeatedly in one session, with batch save: EditableGrid.
-- Hundreds to thousands of rows edited cell by cell (text, long text, select, combobox): LiteEditableGrid inside the EditableGrid frame; with `getRowGroup` it becomes the Grouped Editable Grid.
+- Every editable table uses LiteEditableGrid inside the EditableGrid frame (Locke, 2026-10-26): `editMode="row"` for collections up to about 300 rows edited one row at a time, the default cell mode for hundreds to thousands of rows edited cell by cell. With `getRowGroup` it becomes the Grouped Editable Grid. A Fluent Table with Fluent inputs in the active row is no longer recommended.
 - A naturally grouped collection with show and hide: GroupedTableSectionRow, in a Grouped Table or a Grouped Editable Grid.
 - A few records to scan or compare: Table. A compact short list: CollectionList.
 - A wide Table scrolls sideways inside a TableScrollRegion, which never adds a vertical scrollbar. For many small inputs in table rows, use LiteEditableGrid rather than Fluent controls in Table cells.

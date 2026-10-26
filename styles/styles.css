@@ -367,6 +367,29 @@
     overflow: auto;
   }
 
+  /* The toolbar is the first strip when the frame has no header: the frame border is its top edge. */
+  :where([data-nidec-ui]) .nidec-ui-editable-grid__toolbar:first-child {
+    border-block-start: 0;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-editable-grid[data-density="compact"] .nidec-ui-editable-grid__header {
+    padding: var(--spacingVerticalS) var(--spacingHorizontalM);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-editable-grid[data-density="compact"] .nidec-ui-editable-grid__title {
+    font-size: var(--fontSizeBase400);
+    line-height: var(--lineHeightBase400);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-editable-grid[data-density="compact"] .nidec-ui-editable-grid__toolbar {
+    padding: var(--spacingVerticalXS) var(--spacingHorizontalM);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-editable-grid[data-density="compact"] .nidec-ui-editable-grid__footer {
+    min-height: 2.25rem;
+    padding: var(--spacingVerticalXS) var(--spacingHorizontalM);
+  }
+
   :where([data-nidec-ui]) .nidec-ui-editable-grid__viewport:focus-visible {
     outline: var(--strokeWidthThick) solid var(--colorStrokeFocus2);
     outline-offset: calc(0px - var(--strokeWidthThick));
@@ -915,6 +938,270 @@
   :where([data-nidec-ui]) .nidec-ui-lite-grid__option[data-active="true"] {
     outline: var(--strokeWidthThin) solid var(--colorNeutralStroke1);
     outline-offset: calc(0px - var(--strokeWidthThin));
+  }
+
+  /* Cell mode: the row of the active cell carries the slim brand edge of the current row. */
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__row[data-current="true"] {
+    box-shadow: inset var(--strokeWidthThick) 0 0 var(--colorBrandBackground);
+  }
+
+  /* Row edit mode. Rows read as plain text; the editing row keeps the light green row and brand edge,
+     and its editable values become boxless fields in brand green, semibold (Locke, 2026-10-26).
+     No containment, so the fixed list popups are never clipped. */
+  :where([data-nidec-ui]) .nidec-ui-lite-grid[data-edit-mode="row"] {
+    contain: none;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid[data-edit-mode="row"] .nidec-ui-lite-grid__cell {
+    align-items: center;
+    cursor: default;
+    display: flex;
+    padding-block: 0;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid[data-edit-mode="row"] .nidec-ui-lite-grid__cell[data-align="end"] {
+    justify-content: flex-end;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid[data-edit-mode="row"] .nidec-ui-lite-grid__cell[data-editor] {
+    padding-inline-end: var(--spacingHorizontalS);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid[data-edit-mode="row"] .nidec-ui-lite-grid__cell[aria-readonly="true"] {
+    padding-inline-end: calc(var(--spacingHorizontalS) + var(--spacingHorizontalL));
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid[data-edit-mode="row"] .nidec-ui-lite-grid__cell::after,
+  :where([data-nidec-ui]) .nidec-ui-lite-grid[data-edit-mode="row"] .nidec-ui-lite-grid__cell:hover {
+    box-shadow: none;
+    content: none;
+  }
+
+  /* The lock space is kept in every row so numbers line up; the lock shows on the editing row only. */
+  :where([data-nidec-ui]) .nidec-ui-lite-grid[data-edit-mode="row"] .nidec-ui-lite-grid__row:not([data-editing="true"]) .nidec-ui-lite-grid__lock {
+    display: none;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__text {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid[data-row-height="auto"] .nidec-ui-lite-grid__row {
+    height: auto;
+    min-height: var(--nidec-ui-lite-grid-row-height);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid[data-row-height="auto"] .nidec-ui-lite-grid__row > .nidec-ui-lite-grid__cell {
+    align-items: flex-start;
+    padding-block: calc((var(--nidec-ui-lite-grid-row-height) - var(--lineHeightBase300)) / 2)
+      calc((var(--nidec-ui-lite-grid-row-height) - var(--lineHeightBase300)) / 2 - var(--strokeWidthThin));
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid[data-row-height="auto"] .nidec-ui-lite-grid__text {
+    overflow-wrap: anywhere;
+    white-space: normal;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid[data-row-height="auto"] .nidec-ui-lite-grid__cell[data-editor="multiselect"] .nidec-ui-lite-grid__text {
+    display: flex;
+    flex-wrap: wrap;
+    row-gap: var(--spacingVerticalXS);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid[data-row-height="auto"] .nidec-ui-lite-grid__lock {
+    inset-block-start: calc((var(--nidec-ui-lite-grid-row-height) - 0.875rem) / 2);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid[data-edit-mode="row"] .nidec-ui-lite-grid__row[data-editing="true"] {
+    background: var(--colorBrandBackground2);
+    box-shadow: inset var(--strokeWidthThick) 0 0 var(--colorBrandBackground);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid[data-edit-mode="row"] .nidec-ui-lite-grid__row[data-editing="true"] > .nidec-ui-lite-grid__cell {
+    overflow: visible;
+  }
+
+  /* The hidden text keeps the cell as tall as the draft; the field is drawn over it. */
+  :where([data-nidec-ui]) .nidec-ui-lite-grid[data-edit-mode="row"] .nidec-ui-lite-grid__row[data-editing="true"] > .nidec-ui-lite-grid__cell:not([aria-readonly="true"]) > .nidec-ui-lite-grid__text {
+    font-weight: var(--fontWeightSemibold);
+    visibility: hidden;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__field {
+    align-items: center;
+    display: flex;
+    inset: 0;
+    position: absolute;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid[data-row-height="auto"] .nidec-ui-lite-grid__field {
+    align-items: flex-start;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__field:hover {
+    box-shadow: inset 0 -1px 0 var(--colorBrandStroke2);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__field[data-focused="true"] {
+    box-shadow: inset 0 -2px 0 var(--colorCompoundBrandStroke);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__field[aria-invalid="true"],
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__field[aria-invalid="true"][data-focused="true"] {
+    box-shadow: inset 0 -2px 0 var(--colorStatusDangerBorder2);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__field-input,
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__field-value {
+    background: transparent;
+    border: 0;
+    box-sizing: border-box;
+    caret-color: var(--colorBrandForeground1);
+    color: var(--colorBrandForeground1);
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: var(--fontWeightSemibold);
+    height: calc(var(--nidec-ui-lite-grid-row-height) - var(--strokeWidthThin));
+    line-height: var(--lineHeightBase300);
+    margin: 0;
+    min-width: 0;
+    outline: none;
+    padding-block: 0;
+    padding-inline: var(--spacingHorizontalS);
+    text-align: inherit;
+    width: 100%;
+  }
+
+  /* Row mode marks a value that fails validation with red text and a red underline, never a frame
+     (also inside EditableGrid, whose own invalid outline would otherwise apply). */
+  :where([data-nidec-ui]) .nidec-ui-lite-grid[data-edit-mode="row"] [aria-invalid="true"] {
+    outline: none;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid[data-edit-mode="row"] .nidec-ui-lite-grid__cell[aria-invalid="true"] {
+    box-shadow: inset 0 -2px 0 var(--colorStatusDangerBorder2);
+    color: var(--colorStatusDangerForeground1);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__field[aria-invalid="true"] .nidec-ui-lite-grid__field-input {
+    caret-color: var(--colorStatusDangerForeground1);
+    color: var(--colorStatusDangerForeground1);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__cell[data-align="end"] .nidec-ui-lite-grid__field-input {
+    font-variant-numeric: tabular-nums;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__field-input--area {
+    height: 100%;
+    overflow: hidden;
+    padding-block: calc((var(--nidec-ui-lite-grid-row-height) - var(--strokeWidthThin) - var(--lineHeightBase300)) / 2);
+    resize: none;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid[data-row-height="auto"] .nidec-ui-lite-grid__field-input--area {
+    padding-block-start: calc((var(--nidec-ui-lite-grid-row-height) - var(--lineHeightBase300)) / 2);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__field-list {
+    align-items: center;
+    align-self: stretch;
+    display: flex;
+    min-width: 0;
+    position: relative;
+    width: 100%;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid[data-row-height="auto"] .nidec-ui-lite-grid__field-list {
+    align-items: flex-start;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__field-list > .nidec-ui-lite-grid__field-input,
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__field-value {
+    padding-inline-end: var(--spacingHorizontalXXL);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__field-value {
+    align-items: center;
+    cursor: pointer;
+    display: flex;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid[data-row-height="auto"] .nidec-ui-lite-grid__field-value {
+    align-items: flex-start;
+    flex-wrap: wrap;
+    height: auto;
+    min-height: calc(var(--nidec-ui-lite-grid-row-height) - var(--strokeWidthThin));
+    padding-block-start: calc((var(--nidec-ui-lite-grid-row-height) - var(--lineHeightBase300)) / 2);
+    row-gap: var(--spacingVerticalXS);
+    white-space: normal;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__field-chevron {
+    border-block-end: var(--strokeWidthThin) solid currentColor;
+    border-inline-end: var(--strokeWidthThin) solid currentColor;
+    color: var(--colorBrandForeground1);
+    height: 0.375rem;
+    inset-block-start: calc((var(--nidec-ui-lite-grid-row-height) - var(--strokeWidthThin)) / 2 - 0.3125rem);
+    inset-inline-end: var(--spacingHorizontalM);
+    pointer-events: none;
+    position: absolute;
+    transform: rotate(45deg);
+    width: 0.375rem;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid[data-edit-mode="row"] .nidec-ui-lite-grid__row[data-editing="true"] .nidec-ui-lite-grid__tag {
+    background: var(--colorNeutralBackground1);
+    box-shadow: inset 0 0 0 var(--strokeWidthThin) var(--colorBrandStroke2);
+    color: var(--colorBrandForeground1);
+    font-weight: var(--fontWeightSemibold);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__listbox.nidec-ui-lite-grid__listbox--fixed {
+    inset: auto;
+    min-width: 15rem;
+    position: fixed;
+    z-index: 1000;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__actions {
+    background: var(--colorNeutralBackground1);
+    gap: var(--spacingHorizontalXXS);
+    inset-inline-end: 0;
+    justify-content: flex-end;
+    overflow: visible;
+    padding-inline: var(--spacingHorizontalXS);
+    position: sticky;
+    z-index: 1;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__header-cell.nidec-ui-lite-grid__actions {
+    background: var(--colorNeutralBackground2);
+    justify-content: flex-start;
+    padding-inline: var(--spacingHorizontalS);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid__row:hover > .nidec-ui-lite-grid__actions {
+    background: var(--colorNeutralBackground1Hover);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid[data-edit-mode="row"] .nidec-ui-lite-grid__row[data-editing="true"] > .nidec-ui-lite-grid__actions {
+    background: var(--colorBrandBackground2);
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid[data-row-height="auto"] .nidec-ui-lite-grid__row > .nidec-ui-lite-grid__actions {
+    padding-block: calc((var(--nidec-ui-lite-grid-row-height) - 1.5rem) / 2) 0;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid[data-edit-mode="row"] .nidec-ui-lite-grid__actions .nidec-ui-editable-grid__row-actions {
+    padding-inline-end: 0;
   }
 
   @media (max-width: 720px) {
@@ -2532,7 +2819,8 @@
   z-index: 1;
 }
 
-:where([data-nidec-ui]) .nidec-ui-editable-grid__viewport th:last-child {
+/* Only the column marked as the action column is pinned; other last columns scroll normally. */
+:where([data-nidec-ui]) .nidec-ui-editable-grid__viewport th.nidec-ui-editable-grid__action-column {
   background: var(--colorNeutralBackground2);
   inset-inline-end: 0;
   padding-inline-end: var(--spacingHorizontalS);
@@ -2540,6 +2828,18 @@
   z-index: 2;
 }
 
-:where([data-nidec-ui]) tr[data-editing="true"] td.nidec-ui-editable-grid__action-column {
+/* With `maxHeight` the rows scroll under a sticky column header. */
+:where([data-nidec-ui]) .nidec-ui-editable-grid__viewport[data-max-height] thead th {
+  background: var(--colorNeutralBackground2);
+  inset-block-start: 0;
+  position: sticky;
+  z-index: 2;
+}
+
+:where([data-nidec-ui]) .nidec-ui-editable-grid__viewport[data-max-height] thead th.nidec-ui-editable-grid__action-column {
+  z-index: 3;
+}
+
+:where([data-nidec-ui]) .nidec-ui-editable-grid__viewport tr[data-editing="true"] td.nidec-ui-editable-grid__action-column {
   background: var(--colorBrandBackground2);
 }

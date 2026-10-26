@@ -34,9 +34,10 @@ The governed default is a compact browse grid with one active edit row:
 
 ## Layout contract
 
-- `EditableGrid` provides title, description, status, toolbar, scrollable grid viewport and footer slots.
+- `EditableGrid` provides title, description, status, toolbar, scrollable grid viewport and footer slots. `title` and `toolbar` are optional: leave `title` out when the page already names the grid (the header is then drawn only for `status`), and leave `toolbar` out for no toolbar strip at all. `density="compact"` tightens the header, toolbar and footer for a grid inside a form or drawer.
+- `maxHeight` (px or a CSS length such as `calc(100vh - 320px)`) caps the viewport so the rows scroll under a sticky column header; use a `calc()` against the window height to let the grid follow the window.
 - The viewport owns horizontal overflow. The application page must not grow wider than its content module.
-- Place Actions in the final table column and mark each leaf-row action `TableCell` with `nidec-ui-editable-grid__action-column`. The shared style keeps that cell and the final header cell visible at the viewport's right edge during horizontal scrolling, with themed opaque surfaces and right padding. This applies equally to plain and grouped Editable Grid; a group disclosure row spans columns and must not be treated as an action cell.
+- Place Actions in the final table column and mark both the Actions `TableHeaderCell` and each leaf-row action `TableCell` with `nidec-ui-editable-grid__action-column`. Only the marked column is pinned (2026-10-26; before, the final header cell was pinned whatever it held). The shared style keeps that header and its cells visible at the viewport's right edge during horizontal scrolling, with themed opaque surfaces and right padding. This applies equally to plain and grouped Editable Grid; a group disclosure row spans columns and must not be treated as an action cell.
 - Rows-per-page belongs in the center area of the footer; previous/next use governed icon buttons.
 - Freeze identity columns and use a sticky header when the chosen grid implementation supports them.
 - For large datasets, consumers own server paging or virtualization and must preserve stable row identity.
@@ -59,14 +60,31 @@ The application must also decide what happens when users change row, filter, pag
 
 - `EditableGrid`: neutral structural frame; it does not own data or commands.
 - `EditableGridRowActionGroup`: governed confirm/cancel icon actions for the single active row.
-- Fluent `Table` or `DataGrid`: consumer-composed rows and cells under the above contract.
+- `LiteEditableGrid` with `editMode="row"`: the recommended body (see below).
+- Fluent `Table` or `DataGrid` with Fluent inputs in the active row: still supported, **not recommended** for new grids (Locke, 2026-10-26). Fixed-size Fluent controls do not follow the row height, the text shifts and shrinks when a row starts editing, and an auto-height row collapses to the control's height.
 
 For an inherently hierarchical collection, [Grouped Table and Grouped Editable Grid](grouped-table.md) adds disclosure-only section rows without changing the leaf-row editing contract.
 
-## Lightweight grid for long collections
+## Lightweight grid (recommended body)
 
-`LiteEditableGrid` (unpublished, 2026-10-13) is the lightweight body for the same frame when a collection is long. It renders cells as plain text, keeps only the rows in view (plus a small overscan) in the DOM, and mounts one native editor for the cell being edited. Columns choose a dedicated editor: `text`, `longText` (multi-line panel over the cell), `select` (fixed list), `combobox` (filtered list, freeform by default), `multiselect` (checklist; values shown as tags with a remove mark) or `none` (read-only: normal background with a trailing lock mark; Locke, 2026-10-13, grid only). Rows have one fixed 32px height.
+`LiteEditableGrid` is the body of every editable table (decision, Locke, 2026-10-26). Cells are plain text and the cell draws its own editor, so the editor always matches the row height and the text does not move when a row starts editing. It has two edit modes:
 
-Use it inside `EditableGrid` instead of a Table with per-row Fluent inputs when the collection has hundreds or thousands of rows. Keep the Table model for short collections that need badges, icons or row actions inside cells. It has no sorting, grouping, column resizing or multi-cell selection; IME input starts after Enter, F2 or a double-click. The consumer still owns rows, `onCellChange`, validation rules, parsing, persistence and save.
+| | `editMode="row"` | `editMode="cell"` (default) |
+| --- | --- | --- |
+| Model | One row edits at a time; the edit action or a double-click starts it, Enter or the check confirms the whole row, Esc or the cross cancels | Spreadsheet: arrow keys move an active cell, Enter, F2, double-click or typing edits one cell |
+| Callback | `onRowChange({ rowId, rowIndex, row, values, changes })`, once per confirmed row with at least one change | `onCellChange` per cell |
+| Row height | `rowHeight` 32, 40 (default), 48 or `auto` | `rowHeight` 32 (default), 40 or 48 |
+| Rendering | Every row is rendered; keep it to about 300 rows, and use `auto` only here | Only the rows in view (virtual scrolling), thousands of rows |
+| Height | Grows with its rows; `maxHeight` caps it under a sticky header, `height` fixes it | `height`, default `28rem` |
 
-Measured in Chromium (cloud container) for 2,000 rows by 5 columns: LiteEditableGrid mounts in about 17 ms with 154 elements, a Fluent Table with plain text cells in about 450 ms with 12,003 elements, and a Fluent Table with an Input in every cell in about 1.9 s with 32,003 elements. Scrolling the 20,000-row preview 20 rows per frame keeps a median frame of 16.7 ms (p95 19.1 ms) with 35 rows in the DOM.
+Row mode look (Locke, 2026-10-26): no per-cell boxes, fills or frames. The editing row keeps the light green row background and the brand left edge; its editable values turn brand green and semibold; the focused field gets a 2px brand underline; a list field shows a chevron. A value that fails `validate` turns red with a red underline and disables the check until fixed. Read-only cells show the lock only on the editing row, with its space reserved in every row so numbers stay aligned. Unconfirmed changes keep their row in edit: starting another row returns focus to the open row.
+
+Row mode extras: `editingRowId` with `onEditingRowChange` (controlled), `canEditRow(row)` returning `false` or a reason shown on the disabled edit action, `renderRowActions(row)` for more display-only actions before the edit action, `actionsHeader` and `formatRowActionLabel` for the actions column.
+
+Editors per column: `text`, `number` (decimal keyboard, end-aligned by default; parsing stays with the application), `longText`, `select`, `combobox`, `multiselect`, `none` (read-only). Editable cells use only these editors; badges, links and row-end actions are display-only. A date editor is deferred to a later round.
+
+Grouping (`getRowGroup`, one or two levels) works in both modes. In cell mode the layout is computed once per change of `rows`, `getRowGroup` or the collapsed set, so keep `getRowGroup` stable; with thousands of rows the cost is one pass over the rows, not one per scroll frame. In cell mode the `data-row` attribute on a row is its display position (after grouping and collapsing), not the index in `rows`; use `getRowId` for identity.
+
+Neither mode has sorting, column resizing or multi-cell selection. In cell mode IME input starts after Enter, F2 or a double-click; in row mode fields are ordinary inputs and IME works directly. The consumer still owns rows, validation rules, parsing, persistence and save.
+
+Cell mode performance, measured in Chromium (cloud container) for 2,000 rows by 5 columns: LiteEditableGrid mounts in about 17 ms with 154 elements, a Fluent Table with plain text cells in about 450 ms with 12,003 elements, and a Fluent Table with an Input in every cell in about 1.9 s with 32,003 elements. Scrolling the 20,000-row preview 20 rows per frame keeps a median frame of 16.7 ms (p95 19.1 ms) with 35 rows in the DOM.
