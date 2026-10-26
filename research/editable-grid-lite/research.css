@@ -1,0 +1,195 @@
+/* Research prototype only. Uses the Fluent tokens that NidecProvider exposes. */
+body { margin: 0; background: var(--colorNeutralBackground2, #f5f5f5); }
+.rs-page { display: grid; gap: 24px; padding: 24px; font-family: var(--fontFamilyBase); color: var(--colorNeutralForeground1); }
+.rs-page--shot { width: 1280px; box-sizing: border-box; }
+.rs-controls h1 { font-size: var(--fontSizeBase500); font-weight: var(--fontWeightSemibold); line-height: var(--lineHeightBase500); margin: 0 0 4px; }
+.rs-controls p { color: var(--colorNeutralForeground2); margin: 0 0 12px; font-size: var(--fontSizeBase300); }
+.rs-control-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; font-size: var(--fontSizeBase300); }
+.rs-control-row > label { color: var(--colorNeutralForeground2); }
+
+/* ---- current approach: Fluent Table with forced row heights ---------------- */
+.rs-current [data-row-id] td { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rs-current[data-height="32"] [data-row-id] { height: 32px; }
+.rs-current[data-height="40"] [data-row-id] { height: 40px; }
+.rs-current[data-height="48"] [data-row-id] { height: 48px; }
+.rs-current[data-height="auto"] [data-row-id] td { white-space: normal; overflow-wrap: anywhere; padding-block: 10px; vertical-align: top; }
+.rs-current th { background: var(--colorNeutralBackground2); font-weight: var(--fontWeightSemibold); }
+
+/* ---- lightweight approach ---------------------------------------------------- */
+.rs-lite {
+  --rs-pad: 8px;
+  --rs-line: var(--lineHeightBase300);
+  background: var(--colorNeutralBackground1);
+  font-size: var(--fontSizeBase300);
+  line-height: var(--rs-line);
+  overflow: auto;
+}
+.rs-row { display: grid; grid-template-columns: var(--rs-columns); min-width: var(--rs-min-width); }
+.rs-lite:not([data-height="auto"]) .rs-row { height: var(--rs-row-height); }
+.rs-lite[data-height="auto"] .rs-row { min-height: var(--rs-row-height); }
+.rs-row:not(.rs-row--header):not([data-editing]):hover { background: var(--colorNeutralBackground1Hover); }
+
+.rs-cell {
+  align-items: center;
+  border-block-end: var(--strokeWidthThin) solid var(--colorNeutralStroke2);
+  box-sizing: border-box;
+  display: flex;
+  min-width: 0;
+  overflow: hidden;
+  padding-inline: var(--rs-pad);
+  position: relative;
+}
+.rs-header { background: var(--colorNeutralBackground2); border-block-end-color: var(--colorNeutralStroke1); font-weight: var(--fontWeightSemibold); }
+.rs-text { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rs-cell[data-align="end"] { justify-content: flex-end; text-align: end; font-variant-numeric: tabular-nums; }
+/* Space for the lock is kept in every row so numbers line up; the lock itself shows only where editing is possible. */
+.rs-cell[aria-readonly="true"] { padding-inline-end: calc(var(--rs-pad) + 20px); cursor: default; }
+.rs-cell[aria-selected="true"] { background: var(--colorBrandBackground2); box-shadow: inset 0 0 0 1px var(--colorBrandStroke1); }
+.rs-lite[data-mode="lite-cell"] .rs-cell:not([aria-readonly="true"]):not(.rs-header) { cursor: text; }
+.rs-lock { color: var(--colorNeutralForeground3); display: inline-flex; inset-inline-end: var(--rs-pad); position: absolute; top: calc(50% - 7px); }
+
+/* Auto rows: text wraps and sits at the top; the first line keeps the 40px row's baseline. */
+.rs-lite[data-height="auto"] .rs-cell { align-items: flex-start; padding-block: calc((var(--rs-row-height) - var(--rs-line)) / 2) calc((var(--rs-row-height) - var(--rs-line)) / 2 - 1px); }
+.rs-lite[data-height="auto"] .rs-header { align-items: center; padding-block: 0; }
+.rs-lite[data-height="auto"] .rs-text { white-space: normal; overflow-wrap: anywhere; }
+.rs-lite[data-height="auto"] .rs-cell[data-kind="multiselect"] .rs-text { display: flex; flex-wrap: wrap; row-gap: 4px; }
+.rs-lite[data-height="auto"] .rs-lock { top: calc((var(--rs-row-height) - 14px) / 2); }
+
+/* Edit row: fields are drawn inside each cell's own box. */
+.rs-row[data-editing] .rs-cell { overflow: visible; }
+.rs-field {
+  --rs-inset: 0px;
+  --rs-border: 0px;
+  align-items: center;
+  background: var(--colorNeutralBackground1);
+  box-sizing: border-box;
+  display: flex;
+  inset: var(--rs-inset);
+  position: absolute;
+}
+.rs-field[data-frame="cell"] { box-shadow: inset 0 0 0 1px var(--colorNeutralStroke1); }
+.rs-field[data-frame="cell"][data-focused] { box-shadow: inset 0 0 0 2px var(--colorBrandStroke1); }
+.rs-field[data-frame="inset"] {
+  --rs-inset: 3px; --rs-border: 1px;
+  border: 1px solid var(--colorNeutralStroke1);
+  border-block-end-color: var(--colorNeutralStrokeAccessible);
+  border-radius: var(--borderRadiusMedium);
+}
+.rs-lite[data-height="48"] .rs-field[data-frame="inset"], .rs-lite[data-height="auto"] .rs-field[data-frame="inset"] { --rs-inset: 4px; }
+.rs-field[data-frame="inset"][data-focused] { border-block-end-color: var(--colorCompoundBrandStroke, var(--colorBrandStroke1)); box-shadow: inset 0 -1px 0 var(--colorCompoundBrandStroke, var(--colorBrandStroke1)); }
+.rs-field[data-frame="underline"] { background: transparent; border-block-end: 1px solid var(--colorNeutralStrokeAccessible); inset-inline: 0; }
+.rs-field[data-frame="underline"][data-focused] { box-shadow: inset 0 -1px 0 var(--colorBrandStroke1); border-block-end-color: var(--colorBrandStroke1); }
+
+.rs-input {
+  background: transparent;
+  border: 0;
+  box-sizing: border-box;
+  color: var(--colorNeutralForeground1);
+  flex: 1 1 auto;
+  font: inherit;
+  height: 100%;
+  line-height: var(--rs-line);
+  margin: 0;
+  min-width: 0;
+  outline: none;
+  padding: 0 calc(var(--rs-pad) - var(--rs-inset) - var(--rs-border));
+}
+.rs-field[data-frame="underline"] .rs-input { padding-inline: var(--rs-pad); }
+.rs-input--area { overflow: hidden; resize: none; padding-block: calc((var(--rs-row-height) - var(--rs-line)) / 2 - var(--rs-inset) - var(--rs-border)); }
+.rs-lite[data-height="auto"] .rs-field { align-items: stretch; }
+
+.rs-field--list { cursor: pointer; outline: none; }
+.rs-field-value {
+  display: block; flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  padding-inline: calc(var(--rs-pad) - var(--rs-inset) - var(--rs-border)) 28px;
+}
+.rs-field[data-frame="underline"] .rs-field-value { padding-inline-start: var(--rs-pad); }
+.rs-lite[data-height="auto"] .rs-field-value {
+  padding-block-start: calc((var(--rs-row-height) - var(--rs-line)) / 2 - var(--rs-inset) - var(--rs-border));
+  white-space: normal; display: flex; flex-wrap: wrap; row-gap: 4px; align-content: flex-start;
+}
+.rs-chevron {
+  border-block-end: 1px solid currentColor; border-inline-end: 1px solid currentColor;
+  color: var(--colorNeutralForeground3); height: 6px; position: absolute; inset-inline-end: 12px; top: calc(50% - 5px); transform: rotate(45deg); width: 6px;
+}
+.rs-lite[data-height="auto"] .rs-chevron { top: calc(var(--rs-row-height) / 2 - 5px - var(--rs-inset)); }
+.rs-listbox {
+  background: var(--colorNeutralBackground1); border-radius: var(--borderRadiusMedium); box-shadow: var(--shadow16); box-sizing: border-box;
+  cursor: default; inset-inline-start: calc(0px - var(--rs-inset)); min-width: max(calc(100% + 2 * var(--rs-inset)), 12rem); padding: 4px; position: absolute;
+  top: calc(100% + var(--rs-inset) + 2px); z-index: 10;
+}
+.rs-field[data-frame="cell"] .rs-listbox { top: calc(100% + 2px); }
+.rs-option { border-radius: var(--borderRadiusMedium); padding: 6px 8px; cursor: pointer; white-space: nowrap; }
+.rs-option:hover { background: var(--colorNeutralBackground1Hover); }
+.rs-option[aria-selected="true"] { background: var(--colorBrandBackground2); color: var(--colorBrandForeground1); }
+.rs-option[data-check]::before { content: ""; display: inline-block; width: 12px; height: 12px; margin-inline-end: 8px; vertical-align: -1px; border: 1px solid var(--colorNeutralStrokeAccessible); border-radius: 2px; box-sizing: border-box; }
+.rs-option[data-check][aria-selected="true"]::before { background: var(--colorBrandBackground); border-color: var(--colorBrandBackground); box-shadow: inset 0 0 0 2px var(--colorNeutralBackground1); }
+
+.rs-tag {
+  align-items: center; background: var(--colorBrandBackground2); border-radius: var(--borderRadiusMedium); box-sizing: border-box;
+  color: var(--colorBrandForeground2); display: inline-flex; font-size: var(--fontSizeBase200); height: 20px; line-height: 16px;
+  margin-inline-end: 4px; padding-inline: 6px; vertical-align: top; white-space: nowrap;
+}
+.rs-field .rs-tag { background: var(--colorNeutralBackground3); color: var(--colorNeutralForeground2); }
+
+.rs-actions { justify-content: flex-end; padding-inline: 4px; position: sticky; inset-inline-end: 0; background: var(--colorNeutralBackground1); z-index: 1; }
+.rs-header.rs-actions { background: var(--colorNeutralBackground2); justify-content: flex-start; }
+.rs-row[data-editing] .rs-actions { background: var(--colorBrandBackground2); }
+.rs-lite[data-height="auto"] .rs-actions { padding-block: 8px 0; }
+/* Auto rows: the field fills the whole cell, single-line text stays on the first line like in view mode. */
+.rs-lite[data-height="auto"] .rs-input:not(.rs-input--area) { align-self: flex-start; flex: 1 1 auto; height: calc(var(--rs-row-height) - 2 * var(--rs-inset) - 2 * var(--rs-border)); }
+.rs-lite[data-height="auto"] .rs-field[data-frame="underline"] .rs-input:not(.rs-input--area) { height: calc(var(--rs-row-height) - 1px); }
+.rs-current[data-height="auto"] [data-row-id] { height: auto; }
+.rs-current[data-height="auto"] .rs-text { white-space: normal; }
+.rs-lite[data-height="auto"] .rs-header.rs-actions { padding-block: 0; }
+.rs-lite[data-height="auto"] .rs-cell[data-dirty="true"]::after { inset-block-start: calc(var(--rs-row-height) / 2); }
+
+/* Borderless styles: the field is part of the table.
+   filled = Fluent's "filled-lighter" idea: white fill on the tinted edit row, no outline, brand bar on focus.
+   ghost  = Power Apps / spreadsheet style: nothing drawn at rest, a hint on hover, white fill + brand bar on focus. */
+.rs-field[data-frame="filled"] { --rs-inset: 3px; inset: 3px 2px; border-radius: var(--borderRadiusSmall); }
+.rs-field[data-frame="filled"] .rs-input, .rs-field[data-frame="filled"] .rs-field-value { padding-inline: calc(var(--rs-pad) - 2px) calc(var(--rs-pad) - 2px); }
+.rs-field[data-frame="filled"] .rs-field-value { padding-inline-end: 28px; }
+.rs-field[data-frame="filled"][data-focused] { box-shadow: inset 0 -2px 0 var(--colorCompoundBrandStroke, var(--colorBrandStroke1)); }
+.rs-field[data-frame="ghost"] { background: transparent; }
+.rs-field[data-frame="ghost"]:hover { box-shadow: inset 0 -1px 0 var(--colorNeutralStrokeAccessible); }
+.rs-field[data-frame="ghost"][data-focused] { background: var(--colorNeutralBackground1); box-shadow: inset 0 -2px 0 var(--colorCompoundBrandStroke, var(--colorBrandStroke1)); }
+.rs-field[data-frame="ghost"] .rs-input, .rs-field[data-frame="ghost"] .rs-field-value { padding-inline-start: var(--rs-pad); }
+.rs-field[data-frame="ghost"] .rs-input { padding-inline-end: var(--rs-pad); }
+.rs-lite[data-height="auto"] .rs-field[data-frame="filled"] .rs-input--area,
+.rs-lite[data-height="auto"] .rs-field[data-frame="filled"] .rs-field-value { padding-block-start: calc((var(--rs-row-height) - var(--rs-line)) / 2 - 3px); }
+.rs-lite[data-height="auto"] .rs-field[data-frame="filled"] .rs-input:not(.rs-input--area) { height: calc(var(--rs-row-height) - 6px); }
+.rs-lite[data-height="auto"] .rs-field[data-frame="ghost"] .rs-input--area,
+.rs-lite[data-height="auto"] .rs-field[data-frame="ghost"] .rs-field-value { padding-block-start: calc((var(--rs-row-height) - var(--rs-line)) / 2); }
+.rs-lite[data-height="auto"] .rs-field[data-frame="ghost"] .rs-input:not(.rs-input--area) { height: calc(var(--rs-row-height) - 1px); }
+.rs-field[data-frame="filled"] .rs-listbox, .rs-field[data-frame="ghost"] .rs-listbox { top: calc(100% + 4px); }
+
+/* grey = white edit row (only the brand edge marks it), editable cells a light grey fill without outline
+   (Fluent "filled-darker" idea), white fill + brand bar on focus. */
+.rs-lite[data-frame="grey"] .rs-row[data-editing] { background: var(--colorNeutralBackground1); }
+.rs-lite[data-frame="grey"] .rs-row[data-editing] .rs-actions { background: var(--colorNeutralBackground1); }
+.rs-field[data-frame="grey"] { --rs-inset: 3px; inset: 3px 2px; border-radius: var(--borderRadiusSmall); background: var(--colorNeutralBackground3); }
+.rs-field[data-frame="grey"] .rs-input, .rs-field[data-frame="grey"] .rs-field-value { padding-inline: calc(var(--rs-pad) - 2px); }
+.rs-field[data-frame="grey"] .rs-field-value { padding-inline-end: 28px; }
+.rs-field[data-frame="grey"][data-focused] { background: var(--colorNeutralBackground1); box-shadow: inset 0 0 0 1px var(--colorNeutralStroke2), inset 0 -2px 0 var(--colorCompoundBrandStroke, var(--colorBrandStroke1)); }
+.rs-field[data-frame="grey"] .rs-tag { background: var(--colorNeutralBackground1); }
+.rs-field[data-frame="grey"] .rs-listbox { top: calc(100% + 4px); }
+
+/* text = no field drawn at all: editable values turn brand green and semibold; the focused cell gets a brand underline.
+   text-white = the same on a white edit row (only the brand edge marks the row). */
+.rs-lite[data-frame="text-white"] .rs-row[data-editing],
+.rs-lite[data-frame="text-white"] .rs-row[data-editing] .rs-actions { background: var(--colorNeutralBackground1); }
+.rs-field[data-frame="text"], .rs-field[data-frame="text-white"] { background: transparent; }
+.rs-field[data-frame="text"] .rs-input, .rs-field[data-frame="text-white"] .rs-input,
+.rs-field[data-frame="text"] .rs-field-value, .rs-field[data-frame="text-white"] .rs-field-value {
+  color: var(--colorBrandForeground1); font-weight: var(--fontWeightSemibold); padding-inline-start: var(--rs-pad);
+}
+.rs-field[data-frame="text"] .rs-input, .rs-field[data-frame="text-white"] .rs-input { padding-inline-end: var(--rs-pad); caret-color: var(--colorBrandForeground1); }
+.rs-field[data-frame="text"][data-focused], .rs-field[data-frame="text-white"][data-focused] { box-shadow: inset 0 -2px 0 var(--colorCompoundBrandStroke, var(--colorBrandStroke1)); }
+.rs-field[data-frame="text"]:not([data-focused]):hover, .rs-field[data-frame="text-white"]:not([data-focused]):hover { box-shadow: inset 0 -1px 0 var(--colorBrandStroke2, var(--colorNeutralStrokeAccessible)); }
+.rs-field[data-frame="text"] .rs-chevron, .rs-field[data-frame="text-white"] .rs-chevron { color: var(--colorBrandForeground1); }
+.rs-field[data-frame="text"] .rs-tag, .rs-field[data-frame="text-white"] .rs-tag { background: var(--colorNeutralBackground1); color: var(--colorBrandForeground1); font-weight: var(--fontWeightSemibold); box-shadow: inset 0 0 0 1px var(--colorBrandStroke2, var(--colorNeutralStroke1)); }
+.rs-field[data-frame="text"] .rs-listbox, .rs-field[data-frame="text-white"] .rs-listbox { top: calc(100% + 2px); font-weight: var(--fontWeightRegular); }
+.rs-field[data-frame="text"][aria-invalid="true"] .rs-input, .rs-field[data-frame="text-white"][aria-invalid="true"] .rs-input { color: var(--colorPaletteRedForeground1, var(--colorStatusDangerForeground1)); }
+/* The hidden sizer uses the same weight, so auto rows grow exactly with the semibold text. */
+.rs-lite[data-frame^="text"] .rs-row[data-editing] .rs-cell:not([aria-readonly="true"]) .rs-text { font-weight: var(--fontWeightSemibold); }

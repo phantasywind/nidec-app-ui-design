@@ -44,6 +44,33 @@ describe('EditableGrid governance', () => {
     expect(html).not.toContain('role="status"');
   });
 
+  it('omits the header and toolbar it is not given, so no empty strip is drawn', () => {
+    const html = renderToStaticMarkup(createElement(EditableGrid, {
+      'aria-label': 'Lines', children: createElement('table', null, createElement('tbody')),
+    }));
+    expect(html).not.toContain('nidec-ui-editable-grid__header');
+    expect(html).not.toContain('nidec-ui-editable-grid__toolbar');
+    expect(html).not.toContain('<h2');
+    const statusOnly = renderToStaticMarkup(createElement(EditableGrid, {
+      'aria-label': 'Lines', status: '2 issues', children: createElement('table'),
+    }));
+    expect(statusOnly).toContain('nidec-ui-editable-grid__header');
+    expect(statusOnly).not.toContain('<h2');
+  });
+
+  it('marks compact density and caps the viewport with maxHeight', async () => {
+    const html = renderToStaticMarkup(createElement(EditableGrid, {
+      ...gridContract, density: 'compact', maxHeight: 'calc(100vh - 320px)',
+    }));
+    expect(html).toContain('data-density="compact"');
+    expect(html).toContain('data-max-height="true"');
+    expect(html).toContain('max-height:calc(100vh - 320px)');
+    expect(renderToStaticMarkup(createElement(EditableGrid, { ...gridContract, maxHeight: 360 }))).toContain('max-height:360px');
+    expect(renderToStaticMarkup(createElement(EditableGrid, gridContract))).not.toContain('data-density');
+    const css = await readFile(join(repositoryRoot, 'styles', 'components.css'), 'utf8');
+    expect(css).toMatch(/\.nidec-ui-editable-grid__viewport\[data-max-height\] thead th\s*\{[^}]*position:\s*sticky/s);
+  });
+
   it('rejects an unnamed editing surface', () => {
     expect(() => EditableGrid({ ...gridContract, 'aria-label': ' ' })).toThrow('non-empty aria-label');
   });
@@ -95,14 +122,18 @@ describe('EditableGrid governance', () => {
     const css = await readFile(join(repositoryRoot, 'styles', 'components.css'), 'utf8');
     const preview = await readFile(join(repositoryRoot, 'fixtures', 'react-composite-patterns-consumer', 'src', 'demos.tsx'), 'utf8');
     expect(css).toMatch(/\.nidec-ui-editable-grid__viewport td\.nidec-ui-editable-grid__action-column\s*\{[^}]*position:\s*sticky/s);
-    expect(css).toMatch(/\.nidec-ui-editable-grid__viewport th:last-child\s*\{[^}]*position:\s*sticky/s);
+    expect(css).toMatch(/\.nidec-ui-editable-grid__viewport th\.nidec-ui-editable-grid__action-column\s*\{[^}]*position:\s*sticky/s);
+    // Only the marked action header is pinned, never whatever column happens to be last.
+    expect(css).not.toMatch(/editable-grid__viewport th:last-child/);
+    expect(css).toMatch(/\.nidec-ui-editable-grid__viewport tr\[data-editing="true"\] td\.nidec-ui-editable-grid__action-column/);
     expect(preview.match(/<TableCell className="nidec-ui-editable-grid__action-column">/g)).toHaveLength(2);
+    expect(preview.match(/<TableHeaderCell className="nidec-ui-editable-grid__action-column">/g)).toHaveLength(2);
   });
 
   it('keeps the frozen action column free of a divider line', async () => {
     const css = await readFile(join(repositoryRoot, 'styles', 'components.css'), 'utf8');
     const actionCell = /\.nidec-ui-editable-grid__viewport td\.nidec-ui-editable-grid__action-column\s*\{([^}]*)\}/s.exec(css);
-    const actionHeader = /\.nidec-ui-editable-grid__viewport th:last-child\s*\{([^}]*)\}/s.exec(css);
+    const actionHeader = /\.nidec-ui-editable-grid__viewport th\.nidec-ui-editable-grid__action-column\s*\{([^}]*)\}/s.exec(css);
     expect(actionCell?.[1]).toBeDefined();
     expect(actionHeader?.[1]).toBeDefined();
     expect(actionCell?.[1]).not.toMatch(/border/);

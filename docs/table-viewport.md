@@ -1,6 +1,6 @@
 # 表格视口、冻结列与单元格写法
 
-适用于普通 `Table` / `DataGrid`、Grouped Table 和矩阵表。可编辑表（`EditableGrid`、`LiteEditableGrid`）的视口和行编辑正在单独研究，结论出来前不在本文范围内。
+适用于普通 `Table` / `DataGrid`、Grouped Table 和矩阵表。可编辑表（`EditableGrid`、`LiteEditableGrid`、`LiteRowEditGrid`）的视口、行高和行编辑见 [Editable Grid](editable-grid.md)（2026-10-26 定案）。
 
 ## 表格规则（EPM 与 CPQ 共同遵守）
 
@@ -28,6 +28,13 @@
 
 固定列和固定表头的单元格背景为实色：悬停为中性灰，选中行为浅绿，与其他表格一致。不要再覆盖 `.nidec-ui-grouped-table__section-button` 或给 `thead th` 自写 `position: sticky`。
 
+## 矩阵表不属于可编辑表
+
+只有需要输入（填文字、数字，选选项，选日期）的表才算可编辑表，用 `EditableGrid` + `LiteEditableGrid`（单格编辑）或 `LiteRowEditGrid`（整行编辑）。只点按钮或开关的表维持普通 `Table` + 标准控件（Locke，2026-10-26）：
+
+- **字段矩阵**：每格一个开关，用 `Table` + 每格 `Switch` 或 `Checkbox`。
+- **选择矩阵**：每格一个按钮或链接，点开 `FormDrawer`，用 `Table` + `MatrixCellButton`（或 `RecordLink`）。
+
 ## 矩阵表：MatrixCellButton
 
 矩阵表的行是记录（可按分组），列是另一组对象（如 Series），每个格子是一个按钮，点开后在 `FormDrawer` 里编辑该格。
@@ -51,3 +58,8 @@
 ```
 
 单行显示，放不下时以省略号结束；只有文字确实被截断时，悬停才显示全文。内容必须是字符串。
+
+## 金额与货币（Locke，2026-10-26）
+
+表格和只读字段里的金额：货币符号在数字前，中间一个空格，带千分位，小数位按币种固定，例如 `$ 100.00`、`¥ 1,250.50`、`-$ 86.50`，右对齐。用包里的 `formatCurrency(amount, currency)`；在 LiteEditableGrid、LiteRowEditGrid 里作为列的 `format` 传入，编辑时仍是纯数字。常用的美元、人民币用符号；日元以及其他与美元、人民币符号相同的货币一律用币种代码，例如 `JPY 1,200`、`HKD 50.00`。`formatCurrency` 默认就这样处理。
+

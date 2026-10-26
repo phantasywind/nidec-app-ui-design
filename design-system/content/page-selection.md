@@ -111,13 +111,14 @@ Independent steps that are each done or not, with no current stage (a checklist 
 ## Dense editing and grouped data
 
 - Many rows edited repeatedly in one session, with batch save: EditableGrid.
-- Hundreds to thousands of rows edited cell by cell (text, long text, select, combobox): LiteEditableGrid inside the EditableGrid frame; with `getRowGroup` it becomes the Grouped Editable Grid.
+- Every editable table uses one of the two lightweight grids inside the EditableGrid frame (Locke, 2026-10-26). LiteEditableGrid (cell edit, auto row height by default) is preferred: BOM templates, project BOMs and other lines with long text, tags or groups; with `getRowGroup` it becomes the Grouped Editable Grid. LiteRowEditGrid (row edit, fixed row height, virtualised) is for long lists of uniform records maintained a row at a time: component master, cost management. Both save as you leave a cell or row, with no row actions. A Fluent Table with Fluent inputs in the active row is no longer recommended. Only tables whose cells take typed or chosen input (text, numbers, list choices, dates) count as editable grids: a field matrix of toggles stays a Table with a Switch or Checkbox per cell, and a selection matrix whose cells open a drawer stays a Table with MatrixCellButton (Locke, 2026-10-26).
 - A naturally grouped collection with show and hide: GroupedTableSectionRow, in a Grouped Table or a Grouped Editable Grid.
 - A few records to scan or compare: Table. A compact short list: CollectionList.
 - A wide Table scrolls sideways inside a TableScrollRegion, which never adds a vertical scrollbar. For many small inputs in table rows, use LiteEditableGrid rather than Fluent controls in Table cells.
 
 ## Always
 
+- Currency amounts in tables and read-only fields show the currency symbol before the number with one space, thousands separators and the currency's fixed decimals: `$ 100.00`, `¥ 1,250.50`, `-$ 86.50` (Locke, 2026-10-26). US dollars and renminbi, the common ones, use their symbol; every other currency (yen, Hong Kong dollars and any other that shares `$` or `¥`) uses its ISO code: `JPY 1,200`, `HKD 50.00`. Use `formatCurrency(amount, currency)`, which does this by default; in LiteEditableGrid and LiteRowEditGrid pass it as the column's `format`, so the editor still shows the plain number. Amounts are end-aligned.
 - In every table-type component (Table, DataGrid, RecordSelectionDataGrid, EditableGrid, LiteEditableGrid, grouped tables), one column shows one field. Do not stack two fields in one column, such as a code above a name or a value with a second value under it; give each field its own column. An exception needs Locke's separate approval, recorded with the page it applies to (shared rule, 2026-10-13).
 
 - Keep the application shell white and flat, and build pages from white modules with one light border. No grey canvas, no nested borders or shadows.
