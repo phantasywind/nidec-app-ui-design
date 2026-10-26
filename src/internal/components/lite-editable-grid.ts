@@ -23,6 +23,7 @@ export type {
 /** Default row and header height in px. Rows have one fixed height so that virtual scrolling needs no measurement. */
 export const LITE_GRID_ROW_HEIGHT = 32;
 const DEFAULT_OVERSCAN = 10;
+const AUTO_ROW_MIN_HEIGHT = 40;
 const LIST_POPUP_HEIGHT = 240;
 const LONG_TEXT_POPUP_HEIGHT = 160;
 
@@ -33,8 +34,12 @@ export type LiteEditableGridRowHeight = 32 | 40 | 48;
 export type LiteEditableGridCellModeProps<Row> = LiteEditableGridBaseProps<Row> & {
   editMode?: 'cell';
   onCellChange: (change: LiteEditableGridCellChange<Row>) => void;
-  /** Row height in px. Default 32. */
-  rowHeight?: LiteEditableGridRowHeight;
+  /**
+   * Row height in px, default 32. `auto` lets long text and tags wrap and the
+   * row grow with them (40px minimum); it turns off virtual scrolling, so every
+   * row is rendered: keep such grids to a few hundred rows.
+   */
+  rowHeight?: LiteEditableGridRowHeight | 'auto';
   /** Rows rendered beyond each edge of the viewport. Default 10. */
   overscan?: number;
   /** Called when the active cell moves to another row, or leaves the rows; the row then carries a brand edge. */
@@ -64,15 +69,22 @@ type RowViewProps<Row> = {
   depth: number;
   columns: readonly PreparedColumn<Row>[];
   activeCol: number;
+  /** Column being edited in this row, or -1. */
+  editingCol: number;
+  /** Auto row height only: the editor, drawn inside its cell so the row grows with the draft. */
+  editor: ReactElement | null;
   gridId: string;
 };
 
-function RowViewImpl<Row>({ row, rowIndex, depth, columns, activeCol, gridId }: RowViewProps<Row>): ReactElement {
+function RowViewImpl<Row>({
+  row, rowIndex, depth, columns, activeCol, editingCol, editor, gridId,
+}: RowViewProps<Row>): ReactElement {
   return h('div', {
     'aria-rowindex': rowIndex + 2,
     className: 'nidec-ui-lite-grid__row',
     'data-current': activeCol >= 0 ? true : undefined,
     'data-depth': depth || undefined,
+    'data-editing': editingCol >= 0 ? true : undefined,
     'data-row': rowIndex,
     role: 'row',
   }, columns.map((column, col) => {
@@ -81,6 +93,7 @@ function RowViewImpl<Row>({ row, rowIndex, depth, columns, activeCol, gridId }: 
     const multi = column.kind === 'multiselect';
     const values = multi ? splitLiteGridValues(value, column.options) : undefined;
     const text = values ? values.map(item => displayText(column, item)).join(', ') : displayText(column, value);
+    const inline = editor !== null && col === editingCol;
     return h('div', {
       'aria-colindex': col + 1,
       'aria-invalid': error ? true : undefined,
@@ -89,12 +102,13 @@ function RowViewImpl<Row>({ row, rowIndex, depth, columns, activeCol, gridId }: 
       className: 'nidec-ui-lite-grid__cell',
       'data-align': column.align === 'end' ? 'end' : undefined,
       'data-col': col,
+      'data-editing': col === editingCol ? true : undefined,
       'data-editor': column.kind,
       id: cellId(gridId, rowIndex, col),
       key: column.key,
       role: 'gridcell',
-      title: error ?? ((column.kind === 'longText' || multi) && text ? text : undefined),
-    }, values ? renderTags(column, values, column.maxVisibleTags ?? 2) : text,
+      title: inline ? undefined : error ?? ((column.kind === 'longText' || multi) && text ? text : undefined),
+    }, inline ? editor : values ? renderTags(column, values, column.maxVisibleTags ?? 2) : text,
     // Read-only cells keep the row background and carry a lock mark instead of a grey fill.
     column.kind === 'none' ? h('span', { 'aria-hidden': true, className: 'nidec-ui-lite-grid__lock' }, lockIcon()) : null);
   }));
@@ -108,7 +122,8 @@ type EditorProps<Row> = {
   seed: string | undefined;
   label: string;
   placement: 'below' | 'above';
-  style: CSSProperties;
+  /** Positioned over the cell; undefined when the editor is drawn inside its cell (auto row height). */
+  style: CSSProperties | undefined;
   listId: string;
   onCommit: (value: string, move: Move) => void;
   onCancel: () => void;
@@ -170,7 +185,7 @@ function CellEditor<Row>(props: EditorProps<Row>) {
   const fieldRef = useRef<HTMLInputElement & HTMLTextAreaElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
-  useExitFade(wrapperRef, column.kind !== 'text' && column.kind !== 'number');
+  useExitFade(wrapperRef, style !== undefined && column.kind !== 'text' && column.kind !== 'number');
 
   const comboOptions = column.kind === 'combobox'
     ? (seed === undefined && draft === initialText ? options : filterLiteGridOptions(options, draft))
@@ -329,6 +344,20 @@ function CellEditor<Row>(props: EditorProps<Row>) {
       }),
       h('div', { key: 'list' }, listbox(comboOptions)),
     ];
+  } else if (column.kind === 'longText' && style === undefined) {
+    // Inside an auto-height cell: the text wraps in place and a hidden copy of the draft grows the row.
+    content = [
+      h('span', { 'aria-hidden': true, className: 'nidec-ui-lite-grid__editor-sizer', key: 'sizer' }, `${draft}\u200b`),
+      h('textarea', {
+        'aria-label': label,
+        className: 'nidec-ui-lite-grid__editor-area',
+        key: 'area',
+        onChange: (event: { target: { value: string } }) => setDraft(event.target.value),
+        ref: fieldRef,
+        spellCheck: false,
+        value: draft,
+      }),
+    ];
   } else if (column.kind === 'longText') {
     content = h('textarea', {
       'aria-label': label,
@@ -352,7 +381,7 @@ function CellEditor<Row>(props: EditorProps<Row>) {
   }
 
   return h('div', {
-    className: 'nidec-ui-lite-grid__editor',
+    className: style === undefined ? 'nidec-ui-lite-grid__editor nidec-ui-lite-grid__editor--inline' : 'nidec-ui-lite-grid__editor',
     'data-align': column.align === 'end' ? 'end' : undefined,
     'data-editor': column.kind,
     onBlur,
@@ -378,7 +407,7 @@ function MultiSelectEditor<Row>(props: EditorProps<Row>) {
   });
   const listRef = useRef<HTMLDivElement>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
-  useExitFade(wrapperRef, true);
+  useExitFade(wrapperRef, style !== undefined);
 
   useLayoutEffect(() => { listRef.current?.focus({ preventScroll: true }); }, []);
   useEffect(() => {
@@ -437,7 +466,7 @@ function MultiSelectEditor<Row>(props: EditorProps<Row>) {
   };
 
   return h('div', {
-    className: 'nidec-ui-lite-grid__editor',
+    className: style === undefined ? 'nidec-ui-lite-grid__editor nidec-ui-lite-grid__editor--inline' : 'nidec-ui-lite-grid__editor',
     'data-editor': 'multiselect',
     onBlur: (event: FocusEvent<HTMLDivElement>) => {
       if (!event.currentTarget.contains(event.relatedTarget as Node | null)) finish('none');
@@ -482,7 +511,8 @@ function MultiSelectEditor<Row>(props: EditorProps<Row>) {
 /**
  * Cell edit mode: cells render as plain text; only the one cell being edited
  * mounts a real editor, and only the rows in view (plus overscan) are in the
- * DOM. Rows have one fixed height.
+ * DOM. Rows have one fixed height, or with `rowHeight="auto"` grow with their
+ * text; every row is then rendered and the editor is drawn inside its cell.
  */
 function CellEditGrid<Row>({
   'aria-label': ariaLabel,
@@ -491,7 +521,7 @@ function CellEditGrid<Row>({
   getRowId,
   onCellChange,
   height = '28rem',
-  rowHeight = LITE_GRID_ROW_HEIGHT,
+  rowHeight: rowHeightProp = LITE_GRID_ROW_HEIGHT,
   overscan = DEFAULT_OVERSCAN,
   onActiveRowChange,
   getRowGroup,
@@ -507,6 +537,9 @@ function CellEditGrid<Row>({
   ...props
 }: LiteEditableGridCellModeProps<Row>) {
   if (!ariaLabel.trim()) throw new Error('LiteEditableGrid requires a non-empty aria-label.');
+  // Auto rows have no fixed height, so every row is rendered and positions are measured.
+  const auto = rowHeightProp === 'auto';
+  const rowHeight = auto ? AUTO_ROW_MIN_HEIGHT : rowHeightProp;
   const gridId = useId().replaceAll(':', '');
   const rootRef = useRef<HTMLDivElement>(null);
   const firstRowRef = useRef(0);
@@ -552,11 +585,20 @@ function CellEditGrid<Row>({
     setEditing(cell => cell && (cell.row >= itemCount || cell.col >= prepared.length) ? null : cell);
   }, [itemCount, prepared.length]);
 
-  const { start, end } = computeRenderRange(scrollRow * rowHeight, viewportHeight, itemCount, overscan, rowHeight);
+  const { start, end } = auto
+    ? { start: 0, end: itemCount }
+    : computeRenderRange(scrollRow * rowHeight, viewportHeight, itemCount, overscan, rowHeight);
+
+  /** Top and height of a display row in body coordinates: computed for fixed rows, measured for auto rows. */
+  const rowBox = useCallback((position: number) => {
+    if (!auto) return { top: position * rowHeight, height: rowHeight };
+    const element = rootRef.current?.querySelector<HTMLElement>(`.nidec-ui-lite-grid__body > .nidec-ui-lite-grid__window > [data-row="${position}"]`);
+    return element ? { top: element.offsetTop, height: element.offsetHeight } : { top: position * rowHeight, height: rowHeight };
+  }, [auto, rowHeight]);
 
   const onScroll = () => {
     const root = rootRef.current;
-    if (!root) return;
+    if (!root || auto) return;
     const first = Math.floor(root.scrollTop / rowHeight);
     if (first !== firstRowRef.current) {
       firstRowRef.current = first;
@@ -568,14 +610,14 @@ function CellEditGrid<Row>({
     const root = rootRef.current;
     const column = prepared[cell.col];
     if (!root || !column) return;
-    const top = cell.row * rowHeight;
+    const { top, height: boxHeight } = rowBox(cell.row);
     const view = root.clientHeight - rowHeight;
     if (top < root.scrollTop) root.scrollTop = top;
-    else if (top + rowHeight > root.scrollTop + view) root.scrollTop = top + rowHeight - view;
+    else if (top + boxHeight > root.scrollTop + view) root.scrollTop = top + boxHeight - view;
     const right = column.offset + column.px;
     if (column.offset < root.scrollLeft) root.scrollLeft = column.offset;
     else if (right > root.scrollLeft + root.clientWidth) root.scrollLeft = right - root.clientWidth;
-  }, [prepared, rowHeight]);
+  }, [prepared, rowHeight, rowBox]);
 
   const activeRow = active ? rowFor(active.row) : undefined;
   const activeRowId = activeRow === undefined ? undefined : getRowId(activeRow);
@@ -791,15 +833,15 @@ function CellEditGrid<Row>({
     const column = prepared[editing.col];
     if (row !== undefined && column) {
       const root = rootRef.current;
-      const rowTop = editing.row * rowHeight;
+      const { top: rowTop, height: boxHeight } = rowBox(editing.row);
       const popup = column.kind === 'longText' ? LONG_TEXT_POPUP_HEIGHT
         : column.kind === 'select' || column.kind === 'combobox' || column.kind === 'multiselect' ? LIST_POPUP_HEIGHT : 0;
       const viewTop = root?.scrollTop ?? 0;
       const viewBottom = viewTop + (root?.clientHeight ?? viewportHeight) - rowHeight;
-      const below = viewBottom - (rowTop + rowHeight);
+      const below = viewBottom - (rowTop + boxHeight);
       const above = rowTop - viewTop;
       const placement = popup && below < popup && above > below ? 'above' : 'below';
-      const editorStyle: CSSProperties = column.last
+      const editorStyle: CSSProperties | undefined = auto ? undefined : column.last
         ? { insetInlineStart: column.offset, insetInlineEnd: 0, top: rowTop }
         : { insetInlineStart: column.offset, top: rowTop, width: column.px };
       editor = h(column.kind === 'multiselect' ? MultiSelectEditor<Row> : CellEditor<Row>, {
@@ -846,10 +888,13 @@ function CellEditGrid<Row>({
       continue;
     }
     const row = rows[layout.rowAt(index)] as Row;
+    const editingHere = editing?.row === index;
     visibleRows.push(h(RowView<Row>, {
       activeCol: active?.row === index ? active.col : -1,
       columns: prepared,
       depth: layout.depthAt(index),
+      editingCol: editingHere ? editing.col : -1,
+      editor: auto && editingHere ? editor : null,
       gridId,
       key: getRowId(row),
       row,
@@ -865,6 +910,8 @@ function CellEditGrid<Row>({
     'aria-label': ariaLabel,
     'aria-rowcount': itemCount + 1,
     className: withClass('nidec-ui-lite-grid', className),
+    'data-edit-mode': 'cell',
+    'data-row-height': auto ? 'auto' : undefined,
     onCopy,
     onFocus: (event: FocusEvent<HTMLDivElement>) => {
       if (event.target === event.currentTarget && !active && itemCount && prepared.length) setActive({ row: 0, col: 0 });
@@ -898,14 +945,14 @@ function CellEditGrid<Row>({
     onDoubleClick: onBodyDoubleClick,
     onMouseDown: onBodyMouseDown,
     role: 'rowgroup',
-    style: { blockSize: `${itemCount * rowHeight}px`, width },
+    style: auto ? { width } : { blockSize: `${itemCount * rowHeight}px`, width },
   },
   h('div', {
     className: 'nidec-ui-lite-grid__window',
     role: 'presentation',
-    style: { transform: `translateY(${start * rowHeight}px)` },
+    style: auto ? undefined : { transform: `translateY(${start * rowHeight}px)` },
   }, visibleRows),
-  editor));
+  auto ? null : editor));
 }
 
 export type LiteEditableGridProps<Row> = LiteEditableGridCellModeProps<Row> | LiteEditableGridRowModeProps<Row>;

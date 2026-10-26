@@ -74,17 +74,24 @@ For an inherently hierarchical collection, [Grouped Table and Grouped Editable G
 
 ## Lightweight grid (recommended body)
 
-`LiteEditableGrid` is the body of every editable table (decision, Locke, 2026-10-26). Cells are plain text and the cell draws its own editor, so the editor always matches the row height and the text does not move when a row starts editing. It has two edit modes:
+`LiteEditableGrid` is the body of every editable table (decision, Locke, 2026-10-26). Cells are plain text and the cell draws its own editor, so the editor always matches the row height and the text does not move when a row starts editing. It has two edit modes.
+
+### Which mode (Locke, 2026-10-26)
+
+- **Row edit** (`editMode="row"`): each row is one complete record that is checked and confirmed as a whole, often with row actions such as delete or more, up to about 300 rows. Examples: quote lines, BOM lines of one document.
+- **Cell edit** (`editMode="cell"`): fast bulk entry or maintenance of values that stand on their own; each cell takes effect when it is confirmed and the keyboard drives the work. Any volume with fixed rows. Examples: price lists, parameter tables.
 
 | | `editMode="row"` | `editMode="cell"` (default) |
 | --- | --- | --- |
 | Model | One row edits at a time; the edit action or a double-click starts it, Enter or the check confirms the whole row, Esc or the cross cancels | Spreadsheet: arrow keys move an active cell, Enter, F2, double-click or typing edits one cell |
 | Callback | `onRowChange({ rowId, rowIndex, row, values, changes })`, once per confirmed row with at least one change | `onCellChange` per cell |
-| Row height | `rowHeight` 32, 40 (default), 48 or `auto` | `rowHeight` 32 (default), 40 or 48 |
-| Rendering | Every row is rendered; keep it to about 300 rows, and use `auto` only here | Only the rows in view (virtual scrolling), thousands of rows |
+| Row height | `rowHeight` 32, 40 (default), 48 or `auto` | `rowHeight` 32 (default), 40, 48 or `auto` |
+| Rendering | Every row is rendered; keep it to about 300 rows | Fixed rows: only the rows in view (virtual scrolling), thousands of rows. `auto`: every row is rendered, about 300 rows |
 | Height | Grows with its rows; `maxHeight` caps it under a sticky header, `height` fixes it | `height`, default `28rem` |
 
-Row mode look (Locke, 2026-10-26): no per-cell boxes, fills or frames. The editing row keeps the light green row background and the brand left edge; its editable values turn brand green and semibold; the focused field gets a 2px brand underline; a list field shows a chevron. A value that fails `validate` turns red with a red underline and disables the check until fixed. Read-only cells show the lock only on the editing row, with its space reserved in every row so numbers stay aligned. Unconfirmed changes keep their row in edit: starting another row returns focus to the open row.
+Row mode look (Locke, 2026-10-26): no per-cell boxes, fills or frames. The editing row keeps the light green row background and the brand left edge; its editable values turn semibold (neutral text; the green text was dropped on Locke's review); the focused field gets a 2px brand underline; a list field shows a chevron. A value that fails `validate` turns red with a red underline and disables the check until fixed. Read-only cells show the lock only on the editing row, with its space reserved in every row so numbers stay aligned. Unconfirmed changes keep their row in edit: starting another row returns focus to the open row.
+
+Cell mode look (Locke, 2026-10-26, chosen in the comparison prototype): the editor draws no frame. With fixed rows it is a white field over the cell with a 2px brand underline ("no frame, focus only"); with `auto` rows it is a white field without a frame drawn inside the cell, its text at the top where the cell text was, and long text wraps in place so the row grows while typing ("white fill, no frame"). The row of the cell being edited turns light green and carries the brand edge.
 
 Row mode extras: `editingRowId` with `onEditingRowChange` (controlled), `canEditRow(row)` returning `false` or a reason shown on the disabled edit action, `renderRowActions(row)` for more display-only actions before the edit action, `actionsHeader` and `formatRowActionLabel` for the actions column.
 

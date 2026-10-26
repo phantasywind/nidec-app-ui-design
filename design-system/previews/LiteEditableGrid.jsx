@@ -42,8 +42,18 @@ function Demo() {
   const [count, setCount] = useState('5000');
   const [rows, setRows] = useState(() => makeRows(200));
   const [changed, setChanged] = useState(0);
-  const changeMode = (_, value) => { setMode(value); setRows(makeRows(value === 'row' ? 200 : Number(count))); setChanged(0); };
-  const changeCount = (_, value) => { setCount(value); setRows(makeRows(Number(value))); setChanged(0); };
+  // Every row is rendered in row mode and with auto rows, so those show 200 rows.
+  const rowCount = (m, h, c) => (m === 'row' || h === 'auto' ? 200 : Number(c));
+  const reset = (m, h, c) => { setRows(makeRows(rowCount(m, h, c))); setChanged(0); };
+  const changeMode = (_, value) => {
+    const next = value === 'row' ? '40' : '32';
+    setMode(value); setHeight(next); reset(value, next, count);
+  };
+  const changeHeight = (_, value) => {
+    if ((value === 'auto') !== (height === 'auto') && mode === 'cell') reset(mode, value, count);
+    setHeight(value);
+  };
+  const changeCount = (_, value) => { setCount(value); reset(mode, height, value); };
   const onCellChange = ({ rowIndex, columnKey, value, values }) => {
     setRows(current => { const next = current.slice(); next[rowIndex] = { ...current[rowIndex], [columnKey]: values ?? value }; return next; });
     setChanged(n => n + 1);
@@ -53,21 +63,24 @@ function Demo() {
       for (const c of changes) row[c.columnKey] = c.values ?? c.value; next[rowIndex] = row; return next; });
     setChanged(n => n + 1);
   };
+  const rowHeight = height === 'auto' ? 'auto' : Number(height);
   const toolbar = <>
     <SegmentedControl aria-label="Edit mode" value={mode} onValueChange={changeMode}
       options={[{ value: 'row', label: 'Row edit' }, { value: 'cell', label: 'Cell edit' }]} />
-    {mode === 'row'
-      ? <SegmentedControl aria-label="Row height" value={height} onValueChange={(_, value) => setHeight(value)} options={heights} />
-      : <SegmentedControl aria-label="Row count" value={count} onValueChange={changeCount}
-        options={[{ value: '1000', label: '1,000 rows' }, { value: '5000', label: '5,000 rows' }, { value: '20000', label: '20,000 rows' }]} />}
+    <SegmentedControl aria-label="Row height" value={height} onValueChange={changeHeight} options={heights} />
+    {mode === 'cell' && height !== 'auto'
+      ? <SegmentedControl aria-label="Row count" value={count} onValueChange={changeCount}
+        options={[{ value: '1000', label: '1,000 rows' }, { value: '5000', label: '5,000 rows' }, { value: '20000', label: '20,000 rows' }]} />
+      : null}
     <span style={{ color: 'var(--colorNeutralForeground2)' }}>{mode === 'row'
       ? 'Edit or double-click a row. Enter confirms the row, Esc cancels.'
       : 'Arrow keys move. Enter, F2, double-click or typing edits. Esc cancels.'}</span>
   </>;
   const grid = mode === 'row'
     ? <LiteEditableGrid key="row" aria-label="Line records" editMode="row" columns={columns} rows={rows} getRowId={row => row.id}
-      onRowChange={onRowChange} rowHeight={height === 'auto' ? 'auto' : Number(height)} maxHeight={420} />
-    : <LiteEditableGrid key="cell" aria-label="Line records" columns={columns} rows={rows} getRowId={row => row.id} onCellChange={onCellChange} height={420} />;
+      onRowChange={onRowChange} rowHeight={rowHeight} maxHeight={420} />
+    : <LiteEditableGrid key={'cell-' + (height === 'auto')} aria-label="Line records" columns={columns} rows={rows} getRowId={row => row.id}
+      onCellChange={onCellChange} rowHeight={rowHeight} height={420} />;
   return <EditableGrid aria-label="Lightweight line editor" density="compact"
     status={<span>{changed} {mode === 'row' ? 'rows confirmed' : 'edits'}</span>} toolbar={toolbar} footer={<span>{rows.length.toLocaleString('en-US')} lines</span>}>
     {grid}

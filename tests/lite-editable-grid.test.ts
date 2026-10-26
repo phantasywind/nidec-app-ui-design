@@ -193,10 +193,11 @@ describe('LiteEditableGrid', () => {
         .toContain('max-block-size:calc(100vh - 320px)');
     });
 
-    it('draws the editing row as a light green row with green semibold values and a brand underline on focus', async () => {
+    it('draws the editing row as a light green row with semibold values and a brand underline on focus', async () => {
       const css = await readFile(join(repositoryRoot, 'styles', 'components.css'), 'utf8');
       expect(css).toMatch(/\[data-edit-mode="row"\] \.nidec-ui-lite-grid__row\[data-editing="true"\] \{\s*background: var\(--colorBrandBackground2\)/);
-      expect(css).toMatch(/\.nidec-ui-lite-grid__field-input[^{]*\{[^}]*color: var\(--colorBrandForeground1\)/s);
+      // Locke dropped the green text on review (2026-10-26): values are neutral and semibold.
+      expect(css).toMatch(/\.nidec-ui-lite-grid__field-input,[^{]*\{[^}]*color: var\(--colorNeutralForeground1\);[^}]*font-weight: var\(--fontWeightSemibold\)/s);
       expect(css).toMatch(/\.nidec-ui-lite-grid__field\[data-focused="true"\] \{\s*box-shadow: inset 0 -2px 0 var\(--colorCompoundBrandStroke\)/);
     });
   });
@@ -211,6 +212,18 @@ describe('LiteEditableGrid', () => {
       getRowId: row => row.id, editMode: 'row', onRowChange: () => undefined, editingRowId: '0',
     }));
     expect(editing).toMatch(/<input[^>]*inputMode="decimal"/);
+  });
+
+  it('renders every row in flow for auto row height in cell mode', async () => {
+    const html = renderToStaticMarkup(createElement(LiteEditableGrid<Line>, { ...props, rows: rows.slice(0, 300), rowHeight: 'auto' }));
+    expect(html).toContain('data-edit-mode="cell"');
+    expect(html).toContain('data-row-height="auto"');
+    expect(html.match(/class="nidec-ui-lite-grid__row"/g)).toHaveLength(300);
+    expect(html).not.toContain('translateY');
+    expect(html).toContain('--nidec-ui-lite-grid-row-height:40px');
+    const css = await readFile(join(repositoryRoot, 'styles', 'components.css'), 'utf8');
+    // The cell editor is a white field with the brand underline and no frame.
+    expect(css).toMatch(/\.nidec-ui-lite-grid__editor \{\s*background: var\(--colorNeutralBackground1\);\s*box-shadow: inset 0 -2px 0 var\(--colorCompoundBrandStroke\)/);
   });
 
   it('sizes cell mode rows by rowHeight', () => {

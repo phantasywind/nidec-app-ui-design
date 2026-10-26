@@ -499,7 +499,7 @@ function SectionRow({ section, position, summary, formatGroupCount, onToggle }: 
 /**
  * Row edit mode of LiteEditableGrid. Rows render as plain text. The edit
  * action (or a double-click) turns one row into an editing row: its editable
- * values stay where they are, in brand green and semibold, and become fields
+ * values stay where they are, in semibold, and become fields
  * without boxes; the focused field carries a brand underline. Enter or the
  * check confirms the whole row, Esc or the cross cancels it.
  */
