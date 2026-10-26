@@ -1,6 +1,6 @@
 # 表格视口、冻结列与单元格写法
 
-适用于普通 `Table` / `DataGrid`、Grouped Table 和矩阵表。可编辑表（`EditableGrid`、`LiteEditableGrid`）的视口、行高和行编辑见 [Editable Grid](editable-grid.md)（2026-10-26 定案）。
+适用于普通 `Table` / `DataGrid`、Grouped Table 和矩阵表。可编辑表（`EditableGrid`、`LiteEditableGrid`、`LiteRowEditGrid`）的视口、行高和行编辑见 [Editable Grid](editable-grid.md)（2026-10-26 定案）。
 
 ## 表格规则（EPM 与 CPQ 共同遵守）
 
@@ -30,7 +30,7 @@
 
 ## 矩阵表不属于可编辑表
 
-只有需要输入（填文字、数字，选选项，选日期）的表才算可编辑表，用 `EditableGrid` + `LiteEditableGrid`。只点按钮或开关的表维持普通 `Table` + 标准控件（Locke，2026-10-26）：
+只有需要输入（填文字、数字，选选项，选日期）的表才算可编辑表，用 `EditableGrid` + `LiteEditableGrid`（单格编辑）或 `LiteRowEditGrid`（整行编辑）。只点按钮或开关的表维持普通 `Table` + 标准控件（Locke，2026-10-26）：
 
 - **字段矩阵**：每格一个开关，用 `Table` + 每格 `Switch` 或 `Checkbox`。
 - **选择矩阵**：每格一个按钮或链接，点开 `FormDrawer`，用 `Table` + `MatrixCellButton`（或 `RecordLink`）。

@@ -8,19 +8,16 @@ import {
   splitLiteGridValues,
 } from './lite-grid-shared';
 import type {
-  LiteEditableGridBaseProps, LiteEditableGridCellChange, LiteEditableGridOption, PreparedColumn,
+  LiteEditableGridCellChange, LiteEditableGridGroup, LiteEditableGridOption, LiteGridCommonProps, PreparedColumn,
 } from './lite-grid-shared';
-import { RowEditGrid } from './lite-row-edit-grid';
-import type { LiteEditableGridRowModeProps } from './lite-row-edit-grid';
 import { withClass } from './with-class';
 
 export { buildLiteGridLayout, filterLiteGridOptions, splitLiteGridValues } from './lite-grid-shared';
-export type { LiteEditableGridRowChange, LiteEditableGridRowModeProps, LiteEditableGridRowActionLabel } from './lite-row-edit-grid';
 export type {
   LiteEditableGridCellChange, LiteEditableGridColumn, LiteEditableGridEditor, LiteEditableGridGroup, LiteEditableGridOption,
 } from './lite-grid-shared';
 
-/** Default row and header height in px. Rows have one fixed height so that virtual scrolling needs no measurement. */
+/** Row and header height in px of a fixed-height grid when none is given. */
 export const LITE_GRID_ROW_HEIGHT = 32;
 const DEFAULT_OVERSCAN = 10;
 const AUTO_ROW_MIN_HEIGHT = 40;
@@ -30,20 +27,32 @@ const LONG_TEXT_POPUP_HEIGHT = 160;
 /** Fixed row heights a grid can use: compact (32), standard (40) and comfortable (48). */
 export type LiteEditableGridRowHeight = 32 | 40 | 48;
 
-/** Props of the default cell edit mode: one cell edits at a time and each change is reported on its own. */
-export type LiteEditableGridCellModeProps<Row> = LiteEditableGridBaseProps<Row> & {
-  editMode?: 'cell';
+export type LiteEditableGridProps<Row> = LiteGridCommonProps<Row> & {
   onCellChange: (change: LiteEditableGridCellChange<Row>) => void;
   /**
-   * Row height in px, default 32. `auto` lets long text and tags wrap and the
-   * row grow with them (40px minimum); it turns off virtual scrolling, so every
-   * row is rendered: keep such grids to a few hundred rows.
+   * Row height. Default `auto`: long text and tags wrap and the row grows with
+   * them (40px minimum); every row is rendered, so keep such grids to a few
+   * hundred rows. A fixed height (32, 40 or 48) turns on virtual scrolling
+   * for any number of rows.
    */
   rowHeight?: LiteEditableGridRowHeight | 'auto';
-  /** Rows rendered beyond each edge of the viewport. Default 10. */
-  overscan?: number;
-  /** Called when the active cell moves to another row, or leaves the rows; the row then carries a brand edge. */
-  onActiveRowChange?: (rowId: string | undefined) => void;
+  /** Viewport block size: px number or any CSS length, such as `calc(100dvh - 16rem)` to follow the window. Default `28rem`. */
+  height?: number | string;
+  /**
+   * Groups rows under collapsible section rows: return one label (one level)
+   * or two labels (a section and a subsection). Sections appear in the order
+   * of their first row; an empty path leaves the row outside any section.
+   */
+  getRowGroup?: (row: Row) => readonly string[];
+  /** Controlled set of collapsed group keys (path labels joined with ` / `). */
+  collapsedGroups?: ReadonlySet<string>;
+  /** Initially collapsed group keys when `collapsedGroups` is not controlled. */
+  defaultCollapsedGroups?: Iterable<string>;
+  onCollapsedGroupsChange?: (collapsed: ReadonlySet<string>) => void;
+  /** Text after a section label, such as "2 modified"; also part of its accessible name. */
+  getGroupSummary?: (group: LiteEditableGridGroup) => string | undefined;
+  /** Accessible wording of a section's row count. Default `1 row` / `N rows`. */
+  formatGroupCount?: (count: number) => string;
 };
 
 type Cell = Readonly<{ row: number; col: number }>;
@@ -509,19 +518,27 @@ function MultiSelectEditor<Row>(props: EditorProps<Row>) {
 }
 
 /**
- * Cell edit mode: cells render as plain text; only the one cell being edited
- * mounts a real editor, and only the rows in view (plus overscan) are in the
- * DOM. Rows have one fixed height, or with `rowHeight="auto"` grow with their
- * text; every row is then rendered and the editor is drawn inside its cell.
+ * Lightweight editable grid with cell edit: spreadsheet-style, one cell at a
+ * time, each change reported on its own as soon as the cell is left. Cells
+ * render as plain text and only the cell being edited mounts an editor, drawn
+ * by the grid so that it matches the row and the text does not move.
+ *
+ * Rows grow with their text by default (`rowHeight="auto"`, every row
+ * rendered, a few hundred rows); a fixed height virtualises the rows for
+ * thousands. Rows can be grouped under collapsible sections. For records
+ * saved a whole row at a time, use LiteRowEditGrid.
+ *
+ * The consumer owns the data, validation rules, persistence and every
+ * business meaning of a value.
  */
-function CellEditGrid<Row>({
+export function LiteEditableGrid<Row>({
   'aria-label': ariaLabel,
   columns,
   rows,
   getRowId,
   onCellChange,
   height = '28rem',
-  rowHeight: rowHeightProp = LITE_GRID_ROW_HEIGHT,
+  rowHeight: rowHeightProp = 'auto',
   overscan = DEFAULT_OVERSCAN,
   onActiveRowChange,
   getRowGroup,
@@ -533,9 +550,8 @@ function CellEditGrid<Row>({
   className,
   style,
   onFocus,
-  editMode: _editMode,
   ...props
-}: LiteEditableGridCellModeProps<Row>) {
+}: LiteEditableGridProps<Row>) {
   if (!ariaLabel.trim()) throw new Error('LiteEditableGrid requires a non-empty aria-label.');
   // Auto rows have no fixed height, so every row is rendered and positions are measured.
   const auto = rowHeightProp === 'auto';
@@ -953,25 +969,4 @@ function CellEditGrid<Row>({
     style: auto ? undefined : { transform: `translateY(${start * rowHeight}px)` },
   }, visibleRows),
   auto ? null : editor));
-}
-
-export type LiteEditableGridProps<Row> = LiteEditableGridCellModeProps<Row> | LiteEditableGridRowModeProps<Row>;
-
-/**
- * Lightweight editable grid. Cells render as plain text and the grid draws
- * its own editors inside the cells, so an editor always matches the row
- * height and the text does not move when editing starts.
- *
- * - `editMode="cell"` (default): spreadsheet-style, one cell at a time,
- *   virtual scrolling for thousands of rows, one change per callback.
- * - `editMode="row"`: one row at a time with confirm and cancel actions,
- *   for short collections saved row by row; every row is rendered.
- *
- * The consumer owns the data, validation rules, persistence and every
- * business meaning of a value.
- */
-export function LiteEditableGrid<Row>(props: LiteEditableGridProps<Row>) {
-  return props.editMode === 'row'
-    ? h(RowEditGrid<Row>, props)
-    : h(CellEditGrid<Row>, props);
 }

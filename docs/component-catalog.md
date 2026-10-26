@@ -31,7 +31,7 @@
 | 特殊部件 / `stage` | StageNavigator | 可提前查看的同级准备工作区 | 选中外圈只表示查看位置；节点底色保留自身状态 |
 | 特殊部件 / `bpf` | BusinessProcessFlow · BusinessProcessStageDetail | 有实际业务进度的流程阶段，点击已到达阶段弹出阶段详情卡 | 只允许查看已到达阶段；查看位置不能改变真实流程位置；详情卡中的条件与操作归应用 |
 | 特殊部件 / `editable-grid` | EditableGrid · EditableGridRowActionGroup | 大量行、频繁修改、批量保存 | 列、校验、选中、草稿、保存与冲突归应用；只冻结标记为 Actions 的列。标题、工具栏可省略，`density="compact"`，`maxHeight` 粘性表头。表体统一用 LiteEditableGrid 整行编辑（Locke 10-26），Fluent Table 加控件不再推荐。只有需要输入（文字、数字、选项、日期）的表才算可编辑表；开关矩阵、按钮/链接弹抽屉的选择矩阵维持 Table + 标准控件 |
-| 特殊部件 / `editable-grid` | LiteEditableGrid（可选两级折叠分组） | 所有可编辑表：`editMode="row"` 整行编辑，用于逐条核对、整行确认的记录（报价行、BOM 行，约 300 行内，行高 32/40/48/自动）；`cell` 单格编辑，用于批量快速录入互相独立的值（价格表、参数表，固定行高时数千行虚拟滚动，自动行高约 300 行内） | 单元格为纯文本、自绘编辑器（文本、数字、长文本、下拉、Combobox、多选标签）；整行模式编辑行绿底、加粗、聚焦下划线；单格模式编辑格白底无框加下划线；都没有单元格框；无排序和多格选择；数据、校验与保存归应用 |
+| 特殊部件 / `editable-grid` | LiteEditableGrid（单格编辑，可选两级折叠分组）、LiteRowEditGrid（整行编辑） | 所有可编辑表二选一。优先用 LiteEditableGrid 单格编辑：BOM 模板、项目 BOM 等带长文本、标签或分组的行，默认自动行高（约 300 行内），也可固定 32/40/48 行高虚拟滚动数千行。LiteRowEditGrid 整行编辑：主数据（如 master component）、成本管理等类型一致、行数多的纯数据表，固定行高 32/40/48 由应用选，虚拟滚动数千行，不分组 | 单元格为纯文本、自绘编辑器（文本、数字、长文本、下拉、Combobox、多选标签）；两者都离开即自动保存，没有行末操作；整行编辑的编辑行绿底、常规字重、聚焦下划线；单格编辑的编辑格白底无框；无排序和多格选择；数据、校验与保存归应用 |
 | 特殊部件 / `grouped-table` | GroupedTableSectionRow · EditableGrid | 自然分组的多行集合和高频编辑 | 分组只控制展开；选中和编辑发生在叶子行，折叠保留草稿 |
 | 样例 / `directory` | DirectoryWorkspace | 查找、筛选、比较并打开记录 | 主列链接或整卡入口打开 Sheet；返回保留目录状态 |
 | 样例 / `form` | Field · WorkspaceSection | 分区录入、校验、提交与反馈 | 本地合成数据；接口、业务校验及保存策略归应用 |

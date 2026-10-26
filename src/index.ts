@@ -15,9 +15,10 @@ export type { EditableGridProps, EditableGridRowActionGroupProps } from './inter
 export { LiteEditableGrid } from './internal/components/lite-editable-grid';
 export type {
   LiteEditableGridProps, LiteEditableGridColumn, LiteEditableGridEditor, LiteEditableGridOption, LiteEditableGridCellChange,
-  LiteEditableGridCellModeProps, LiteEditableGridRowModeProps, LiteEditableGridRowChange, LiteEditableGridRowHeight,
-  LiteEditableGridRowActionLabel,
+  LiteEditableGridGroup, LiteEditableGridRowHeight,
 } from './internal/components/lite-editable-grid';
+export { LiteRowEditGrid } from './internal/components/lite-row-edit-grid';
+export type { LiteRowEditGridProps, LiteRowEditGridRowChange } from './internal/components/lite-row-edit-grid';
 export { ViewModeToggle } from './internal/components/view-mode-toggle';
 export type { ViewMode, ViewModeToggleProps } from './internal/components/view-mode-toggle';
 export { SegmentedControl } from './internal/components/segmented-control';

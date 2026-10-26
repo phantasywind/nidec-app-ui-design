@@ -4,8 +4,8 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
-import { LiteEditableGrid } from '../src/index';
-import type { LiteEditableGridColumn, LiteEditableGridProps } from '../src/index';
+import { LiteEditableGrid, LiteRowEditGrid } from '../src/index';
+import type { LiteEditableGridColumn, LiteEditableGridProps, LiteRowEditGridProps } from '../src/index';
 import {
   buildLiteGridLayout, computeRenderRange, filterLiteGridOptions, LITE_GRID_ROW_HEIGHT, splitLiteGridValues,
 } from '../src/internal/components/lite-editable-grid';
@@ -27,7 +27,7 @@ const rows: Line[] = Array.from({ length: 5000 }, (_, index) => ({
 }));
 
 const props: LiteEditableGridProps<Line> = {
-  'aria-label': 'Lines', columns, rows, getRowId: row => row.id, onCellChange: () => undefined, height: 320,
+  'aria-label': 'Lines', columns, rows, getRowId: row => row.id, onCellChange: () => undefined, height: 320, rowHeight: LITE_GRID_ROW_HEIGHT,
 };
 
 describe('LiteEditableGrid', () => {
@@ -140,78 +140,18 @@ describe('LiteEditableGrid', () => {
     expect(css).toMatch(/\.nidec-ui-lite-grid__option\[aria-selected="true"\]:hover \{\s*background: var\(--colorBrandBackground2\)/);
   });
 
-  describe('row edit mode', () => {
-    const few = rows.slice(0, 6);
-    const rowProps: LiteEditableGridProps<Line> = {
-      'aria-label': 'Lines', columns, rows: few, getRowId: row => row.id, editMode: 'row', onRowChange: () => undefined,
-    };
-
-    it('renders every row as plain text with a 40px default height and an edit action per row', () => {
-      const html = renderToStaticMarkup(createElement(LiteEditableGrid<Line>, rowProps));
-      expect(html).toContain('data-edit-mode="row"');
-      expect(html).toContain('--nidec-ui-lite-grid-row-height:40px');
-      expect(html.match(/data-row-id=/g)).toHaveLength(few.length);
-      expect(html).toContain('aria-colcount="6"');
-      expect(html).toContain('>Actions<');
-      expect(html.match(/aria-label="Edit row \d"/g)).toHaveLength(few.length);
-      expect(html).not.toMatch(/<(input|textarea)\b/);
-    });
-
-    it('accepts row heights 32, 48 and auto', () => {
-      expect(renderToStaticMarkup(createElement(LiteEditableGrid<Line>, { ...rowProps, rowHeight: 32 }))).toContain('--nidec-ui-lite-grid-row-height:32px');
-      expect(renderToStaticMarkup(createElement(LiteEditableGrid<Line>, { ...rowProps, rowHeight: 48 }))).toContain('--nidec-ui-lite-grid-row-height:48px');
-      const auto = renderToStaticMarkup(createElement(LiteEditableGrid<Line>, { ...rowProps, rowHeight: 'auto' }));
-      expect(auto).toContain('data-row-height="auto"');
-      expect(auto).toContain('--nidec-ui-lite-grid-row-height:40px');
-    });
-
-    it('turns only the editing row into boxless fields with confirm and cancel', () => {
-      const html = renderToStaticMarkup(createElement(LiteEditableGrid<Line>, { ...rowProps, editingRowId: '1' }));
-      expect(html.match(/data-editing="true"/g)).toHaveLength(1);
-      // Combobox and quantity are inputs, the note a textarea, the unit a list value.
-      expect(html.match(/<input\b/g)).toHaveLength(2);
-      expect(html.match(/<textarea\b/g)).toHaveLength(1);
-      expect(html.match(/class="nidec-ui-lite-grid__field-list"/g)).toHaveLength(2);
-      expect(html.match(/class="nidec-ui-lite-grid__field"/g)).toHaveLength(4);
-      expect(html).toContain('aria-label="Confirm row 1"');
-      expect(html).toContain('aria-label="Cancel row 1"');
-      // Row 1 has an invalid quantity, so it cannot be confirmed yet.
-      expect(html).toMatch(/aria-label="Confirm row 1"[^>]*disabled=""|disabled=""[^>]*aria-label="Confirm row 1"/);
-      expect(html.match(/aria-label="Edit row \d"/g)).toHaveLength(few.length - 1);
-    });
-
-    it('disables the edit action with a reason from canEditRow', () => {
-      const html = renderToStaticMarkup(createElement(LiteEditableGrid<Line>, {
-        ...rowProps, canEditRow: row => (row.id === '2' ? 'Locked by approval' : true),
-      }));
-      expect(html).toMatch(/aria-label="Edit row 2"[^>]*aria-disabled="true"/);
-      expect(html).not.toMatch(/aria-label="Edit row 3"[^>]*aria-disabled="true"/);
-    });
-
-    it('caps the height with maxHeight', () => {
-      expect(renderToStaticMarkup(createElement(LiteEditableGrid<Line>, { ...rowProps, maxHeight: 'calc(100vh - 320px)' })))
-        .toContain('max-block-size:calc(100vh - 320px)');
-    });
-
-    it('draws the editing row as a light green row with semibold values and a brand underline on focus', async () => {
-      const css = await readFile(join(repositoryRoot, 'styles', 'components.css'), 'utf8');
-      expect(css).toMatch(/\[data-edit-mode="row"\] \.nidec-ui-lite-grid__row\[data-editing="true"\] \{\s*background: var\(--colorBrandBackground2\)/);
-      // Locke dropped the green text on review (2026-10-26): values are neutral and semibold.
-      expect(css).toMatch(/\.nidec-ui-lite-grid__field-input,[^{]*\{[^}]*color: var\(--colorNeutralForeground1\);[^}]*font-weight: var\(--fontWeightSemibold\)/s);
-      expect(css).toMatch(/\.nidec-ui-lite-grid__field\[data-focused="true"\] \{\s*box-shadow: inset 0 -2px 0 var\(--colorCompoundBrandStroke\)/);
-    });
-  });
-
   it('uses a decimal keyboard for the number editor and right-aligns it by default', () => {
     const html = renderToStaticMarkup(createElement(LiteEditableGrid<Line>, {
       ...props, columns: [...columns.slice(0, 4), { key: 'qty', header: 'Qty', editor: 'number' }],
     }));
     expect(html).toMatch(/data-align="end"[^>]*data-editor="number"/);
-    const editing = renderToStaticMarkup(createElement(LiteEditableGrid<Line>, {
-      'aria-label': 'Lines', columns: [{ key: 'qty', header: 'Qty', editor: 'number' }], rows: rows.slice(0, 2),
-      getRowId: row => row.id, editMode: 'row', onRowChange: () => undefined, editingRowId: '0',
-    }));
-    expect(editing).toMatch(/<input[^>]*inputMode="decimal"/);
+  });
+
+  it('grows rows with their text by default', () => {
+    const { rowHeight: _fixed, ...rest } = props;
+    const html = renderToStaticMarkup(createElement(LiteEditableGrid<Line>, { ...rest, rows: rows.slice(0, 20) }));
+    expect(html).toContain('data-row-height="auto"');
+    expect(html.match(/class="nidec-ui-lite-grid__row"/g)).toHaveLength(20);
   });
 
   it('renders every row in flow for auto row height in cell mode', async () => {
@@ -229,5 +169,52 @@ describe('LiteEditableGrid', () => {
   it('sizes cell mode rows by rowHeight', () => {
     expect(renderToStaticMarkup(createElement(LiteEditableGrid<Line>, { ...props, rowHeight: 48 })))
       .toContain(`block-size:${rows.length * 48}px`);
+  });
+});
+
+describe('LiteRowEditGrid', () => {
+  const rowProps: LiteRowEditGridProps<Line> = {
+    'aria-label': 'Lines', columns, rows, getRowId: row => row.id, onRowChange: () => undefined, height: 320,
+  };
+
+  it('renders only the rows in view, as plain text, with a 40px default height and no actions column', () => {
+    const html = renderToStaticMarkup(createElement(LiteRowEditGrid<Line>, rowProps));
+    expect(html).toContain('data-edit-mode="row"');
+    expect(html).toContain('--nidec-ui-lite-grid-row-height:40px');
+    expect(html).toContain(`block-size:${rows.length * 40}px`);
+    const rendered = html.match(/data-row-id=/g)?.length ?? 0;
+    expect(rendered).toBeGreaterThan(0);
+    expect(rendered).toBeLessThan(40);
+    expect(html).toContain('aria-colcount="5"');
+    expect(html).not.toContain('Actions');
+    expect(html).not.toMatch(/<(input|textarea|button)\b/);
+    expect(html).not.toContain('transform');
+  });
+
+  it('takes the fixed row height the application chooses', () => {
+    expect(renderToStaticMarkup(createElement(LiteRowEditGrid<Line>, { ...rowProps, rowHeight: 32 }))).toContain('--nidec-ui-lite-grid-row-height:32px');
+    expect(renderToStaticMarkup(createElement(LiteRowEditGrid<Line>, { ...rowProps, rowHeight: 48 }))).toContain(`block-size:${rows.length * 48}px`);
+  });
+
+  it('marks rows that canEditRow keeps read-only', () => {
+    const html = renderToStaticMarkup(createElement(LiteRowEditGrid<Line>, { ...rowProps, canEditRow: row => row.id !== '2' }));
+    expect(html).toMatch(/aria-disabled="true"[^>]*data-row-id="2"/);
+    expect(html.match(/aria-disabled="true"/g)).toHaveLength(1);
+  });
+
+  it('caps the height with maxHeight instead of the default height', () => {
+    const { height: _height, ...rest } = rowProps;
+    const html = renderToStaticMarkup(createElement(LiteRowEditGrid<Line>, { ...rest, maxHeight: 'calc(100vh - 320px)' }));
+    expect(html).toContain('max-block-size:calc(100vh - 320px)');
+    expect(html).not.toMatch(/[^-]block-size:28rem/);
+  });
+
+  it('draws the editing row light green with regular-weight values and a brand underline on focus', async () => {
+    const css = await readFile(join(repositoryRoot, 'styles', 'components.css'), 'utf8');
+    expect(css).toMatch(/\[data-edit-mode="row"\] \.nidec-ui-lite-grid__row\[data-editing="true"\] \{\s*background: var\(--colorBrandBackground2\)/);
+    // Locke dropped the green text and then the semibold on review (2026-10-26).
+    expect(css).toMatch(/\.nidec-ui-lite-grid__field-input,[^{]*\{[^}]*color: var\(--colorNeutralForeground1\);/s);
+    expect(css).not.toMatch(/\.nidec-ui-lite-grid__field-input,[^{]*\{[^}]*font-weight: var\(--fontWeightSemibold\)/s);
+    expect(css).toMatch(/\.nidec-ui-lite-grid__field\[data-focused="true"\] \{\s*box-shadow: inset 0 -2px 0 var\(--colorCompoundBrandStroke\)/);
   });
 });

@@ -1,7 +1,7 @@
 import { createElement as h } from 'react';
 import type { ComponentPropsWithoutRef, ReactElement } from 'react';
 
-// Types and helpers shared by the cell and row edit modes of LiteEditableGrid.
+// Types and helpers shared by LiteEditableGrid (cell edit) and LiteRowEditGrid (row edit).
 
 export const DEFAULT_COLUMN_WIDTH = 160;
 
@@ -61,34 +61,18 @@ export type LiteEditableGridGroup = Readonly<{
   expanded: boolean;
 }>;
 
-/** Props both edit modes share. */
-export type LiteEditableGridBaseProps<Row> = Omit<ComponentPropsWithoutRef<'div'>,
+/** Props both grids share. */
+export type LiteGridCommonProps<Row> = Omit<ComponentPropsWithoutRef<'div'>,
   'children' | 'role' | 'onChange' | 'onCopy' | 'onPaste'> & {
   'aria-label': string;
   /** Keep this array stable (module constant or useMemo); a new array re-renders every visible row. */
   columns: readonly LiteEditableGridColumn<Row>[];
   rows: readonly Row[];
   getRowId: (row: Row) => string;
-  /**
-   * Viewport block size: px number or any CSS length, such as `calc(100dvh - 16rem)` to follow the window.
-   * Default `28rem` in cell mode; in row mode the grid grows with its rows unless a height is given.
-   */
-  height?: number | string;
-  /**
-   * Groups rows under collapsible section rows: return one label (one level)
-   * or two labels (a section and a subsection). Sections appear in the order
-   * of their first row; an empty path leaves the row outside any section.
-   */
-  getRowGroup?: (row: Row) => readonly string[];
-  /** Controlled set of collapsed group keys (path labels joined with ` / `). */
-  collapsedGroups?: ReadonlySet<string>;
-  /** Initially collapsed group keys when `collapsedGroups` is not controlled. */
-  defaultCollapsedGroups?: Iterable<string>;
-  onCollapsedGroupsChange?: (collapsed: ReadonlySet<string>) => void;
-  /** Text after a section label, such as "2 modified"; also part of its accessible name. */
-  getGroupSummary?: (group: LiteEditableGridGroup) => string | undefined;
-  /** Accessible wording of a section's row count. Default `1 row` / `N rows`. */
-  formatGroupCount?: (count: number) => string;
+  /** Rows rendered beyond each edge of the viewport when rows have a fixed height. Default 10. */
+  overscan?: number;
+  /** Called when the active row changes, or focus leaves the rows; the row then carries a brand edge. */
+  onActiveRowChange?: (rowId: string | undefined) => void;
 };
 
 export type Section = LiteEditableGridGroup & { count: number };

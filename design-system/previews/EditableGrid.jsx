@@ -1,4 +1,4 @@
-// @card group="Specialized components" height=420 width=1100 subtitle="Live component, frame with a row-edit grid"
+// @card group="Specialized components" height=420 width=1100 subtitle="Live component, frame with a cell-edit grid"
 const initial = [
   { id: '001', code: 'ITM-001', description: 'Control unit', category: 'elec', quantity: '1', unit: 'ea', price: '5200.00' },
   { id: '002', code: 'ITM-010', description: 'Drive module', category: 'elec', quantity: '2', unit: 'ea', price: '1250.00' },
@@ -22,14 +22,13 @@ const columns = [
 function Demo() {
   const [lines, setLines] = useState(initial);
   const [dirty, setDirty] = useState(new Set(['003']));
-  const onRowChange = ({ rowIndex, rowId, changes }) => {
-    setLines(current => { const next = current.slice(); const row = { ...current[rowIndex] };
-      for (const c of changes) row[c.columnKey] = c.value; next[rowIndex] = row; return next; });
+  const onCellChange = ({ rowIndex, rowId, columnKey, value }) => {
+    setLines(current => { const next = current.slice(); next[rowIndex] = { ...current[rowIndex], [columnKey]: value }; return next; });
     setDirty(s => new Set(s).add(rowId));
   };
   const status = <div style={{display:'flex',gap:16,alignItems:'center'}}><span>{dirty.size} unsaved changes</span><Button appearance="primary" onClick={() => setDirty(new Set())}>Save changes</Button></div>;
   const toolbar = <><SearchBox aria-label="Search lines" placeholder="Search by code or description" /><Button icon={<Icons.Add />}>Add line</Button></>;
-  return <EditableGrid aria-label="Example line editor" title="Line editor" description="Edit one row at a time, confirm it, then save one controlled batch." status={status} toolbar={toolbar} footer={<span>{lines.length} lines</span>}>
-    <LiteEditableGrid aria-label="Editable line records" editMode="row" columns={columns} rows={lines} getRowId={row => row.id} onRowChange={onRowChange} />
+  return <EditableGrid aria-label="Example line editor" title="Line editor" description="Each cell saves into the draft when you leave it; save the draft as one controlled batch." status={status} toolbar={toolbar} footer={<span>{lines.length} lines</span>}>
+    <LiteEditableGrid aria-label="Editable line records" columns={columns} rows={lines} getRowId={row => row.id} onCellChange={onCellChange} height="auto" />
   </EditableGrid>;
 }

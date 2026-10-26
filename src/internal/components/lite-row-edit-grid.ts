@@ -1,23 +1,18 @@
 import { createElement as h, memo, useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import type { CSSProperties, FocusEvent, KeyboardEvent, MouseEvent, ReactElement, ReactNode } from 'react';
-import { Tooltip as FluentTooltip } from '@fluentui/react-components';
-import { TableActionIconButton } from './button';
-import { EditableGridRowActionGroup } from './editable-grid';
-import { checkIcon, dismissIcon, editIcon, lockIcon } from './icons';
+import { lockIcon } from './icons';
+import { computeRenderRange } from './lite-editable-grid';
 import {
-  buildLiteGridLayout, displayText, filterLiteGridOptions, prepareLiteGridColumns, readValue, renderTags, splitLiteGridValues,
+  displayText, filterLiteGridOptions, prepareLiteGridColumns, readValue, renderTags, splitLiteGridValues,
 } from './lite-grid-shared';
-import type { LiteEditableGridBaseProps, LiteEditableGridOption, PreparedColumn, Section } from './lite-grid-shared';
+import type { LiteEditableGridOption, LiteGridCommonProps, PreparedColumn } from './lite-grid-shared';
 import { withClass } from './with-class';
 
-const AUTO_ROW_MIN_HEIGHT = 40;
-const ACTIONS_WIDTH = 80;
+const DEFAULT_OVERSCAN = 10;
 const LIST_POPUP_HEIGHT = 240;
 
-export type LiteEditableGridRowActionLabel = 'edit' | 'confirm' | 'cancel';
-
-/** One confirmed row edit: every editable value of the draft and the ones that changed. */
-export type LiteEditableGridRowChange<Row> = Readonly<{
+/** One saved row edit: every editable value of the draft and the ones that changed. */
+export type LiteRowEditGridRowChange<Row> = Readonly<{
   rowId: string;
   rowIndex: number;
   row: Row;
@@ -27,37 +22,21 @@ export type LiteEditableGridRowChange<Row> = Readonly<{
   changes: readonly Readonly<{ columnKey: string; value: string; values?: readonly string[] }>[];
 }>;
 
-/** Props of the row edit mode: one row edits at a time and is confirmed or cancelled as a whole. */
-export type LiteEditableGridRowModeProps<Row> = LiteEditableGridBaseProps<Row> & {
-  editMode: 'row';
-  /** Called once when a row is confirmed with at least one changed value. */
-  onRowChange: (change: LiteEditableGridRowChange<Row>) => void;
+export type LiteRowEditGridProps<Row> = LiteGridCommonProps<Row> & {
+  /** Called once when an edited row is left (saved) with at least one changed value. */
+  onRowChange: (change: LiteRowEditGridRowChange<Row>) => void;
+  /** Fixed row height in px, chosen by the application. Default 40. */
+  rowHeight?: 32 | 40 | 48;
   /**
-   * Row height in px, default 40. `auto` lets long text and tags wrap and the
-   * row grow with them; every row is rendered, so keep such grids to a few
-   * hundred rows.
+   * Viewport block size: px number or any CSS length, such as `calc(100dvh - 16rem)`.
+   * Default `28rem`, unless `maxHeight` is given.
    */
-  rowHeight?: 32 | 40 | 48 | 'auto';
-  /**
-   * Caps the grid's height (px or a CSS length such as `calc(100vh - 320px)`):
-   * short collections stay as tall as their rows, long ones scroll under the sticky header.
-   */
+  height?: number | string;
+  /** Caps the height instead: short collections stay as tall as their rows, long ones scroll. */
   maxHeight?: number | string;
-  /** Controlled id of the row being edited; `null` edits none. Leave undefined to let the grid own it. */
-  editingRowId?: string | null;
-  onEditingRowChange?: (rowId: string | null) => void;
-  /** `false` or a reason disables the row's edit action; a reason is shown on hover and focus. */
-  canEditRow?: (row: Row) => boolean | string;
-  /** More actions for a row that is not being edited, placed before its edit action. Keep the function stable. */
-  renderRowActions?: (row: Row) => ReactNode;
-  /** Header of the actions column. Default `Actions`. */
-  actionsHeader?: string;
-  /** Accessible names of the row actions. Default `Edit row <id>`, `Confirm row <id>`, `Cancel row <id>`. */
-  formatRowActionLabel?: (action: LiteEditableGridRowActionLabel, rowId: string) => string;
+  /** `false` keeps a row read-only. */
+  canEditRow?: (row: Row) => boolean;
 };
-
-const defaultActionLabel = (action: LiteEditableGridRowActionLabel, rowId: string) =>
-  `${action === 'edit' ? 'Edit' : action === 'confirm' ? 'Confirm' : 'Cancel'} row ${rowId}`;
 
 type Draft = Readonly<Record<string, string>>;
 
@@ -88,45 +67,28 @@ function lockMark<Row>(column: PreparedColumn<Row>) {
   return column.kind === 'none' ? h('span', { 'aria-hidden': true, className: 'nidec-ui-lite-grid__lock' }, lockIcon()) : null;
 }
 
-type Api<Row> = {
-  start: (row: Row, columnKey?: string) => void;
-};
+const rowElementId = (gridId: string, position: number) => `${gridId}-r${position}`;
 
 type ViewRowProps<Row> = {
   row: Row;
   rowId: string;
   position: number;
-  depth: number;
+  current: boolean;
+  locked: boolean;
   columns: readonly PreparedColumn<Row>[];
-  api: { current: Api<Row> };
-  canEditRow: ((row: Row) => boolean | string) | undefined;
-  renderRowActions: ((row: Row) => ReactNode) | undefined;
-  formatRowActionLabel: (action: LiteEditableGridRowActionLabel, rowId: string) => string;
+  gridId: string;
 };
 
-function ViewRowImpl<Row>({
-  row, rowId, position, depth, columns, api, canEditRow, renderRowActions, formatRowActionLabel,
-}: ViewRowProps<Row>): ReactElement {
-  const allowed = canEditRow ? canEditRow(row) : true;
-  const label = formatRowActionLabel('edit', rowId);
-  const reason = typeof allowed === 'string' ? allowed : undefined;
-  const editButton = h(TableActionIconButton, {
-    'aria-label': label,
-    className: 'nidec-ui-lite-grid__edit-action',
-    disabled: allowed !== true,
-    ...(reason ? { disabledReason: reason } : {}),
-    icon: editIcon(),
-    onClick: () => api.current.start(row),
-  });
+function ViewRowImpl<Row>({ row, rowId, position, current, locked, columns, gridId }: ViewRowProps<Row>): ReactElement {
   return h('div', {
+    'aria-disabled': locked ? true : undefined,
     'aria-rowindex': position + 2,
+    'aria-selected': current ? true : undefined,
     className: 'nidec-ui-lite-grid__row',
-    'data-depth': depth || undefined,
+    'data-current': current ? true : undefined,
+    'data-row': position,
     'data-row-id': rowId,
-    onDoubleClick: allowed === true ? (event: MouseEvent) => {
-      const key = (event.target as Element).closest('[data-key]')?.getAttribute('data-key') ?? undefined;
-      api.current.start(row, key);
-    } : undefined,
+    id: rowElementId(gridId, position),
     role: 'row',
   },
   columns.map(column => {
@@ -143,10 +105,7 @@ function ViewRowImpl<Row>({
       role: 'gridcell',
       title: error ?? (column.kind === 'longText' && value ? value : undefined),
     }, h('span', { className: 'nidec-ui-lite-grid__text' }, cellText(column, value)), lockMark(column));
-  }),
-  h('div', { className: 'nidec-ui-lite-grid__cell nidec-ui-lite-grid__actions', role: 'gridcell' },
-    renderRowActions?.(row),
-    reason ? editButton : h(FluentTooltip, { content: label, relationship: 'label' }, editButton)));
+  }));
 }
 
 const ViewRow = memo(ViewRowImpl) as typeof ViewRowImpl;
@@ -355,44 +314,49 @@ type EditRowProps<Row> = {
   row: Row;
   rowId: string;
   position: number;
-  depth: number;
   columns: readonly PreparedColumn<Row>[];
   draft: Draft;
   errors: Readonly<Record<string, string | undefined>>;
-  auto: boolean;
   gridId: string;
+  style: CSSProperties | undefined;
   onField: (key: string, value: string) => void;
-  onConfirm: () => void;
+  onSave: (next: boolean) => void;
   onCancel: () => void;
-  formatRowActionLabel: (action: LiteEditableGridRowActionLabel, rowId: string) => string;
+  onLeave: () => void;
 };
 
 function EditRow<Row>({
-  row, rowId, position, depth, columns, draft, errors, auto, gridId, onField, onConfirm, onCancel, formatRowActionLabel,
+  row, rowId, position, columns, draft, errors, gridId, style, onField, onSave, onCancel, onLeave,
 }: EditRowProps<Row>): ReactElement {
   const [focusedKey, setFocusedKey] = useState<string | undefined>(undefined);
   const shownRow = rowWithDraft(row, columns, draft);
-  const invalid = Object.values(errors).some(Boolean);
   const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     if (event.nativeEvent.isComposing) return;
-    // Checked before defaultPrevented: a visible Fluent tooltip (the confirm action under the
-    // pointer) prevents Escape at document level, which must not swallow the row's cancel.
     if (event.key === 'Escape') { event.preventDefault(); onCancel(); return; }
-    if (event.defaultPrevented) return;
+    if (event.defaultPrevented || event.key !== 'Enter') return;
     const target = event.target as HTMLElement;
-    if (event.key !== 'Enter' || target.closest('button')) return;
     if (target.tagName === 'TEXTAREA' && !(event.ctrlKey || event.metaKey)) return;
     event.preventDefault();
-    onConfirm();
+    onSave(true);
+  };
+  const onBlur = (event: FocusEvent<HTMLDivElement>) => {
+    // Leaving the row saves it; switching to another window does not.
+    if (event.currentTarget.contains(event.relatedTarget as Node | null)) return;
+    if (!event.currentTarget.ownerDocument.hasFocus()) return;
+    onLeave();
   };
   return h('div', {
     'aria-rowindex': position + 2,
     className: 'nidec-ui-lite-grid__row',
-    'data-depth': depth || undefined,
+    'data-current': true,
     'data-editing': true,
+    'data-row': position,
     'data-row-id': rowId,
+    id: rowElementId(gridId, position),
+    onBlur,
     onKeyDown,
     role: 'row',
+    style,
   },
   columns.map(column => {
     const readOnly = !editable(column);
@@ -402,7 +366,7 @@ function EditRow<Row>({
     let field: ReactElement | null = null;
     if (!readOnly) {
       const onFocus = () => setFocusedKey(column.key);
-      const onBlur = () => setFocusedKey(key => (key === column.key ? undefined : key));
+      const onFieldBlur = () => setFocusedKey(key => (key === column.key ? undefined : key));
       let control: ReactElement;
       if (column.kind === 'select' || column.kind === 'combobox' || column.kind === 'multiselect') {
         control = h(ListField<Row>, {
@@ -418,7 +382,7 @@ function EditRow<Row>({
           rows: 1,
           spellCheck: false,
           value,
-          wrap: auto ? 'soft' : 'off',
+          wrap: 'off',
         });
       } else {
         control = h('input', {
@@ -437,7 +401,7 @@ function EditRow<Row>({
         'aria-invalid': error ? true : undefined,
         className: 'nidec-ui-lite-grid__field',
         'data-focused': focusedKey === column.key ? true : undefined,
-        onBlur,
+        onBlur: onFieldBlur,
         onFocus,
         title: error,
       }, control);
@@ -452,58 +416,28 @@ function EditRow<Row>({
       key: column.key,
       role: 'gridcell',
     },
-    // In flow: gives the cell the height of the draft text; the field is drawn over it.
+    // Keeps the cell's layout; the field is drawn over it.
     h('span', { 'aria-hidden': readOnly ? undefined : true, className: 'nidec-ui-lite-grid__text' }, cellText(column, value)),
     field,
     lockMark(column));
-  }),
-  h('div', { className: 'nidec-ui-lite-grid__cell nidec-ui-lite-grid__actions', role: 'gridcell' },
-    h(EditableGridRowActionGroup, {
-      cancelIcon: dismissIcon(),
-      cancelLabel: formatRowActionLabel('cancel', rowId),
-      confirmDisabled: invalid,
-      confirmIcon: checkIcon(),
-      confirmLabel: formatRowActionLabel('confirm', rowId),
-      onCancel,
-      onConfirm,
-    })));
+  }));
 }
 
-function SectionRow({ section, position, summary, formatGroupCount, onToggle }: {
-  section: Section; position: number; summary: string | undefined; formatGroupCount: (count: number) => string;
-  onToggle: (key: string) => void;
-}) {
-  return h('div', {
-    'aria-rowindex': position + 2,
-    className: 'nidec-ui-lite-grid__section',
-    'data-level': section.level,
-    onClick: () => onToggle(section.key),
-    role: 'row',
-  }, h('div', {
-    'aria-expanded': section.expanded,
-    'aria-label': `${section.label}, ${formatGroupCount(section.count)}${summary ? `, ${summary}` : ''}`,
-    className: 'nidec-ui-lite-grid__section-cell',
-    onKeyDown: (event: KeyboardEvent) => {
-      if (event.key !== 'Enter' && event.key !== ' ') return;
-      event.preventDefault();
-      onToggle(section.key);
-    },
-    role: 'gridcell',
-    tabIndex: 0,
-  },
-  h('span', { 'aria-hidden': true, className: 'nidec-ui-lite-grid__section-chevron' }),
-  h('span', { className: 'nidec-ui-lite-grid__section-label' }, section.label),
-  summary ? h('span', { className: 'nidec-ui-lite-grid__section-summary' }, summary) : null));
-}
+type Editing = Readonly<{ id: string; draft: Draft }>;
 
 /**
- * Row edit mode of LiteEditableGrid. Rows render as plain text. The edit
- * action (or a double-click) turns one row into an editing row: its editable
- * values stay where they are, in semibold, and become fields
- * without boxes; the focused field carries a brand underline. Enter or the
- * check confirms the whole row, Esc or the cross cancels it.
+ * Lightweight editable grid with row edit, for long lists of uniform records
+ * such as master data and cost tables. Rows have one fixed height and only
+ * the rows in view are rendered, so it handles thousands of rows.
+ *
+ * Arrow keys move the current row; Enter, F2 or a double-click edits it. The
+ * editing row turns light green and its editable values become fields without
+ * boxes; the focused field carries a brand underline. Leaving the row, or
+ * Enter, saves it with one `onRowChange`; Esc discards the draft. Like cell
+ * edit there is no confirm action: values that fail validation are saved and
+ * marked, for the consumer to resolve.
  */
-export function RowEditGrid<Row>({
+export function LiteRowEditGrid<Row>({
   'aria-label': ariaLabel,
   columns,
   rows,
@@ -512,164 +446,237 @@ export function RowEditGrid<Row>({
   rowHeight = 40,
   height,
   maxHeight,
-  editingRowId,
-  onEditingRowChange,
+  overscan = DEFAULT_OVERSCAN,
   canEditRow,
-  renderRowActions,
-  actionsHeader = 'Actions',
-  formatRowActionLabel = defaultActionLabel,
-  getRowGroup,
-  collapsedGroups,
-  defaultCollapsedGroups,
-  onCollapsedGroupsChange,
-  getGroupSummary,
-  formatGroupCount = count => `${count} ${count === 1 ? 'row' : 'rows'}`,
+  onActiveRowChange,
   className,
   style,
-  editMode: _editMode,
+  onFocus,
   ...props
-}: LiteEditableGridRowModeProps<Row>) {
-  if (!ariaLabel.trim()) throw new Error('LiteEditableGrid requires a non-empty aria-label.');
+}: LiteRowEditGridProps<Row>) {
+  if (!ariaLabel.trim()) throw new Error('LiteRowEditGrid requires a non-empty aria-label.');
   const gridId = useId().replaceAll(':', '');
   const rootRef = useRef<HTMLDivElement>(null);
   const prepared = useMemo(() => prepareLiteGridColumns(columns), [columns]);
-  const [ownCollapsed, setOwnCollapsed] = useState<ReadonlySet<string>>(() => new Set(defaultCollapsedGroups ?? []));
-  const collapsed = collapsedGroups ?? ownCollapsed;
-  const layout = useMemo(() => buildLiteGridLayout(rows, getRowGroup, collapsed), [rows, getRowGroup, collapsed]);
-  const toggleGroup = (key: string) => {
-    const next = new Set(collapsed);
-    if (next.has(key)) next.delete(key); else next.add(key);
-    if (!collapsedGroups) setOwnCollapsed(next);
-    onCollapsedGroupsChange?.(next);
-  };
+  const count = rows.length;
+  const [scrollRow, setScrollRow] = useState(0);
+  const [viewportHeight, setViewportHeight] = useState(typeof height === 'number' ? height : 448);
+  const [active, setActive] = useState<number | null>(null);
+  const [editing, setEditing] = useState<Editing | null>(null);
+  // The latest editing state, read by the handlers that save or discard it, so that a
+  // blur fired while focus moves after a save or cancel finds nothing left to save.
+  const editingRef = useRef<Editing | null>(null);
+  editingRef.current = editing;
+  const focusRequest = useRef<string | null>(null);
 
-  const [ownEditing, setOwnEditing] = useState<string | null>(null);
-  const editingId = editingRowId !== undefined ? editingRowId : ownEditing;
-  const editingIndex = editingId === null ? -1 : rows.findIndex(row => getRowId(row) === editingId);
+  useLayoutEffect(() => {
+    const root = rootRef.current;
+    if (!root) return undefined;
+    setViewportHeight(root.clientHeight);
+    if (typeof ResizeObserver === 'undefined') return undefined;
+    const observer = new ResizeObserver(() => setViewportHeight(root.clientHeight));
+    observer.observe(root);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    setActive(position => (position === null || position < count ? position : count ? count - 1 : null));
+  }, [count]);
+
+  const editingIndex = editing ? rows.findIndex(row => getRowId(row) === editing.id) : -1;
   const editingRow = editingIndex < 0 ? undefined : rows[editingIndex];
-  const initialDraft = (row: Row): Draft =>
-    Object.fromEntries(prepared.filter(editable).map(column => [column.key, readValue(column, row)]));
-  const [draftState, setDraftState] = useState<{ id: string | null; values: Draft }>({ id: null, values: {} });
-  let draft = draftState.values;
-  if (draftState.id !== editingId) {
-    // A new editing row (also when the parent sets `editingRowId`) starts from its current values.
-    const fresh = { id: editingId, values: editingRow === undefined ? {} : initialDraft(editingRow) };
-    setDraftState(fresh);
-    draft = fresh.values;
-  }
   const errors: Record<string, string | undefined> = {};
-  if (editingRow !== undefined) {
-    const shown = rowWithDraft(editingRow, prepared, draft);
-    for (const column of prepared) if (editable(column)) errors[column.key] = column.validate?.(draft[column.key] ?? '', shown);
+  if (editing && editingRow !== undefined) {
+    const shown = rowWithDraft(editingRow, prepared, editing.draft);
+    for (const column of prepared) if (editable(column)) errors[column.key] = column.validate?.(editing.draft[column.key] ?? '', shown);
   }
-  const dirty = editingRow !== undefined
-    && prepared.some(column => editable(column) && draft[column.key] !== readValue(column, editingRow));
 
-  const focusRequest = useRef<{ rowId: string; target: string } | null>(null);
-  const setEditing = (rowId: string | null) => {
-    if (editingRowId === undefined) setOwnEditing(rowId);
-    onEditingRowChange?.(rowId);
+  const activeRow = active === null ? undefined : rows[active];
+  const activeRowId = activeRow === undefined ? undefined : getRowId(activeRow);
+  const reportedRowId = useRef<string | undefined>(undefined);
+  useEffect(() => {
+    if (reportedRowId.current === activeRowId) return;
+    reportedRowId.current = activeRowId;
+    onActiveRowChange?.(activeRowId);
+  }, [activeRowId, onActiveRowChange]);
+
+  const reveal = (position: number) => {
+    const root = rootRef.current;
+    if (!root) return;
+    const top = position * rowHeight;
+    const view = root.clientHeight - rowHeight;
+    if (top < root.scrollTop) root.scrollTop = top;
+    else if (top + rowHeight > root.scrollTop + view) root.scrollTop = top + rowHeight - view;
+  };
+  const activate = (position: number) => {
+    setActive(position);
+    reveal(position);
   };
 
-  const start = (row: Row, columnKey?: string) => {
-    const rowId = getRowId(row);
-    if (editingId !== null && editingRow !== undefined && rowId !== editingId && dirty) {
-      // One row at a time: unconfirmed changes keep their row in edit.
-      focusRequest.current = { rowId: editingId, target: 'field' };
-      rootRef.current?.querySelector<HTMLElement>(`[data-editing] [data-field-control]`)?.focus();
-      return;
-    }
-    const allowed = canEditRow ? canEditRow(row) : true;
-    if (allowed !== true) return;
-    const key = columnKey && prepared.some(column => column.key === columnKey && editable(column)) ? columnKey : undefined;
-    focusRequest.current = { rowId, target: key ?? 'field' };
-    setEditing(rowId);
-  };
-  const api = useRef<Api<Row>>({ start });
-  api.current = { start };
-
-  const finish = () => {
-    if (editingId !== null) focusRequest.current = { rowId: editingId, target: 'edit' };
+  const save = () => {
+    const current = editingRef.current;
+    if (!current) return;
+    editingRef.current = null;
     setEditing(null);
-  };
-  const confirm = () => {
-    if (editingRow === undefined || editingId === null) return;
-    if (Object.values(errors).some(Boolean)) return;
-    const changes = prepared.filter(column => editable(column) && draft[column.key] !== readValue(column, editingRow))
+    const rowIndex = rows.findIndex(row => getRowId(row) === current.id);
+    const row = rows[rowIndex];
+    if (row === undefined) return;
+    const changes = prepared.filter(column => editable(column) && current.draft[column.key] !== readValue(column, row))
       .map(column => {
-        const value = draft[column.key] ?? '';
+        const value = current.draft[column.key] ?? '';
         return column.kind === 'multiselect'
           ? { columnKey: column.key, value, values: value ? value.split(',') : [] }
           : { columnKey: column.key, value };
       });
-    if (changes.length) onRowChange({ rowId: editingId, rowIndex: editingIndex, row: editingRow, values: draft, changes });
-    finish();
+    if (changes.length) onRowChange({ rowId: current.id, rowIndex, row, values: current.draft, changes });
   };
-  const onField = (key: string, value: string) =>
-    setDraftState(current => ({ id: current.id, values: { ...current.values, [key]: value } }));
+  const focusGrid = () => rootRef.current?.focus({ preventScroll: true });
 
-  // Focus the first (or the double-clicked) field when a row starts editing, and its edit action when it ends.
+  const start = (position: number, columnKey?: string) => {
+    const row = rows[position];
+    if (row === undefined || (canEditRow && !canEditRow(row)) || !prepared.some(editable)) return;
+    const rowId = getRowId(row);
+    if (editingRef.current?.id === rowId) return;
+    save();
+    activate(position);
+    const key = columnKey && prepared.some(column => column.key === columnKey && editable(column)) ? columnKey : undefined;
+    focusRequest.current = key ?? '';
+    const next = { id: rowId, draft: Object.fromEntries(prepared.filter(editable).map(column => [column.key, readValue(column, row)])) };
+    editingRef.current = next;
+    setEditing(next);
+  };
+
+  const onField = (key: string, value: string) =>
+    setEditing(current => (current ? { id: current.id, draft: { ...current.draft, [key]: value } } : current));
+
+  // Focus the first (or the double-clicked) field when a row starts editing.
   useLayoutEffect(() => {
     const request = focusRequest.current;
-    const root = rootRef.current;
-    if (!request || !root) return;
-    const rowElement = Array.from(root.querySelectorAll<HTMLElement>('[data-row-id]'))
-      .find(element => element.getAttribute('data-row-id') === request.rowId);
-    if (!rowElement) return;
+    const rowElement = rootRef.current?.querySelector<HTMLElement>('[data-editing]');
+    if (request === null || !rowElement) return;
     focusRequest.current = null;
-    const target = request.target === 'edit'
-      ? rowElement.querySelector<HTMLElement>('.nidec-ui-lite-grid__edit-action')
-      : request.target === 'field'
-        ? rowElement.querySelector<HTMLElement>('[data-field-control]')
-        : Array.from(rowElement.querySelectorAll<HTMLElement>('[data-key]'))
-          .find(element => element.getAttribute('data-key') === request.target)?.querySelector<HTMLElement>('[data-field-control]');
-    target?.focus({ preventScroll: false });
+    const cell = request ? Array.from(rowElement.querySelectorAll<HTMLElement>('[data-key]'))
+      .find(element => element.getAttribute('data-key') === request) : rowElement;
+    cell?.querySelector<HTMLElement>('[data-field-control]')?.focus({ preventScroll: true });
   });
 
-  const auto = rowHeight === 'auto';
-  const totalWidth = prepared.reduce((sum, column) => sum + column.px, 0) + ACTIONS_WIDTH;
-  const template = `${prepared.map(column => (column.last ? `minmax(${column.px}px, 1fr)` : `${column.px}px`)).join(' ')} ${ACTIONS_WIDTH}px`;
-  const width = `max(100%, ${totalWidth}px)`;
+  const pageRows = Math.max(1, Math.floor((viewportHeight - rowHeight) / rowHeight) - 1);
 
-  const body: ReactElement[] = [];
-  for (let position = 0; position < layout.count; position += 1) {
-    const section = layout.sectionAt(position);
-    if (section) {
-      body.push(h(SectionRow, {
-        formatGroupCount, key: `section:${section.key}`, onToggle: toggleGroup, position, section, summary: getGroupSummary?.(section),
-      }));
-      continue;
+  const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.target !== event.currentTarget || !count) return;
+    const position = active ?? 0;
+    const ctrl = event.ctrlKey || event.metaKey;
+    let next: number | undefined;
+    switch (event.key) {
+      case 'ArrowUp': next = Math.max(0, position - 1); break;
+      case 'ArrowDown': next = Math.min(count - 1, position + 1); break;
+      case 'PageUp': next = Math.max(0, position - pageRows); break;
+      case 'PageDown': next = Math.min(count - 1, position + pageRows); break;
+      case 'Home': if (!ctrl && active !== null) return; next = 0; break;
+      case 'End': if (!ctrl && active !== null) return; next = count - 1; break;
+      case 'Enter':
+      case 'F2':
+        event.preventDefault();
+        start(position);
+        return;
+      default:
+        return;
     }
-    const row = rows[layout.rowAt(position)] as Row;
+    event.preventDefault();
+    activate(next);
+  };
+
+  const positionFromEvent = (event: MouseEvent) => {
+    const rowElement = (event.target as Element).closest('[data-row]');
+    return rowElement ? Number(rowElement.getAttribute('data-row')) : undefined;
+  };
+
+  const onBodyMouseDown = (event: MouseEvent) => {
+    const target = event.target as Element;
+    if (target.closest('[data-editing]')) {
+      // A click on the editing row outside its fields keeps the focus, and the row, in edit.
+      if (!target.closest('.nidec-ui-lite-grid__field')) event.preventDefault();
+      return;
+    }
+    const position = positionFromEvent(event);
+    if (position !== undefined) setActive(position);
+  };
+
+  const onBodyDoubleClick = (event: MouseEvent) => {
+    const target = event.target as Element;
+    if (target.closest('[data-editing]')) return;
+    const position = positionFromEvent(event);
+    if (position === undefined) return;
+    start(position, target.closest('[data-key]')?.getAttribute('data-key') ?? undefined);
+  };
+
+  const onScroll = () => {
+    const root = rootRef.current;
+    if (!root) return;
+    const first = Math.floor(root.scrollTop / rowHeight);
+    if (first !== scrollRow) setScrollRow(first);
+  };
+
+  const { start: first, end } = computeRenderRange(scrollRow * rowHeight, viewportHeight, count, overscan, rowHeight);
+  const editRow = (position: number, rowStyle: CSSProperties | undefined) => h(EditRow<Row>, {
+    columns: prepared, draft: editing!.draft, errors, gridId, key: editing!.id,
+    onCancel: () => { editingRef.current = null; setEditing(null); focusGrid(); },
+    onField,
+    onLeave: save,
+    onSave: (next: boolean) => {
+      save();
+      focusGrid();
+      if (next) activate(Math.min(count - 1, position + 1));
+    },
+    position, row: rows[position] as Row, rowId: editing!.id, style: rowStyle,
+  });
+  const visible: ReactElement[] = [];
+  for (let position = first; position < end; position += 1) {
+    const row = rows[position] as Row;
     const rowId = getRowId(row);
-    body.push(rowId === editingId
-      ? h(EditRow<Row>, {
-        auto, columns: prepared, depth: layout.depthAt(position), draft, errors, formatRowActionLabel, gridId, key: rowId,
-        onCancel: finish, onConfirm: confirm, onField, position, row, rowId,
-      })
+    visible.push(editing?.id === rowId
+      ? h('div', { 'aria-hidden': true, className: 'nidec-ui-lite-grid__row', key: rowId, role: 'presentation' })
       : h(ViewRow<Row>, {
-        api, canEditRow, columns: prepared, depth: layout.depthAt(position), formatRowActionLabel, key: rowId, position,
-        renderRowActions, row, rowId,
+        columns: prepared, current: active === position, gridId, key: rowId,
+        locked: canEditRow ? !canEditRow(row) : false, position, row, rowId,
       }));
   }
+  // The editing row is drawn in its own layer over an empty slot, so scrolling it out of the
+  // rendered window never remounts it: its focus and draft survive and leaving it still saves.
+  const editingLayer = editingIndex >= 0
+    ? editRow(editingIndex, { insetBlockStart: editingIndex * rowHeight, insetInline: 0, position: 'absolute' })
+    : null;
+
+  const totalWidth = prepared.reduce((sum, column) => sum + column.px, 0);
+  const template = prepared.map(column => (column.last ? `minmax(${column.px}px, 1fr)` : `${column.px}px`)).join(' ');
+  const width = `max(100%, ${totalWidth}px)`;
+  const activeRendered = active !== null && active >= first && active < end;
+  const blockSize = height ?? (maxHeight === undefined ? '28rem' : undefined);
 
   return h('div', {
     ...props,
-    'aria-colcount': prepared.length + 1,
+    'aria-activedescendant': activeRendered && !editing ? rowElementId(gridId, active) : undefined,
+    'aria-colcount': prepared.length,
     'aria-label': ariaLabel,
-    'aria-rowcount': layout.count + 1,
+    'aria-rowcount': count + 1,
     className: withClass('nidec-ui-lite-grid', className),
     'data-edit-mode': 'row',
-    'data-row-height': auto ? 'auto' : undefined,
+    onFocus: (event: FocusEvent<HTMLDivElement>) => {
+      if (event.target === event.currentTarget && active === null && count) setActive(0);
+      onFocus?.(event);
+    },
+    onKeyDown,
+    onScroll,
     ref: rootRef,
     role: 'grid',
     style: {
       ...style,
-      ...(height === undefined ? {} : { blockSize: typeof height === 'number' ? `${height}px` : height }),
+      ...(blockSize === undefined ? {} : { blockSize: typeof blockSize === 'number' ? `${blockSize}px` : blockSize }),
       ...(maxHeight === undefined ? {} : { maxBlockSize: typeof maxHeight === 'number' ? `${maxHeight}px` : maxHeight }),
       '--nidec-ui-lite-grid-columns': template,
-      '--nidec-ui-lite-grid-row-height': `${auto ? AUTO_ROW_MIN_HEIGHT : rowHeight}px`,
+      '--nidec-ui-lite-grid-row-height': `${rowHeight}px`,
     } as CSSProperties,
+    tabIndex: 0,
   },
   h('div', { 'aria-rowindex': 1, className: 'nidec-ui-lite-grid__header', role: 'row', style: { width } },
     prepared.map(column => h('div', {
@@ -678,7 +685,15 @@ export function RowEditGrid<Row>({
       key: column.key,
       role: 'columnheader',
       title: column.header,
-    }, column.header)),
-    h('div', { className: 'nidec-ui-lite-grid__header-cell nidec-ui-lite-grid__actions', role: 'columnheader' }, actionsHeader)),
-  h('div', { className: 'nidec-ui-lite-grid__body', role: 'rowgroup', style: { width } }, body));
+    }, column.header))),
+  h('div', {
+    className: 'nidec-ui-lite-grid__body',
+    onDoubleClick: onBodyDoubleClick,
+    onMouseDown: onBodyMouseDown,
+    role: 'rowgroup',
+    style: { blockSize: `${count * rowHeight}px`, width },
+  },
+  // Offset with padding, not a transform, so the fixed list popups of the editing row stay fixed to the window.
+  h('div', { className: 'nidec-ui-lite-grid__window', role: 'presentation', style: { paddingBlockStart: `${first * rowHeight}px` } }, visible),
+  editingLayer));
 }

@@ -67,38 +67,40 @@ The application must also decide what happens when users change row, filter, pag
 
 - `EditableGrid`: neutral structural frame; it does not own data or commands.
 - `EditableGridRowActionGroup`: governed confirm/cancel icon actions for the single active row.
-- `LiteEditableGrid` with `editMode="row"`: the recommended body (see below).
+- `LiteEditableGrid` (cell edit, preferred) and `LiteRowEditGrid` (row edit): the recommended bodies (see below).
 - Fluent `Table` or `DataGrid` with Fluent inputs in the active row: still supported, **not recommended** for new grids (Locke, 2026-10-26). Fixed-size Fluent controls do not follow the row height, the text shifts and shrinks when a row starts editing, and an auto-height row collapses to the control's height.
 
 For an inherently hierarchical collection, [Grouped Table and Grouped Editable Grid](grouped-table.md) adds disclosure-only section rows without changing the leaf-row editing contract.
 
-## Lightweight grid (recommended body)
+## Lightweight grids (recommended bodies)
 
-`LiteEditableGrid` is the body of every editable table (decision, Locke, 2026-10-26). Cells are plain text and the cell draws its own editor, so the editor always matches the row height and the text does not move when a row starts editing. It has two edit modes.
+Every editable table uses one of two lightweight grids (decision, Locke, 2026-10-26). Cells are plain text and the grid draws its own editors, so an editor always matches the row height and the text does not move when editing starts. They were one component with an `editMode` until Locke's review split them into two components, each tuned for its use (2026-10-26).
 
-### Which mode (Locke, 2026-10-26)
+### Which grid (Locke, 2026-10-26)
 
-- **Row edit** (`editMode="row"`): each row is one complete record that is checked and confirmed as a whole, often with row actions such as delete or more, up to about 300 rows. Examples: quote lines, BOM lines of one document.
-- **Cell edit** (`editMode="cell"`): fast bulk entry or maintenance of values that stand on their own; each cell takes effect when it is confirmed and the keyboard drives the work. Any volume with fixed rows. Examples: price lists, parameter tables.
+- **`LiteEditableGrid`, cell edit (preferred)**: lines with long text, tags or groups, edited cell by cell. Examples: BOM templates, project BOMs. Rows grow with their text by default; with `getRowGroup` it becomes the Grouped Editable Grid.
+- **`LiteRowEditGrid`, row edit**: long lists of uniform records with fixed row heights, maintained a row at a time. Examples: component master, cost management. Row-count performance work goes here.
 
-| | `editMode="row"` | `editMode="cell"` (default) |
+| | `LiteEditableGrid` (cell edit) | `LiteRowEditGrid` (row edit) |
 | --- | --- | --- |
-| Model | One row edits at a time; the edit action or a double-click starts it, Enter or the check confirms the whole row, Esc or the cross cancels | Spreadsheet: arrow keys move an active cell, Enter, F2, double-click or typing edits one cell |
-| Callback | `onRowChange({ rowId, rowIndex, row, values, changes })`, once per confirmed row with at least one change | `onCellChange` per cell |
-| Row height | `rowHeight` 32, 40 (default), 48 or `auto` | `rowHeight` 32 (default), 40, 48 or `auto` |
-| Rendering | Every row is rendered; keep it to about 300 rows | Fixed rows: only the rows in view (virtual scrolling), thousands of rows. `auto`: every row is rendered, about 300 rows |
-| Height | Grows with its rows; `maxHeight` caps it under a sticky header, `height` fixes it | `height`, default `28rem` |
+| Model | Spreadsheet: arrow keys move an active cell; Enter, F2, double-click or typing edits one cell | Arrow keys move the current row; Enter, F2 or a double-click edits the whole row |
+| Saving | Each cell when it is left: `onCellChange` | The row when it is left, or Enter: one `onRowChange({ rowId, rowIndex, row, values, changes })` with at least one change. Esc discards |
+| Row actions | None | None |
+| Row height | `auto` (default), or a fixed 32, 40, 48 | A fixed 32, 40 (default) or 48, chosen by the application |
+| Rendering | `auto`: every row, about 300 rows. Fixed: only the rows in view, thousands | Only the rows in view, thousands |
+| Groups | One or two collapsible levels | None |
+| Height | `height`, default `28rem` | `height`, default `28rem`, or `maxHeight` |
 
-Row mode look (Locke, 2026-10-26): no per-cell boxes, fills or frames. The editing row keeps the light green row background and the brand left edge; its editable values turn semibold (neutral text; the green text was dropped on Locke's review); the focused field gets a 2px brand underline; a list field shows a chevron. A value that fails `validate` turns red with a red underline and disables the check until fixed. Read-only cells show the lock only on the editing row, with its space reserved in every row so numbers stay aligned. Unconfirmed changes keep their row in edit: starting another row returns focus to the open row.
+Neither grid has a confirm step: a value that fails `validate` is saved and stays marked, for the application to resolve before its batch save.
 
-Cell mode look (Locke, 2026-10-26, chosen in the comparison prototype): the editor draws no frame. With fixed rows it is a white field over the cell with a 2px brand underline ("no frame, focus only"); with `auto` rows it is a white field without a frame drawn inside the cell, its text at the top where the cell text was, and long text wraps in place so the row grows while typing ("white fill, no frame"). The row of the cell being edited turns light green and carries the brand edge.
+Cell edit look (Locke, 2026-10-26, chosen in the comparison prototype): the editor draws no frame. With `auto` rows it is a white field without a frame drawn inside the cell, as tall as the row, its text at the top where the cell text was, and long text wraps in place so the row grows while typing ("white fill, no frame"); with fixed rows it is a white field over the cell with a 2px brand underline ("no frame, focus only"). The row of the cell being edited turns light green and carries the brand edge.
 
-Row mode extras: `editingRowId` with `onEditingRowChange` (controlled), `canEditRow(row)` returning `false` or a reason shown on the disabled edit action, `renderRowActions(row)` for more display-only actions before the edit action, `actionsHeader` and `formatRowActionLabel` for the actions column.
+Row edit look (Locke, 2026-10-26): no per-cell boxes, fills or frames. The current row carries the brand left edge. The editing row turns light green; its editable values stay in regular weight and neutral colour (the green text and then the semibold were dropped on review); the focused field gets a 2px brand underline; a list field shows a chevron. A value that fails `validate` turns red with a red underline. Read-only cells show the lock only on the editing row, with its space reserved in every row so numbers stay aligned. Clicking the editing row outside its fields keeps it in edit; switching to another window does not save it. `canEditRow(row)` returning `false` keeps a row read-only, and `onActiveRowChange` reports the current row for toolbar commands.
 
 Editors per column: `text`, `number` (decimal keyboard, end-aligned by default; parsing stays with the application), `longText`, `select`, `combobox`, `multiselect`, `none` (read-only). Editable cells use only these editors; badges, links and row-end actions are display-only. A date editor is deferred to a later round.
 
-Grouping (`getRowGroup`, one or two levels) works in both modes. In cell mode the layout is computed once per change of `rows`, `getRowGroup` or the collapsed set, so keep `getRowGroup` stable; with thousands of rows the cost is one pass over the rows, not one per scroll frame. In cell mode the `data-row` attribute on a row is its display position (after grouping and collapsing), not the index in `rows`; use `getRowId` for identity.
+Grouping (`getRowGroup`, one or two levels) is a LiteEditableGrid feature. The layout is computed once per change of `rows`, `getRowGroup` or the collapsed set, so keep `getRowGroup` stable; with thousands of rows the cost is one pass over the rows, not one per scroll frame. The `data-row` attribute on a row is its display position (after grouping and collapsing), not the index in `rows`; use `getRowId` for identity.
 
-Neither mode has sorting, column resizing or multi-cell selection. In cell mode IME input starts after Enter, F2 or a double-click; in row mode fields are ordinary inputs and IME works directly. The consumer still owns rows, validation rules, parsing, persistence and save.
+Neither grid has sorting, column resizing or multi-cell selection. In cell edit IME input starts after Enter, F2 or a double-click; in row edit fields are ordinary inputs and IME works directly. The consumer still owns rows, validation rules, parsing, persistence and save.
 
-Cell mode performance, measured in Chromium (cloud container) for 2,000 rows by 5 columns: LiteEditableGrid mounts in about 17 ms with 154 elements, a Fluent Table with plain text cells in about 450 ms with 12,003 elements, and a Fluent Table with an Input in every cell in about 1.9 s with 32,003 elements. Scrolling the 20,000-row preview 20 rows per frame keeps a median frame of 16.7 ms (p95 19.1 ms) with 35 rows in the DOM.
+Performance with fixed rows, measured in Chromium (cloud container) for 2,000 rows by 5 columns: LiteEditableGrid mounts in about 17 ms with 154 elements, a Fluent Table with plain text cells in about 450 ms with 12,003 elements, and a Fluent Table with an Input in every cell in about 1.9 s with 32,003 elements. Scrolling the 20,000-row preview 20 rows per frame keeps a median frame of 16.7 ms (p95 19.1 ms) with 35 rows in the DOM.

@@ -1048,11 +1048,16 @@
     inset-block-start: calc(var(--nidec-ui-lite-grid-row-height) / 2 - 3px - 0.3125rem);
   }
 
-  /* Row edit mode. Rows read as plain text; the editing row keeps the light green row and brand edge,
-     and its editable values become boxless fields in semibold (green text dropped on review) (Locke, 2026-10-26).
-     No containment, so the fixed list popups are never clipped. */
+  /* LiteRowEditGrid. Rows read as plain text; the editing row keeps the light green row and brand edge,
+     and its editable values become boxless fields in regular weight (green text, then semibold, dropped
+     on review) (Locke, 2026-10-26). No containment and no transform, so the fixed list popups stay fixed
+     to the window and are never clipped. */
   :where([data-nidec-ui]) .nidec-ui-lite-grid[data-edit-mode="row"] {
     contain: none;
+  }
+
+  :where([data-nidec-ui]) .nidec-ui-lite-grid[data-edit-mode="row"] .nidec-ui-lite-grid__window {
+    will-change: auto;
   }
 
   :where([data-nidec-ui]) .nidec-ui-lite-grid[data-edit-mode="row"] .nidec-ui-lite-grid__cell {
@@ -1130,7 +1135,6 @@
 
   /* The hidden text keeps the cell as tall as the draft; the field is drawn over it. */
   :where([data-nidec-ui]) .nidec-ui-lite-grid[data-edit-mode="row"] .nidec-ui-lite-grid__row[data-editing="true"] > .nidec-ui-lite-grid__cell:not([aria-readonly="true"]) > .nidec-ui-lite-grid__text {
-    font-weight: var(--fontWeightSemibold);
     visibility: hidden;
   }
 
@@ -1139,10 +1143,6 @@
     display: flex;
     inset: 0;
     position: absolute;
-  }
-
-  :where([data-nidec-ui]) .nidec-ui-lite-grid[data-row-height="auto"] .nidec-ui-lite-grid__field {
-    align-items: flex-start;
   }
 
   :where([data-nidec-ui]) .nidec-ui-lite-grid__field:hover {
@@ -1167,7 +1167,7 @@
     color: var(--colorNeutralForeground1);
     font-family: inherit;
     font-size: inherit;
-    font-weight: var(--fontWeightSemibold);
+    font-weight: inherit;
     height: calc(var(--nidec-ui-lite-grid-row-height) - var(--strokeWidthThin));
     line-height: var(--lineHeightBase300);
     margin: 0;
@@ -1206,10 +1206,6 @@
     resize: none;
   }
 
-  :where([data-nidec-ui]) .nidec-ui-lite-grid[data-row-height="auto"] .nidec-ui-lite-grid__field-input--area {
-    padding-block-start: calc((var(--nidec-ui-lite-grid-row-height) - var(--lineHeightBase300)) / 2);
-  }
-
   :where([data-nidec-ui]) .nidec-ui-lite-grid__field-list {
     align-items: center;
     align-self: stretch;
@@ -1217,10 +1213,6 @@
     min-width: 0;
     position: relative;
     width: 100%;
-  }
-
-  :where([data-nidec-ui]) .nidec-ui-lite-grid[data-row-height="auto"] .nidec-ui-lite-grid__field-list {
-    align-items: flex-start;
   }
 
   :where([data-nidec-ui]) .nidec-ui-lite-grid__field-list > .nidec-ui-lite-grid__field-input,
@@ -1235,16 +1227,6 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-  }
-
-  :where([data-nidec-ui]) .nidec-ui-lite-grid[data-row-height="auto"] .nidec-ui-lite-grid__field-value {
-    align-items: flex-start;
-    flex-wrap: wrap;
-    height: auto;
-    min-height: calc(var(--nidec-ui-lite-grid-row-height) - var(--strokeWidthThin));
-    padding-block-start: calc((var(--nidec-ui-lite-grid-row-height) - var(--lineHeightBase300)) / 2);
-    row-gap: var(--spacingVerticalXS);
-    white-space: normal;
   }
 
   :where([data-nidec-ui]) .nidec-ui-lite-grid__field-chevron {
@@ -1264,7 +1246,6 @@
     background: var(--colorNeutralBackground1);
     box-shadow: inset 0 0 0 var(--strokeWidthThin) var(--colorBrandStroke2);
     color: var(--colorBrandForeground1);
-    font-weight: var(--fontWeightSemibold);
   }
 
   :where([data-nidec-ui]) .nidec-ui-lite-grid__listbox.nidec-ui-lite-grid__listbox--fixed {
@@ -1272,39 +1253,6 @@
     min-width: 15rem;
     position: fixed;
     z-index: 1000;
-  }
-
-  :where([data-nidec-ui]) .nidec-ui-lite-grid__actions {
-    background: var(--colorNeutralBackground1);
-    gap: var(--spacingHorizontalXXS);
-    inset-inline-end: 0;
-    justify-content: flex-end;
-    overflow: visible;
-    padding-inline: var(--spacingHorizontalXS);
-    position: sticky;
-    z-index: 1;
-  }
-
-  :where([data-nidec-ui]) .nidec-ui-lite-grid__header-cell.nidec-ui-lite-grid__actions {
-    background: var(--colorNeutralBackground2);
-    justify-content: flex-start;
-    padding-inline: var(--spacingHorizontalS);
-  }
-
-  :where([data-nidec-ui]) .nidec-ui-lite-grid__row:hover > .nidec-ui-lite-grid__actions {
-    background: var(--colorNeutralBackground1Hover);
-  }
-
-  :where([data-nidec-ui]) .nidec-ui-lite-grid[data-edit-mode="row"] .nidec-ui-lite-grid__row[data-editing="true"] > .nidec-ui-lite-grid__actions {
-    background: var(--colorBrandBackground2);
-  }
-
-  :where([data-nidec-ui]) .nidec-ui-lite-grid[data-row-height="auto"] .nidec-ui-lite-grid__row > .nidec-ui-lite-grid__actions {
-    padding-block: calc((var(--nidec-ui-lite-grid-row-height) - 1.5rem) / 2) 0;
-  }
-
-  :where([data-nidec-ui]) .nidec-ui-lite-grid[data-edit-mode="row"] .nidec-ui-lite-grid__actions .nidec-ui-editable-grid__row-actions {
-    padding-inline-end: 0;
   }
 
   @media (max-width: 720px) {
