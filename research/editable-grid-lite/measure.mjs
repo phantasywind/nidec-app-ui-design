@@ -49,6 +49,7 @@ const probe = (col) => page.evaluate((col) => {
 
 const scenarios = [
   { id: 'current', q: 'scenario=current' },
+  { id: 'lite-row-grey', q: 'scenario=lite-row&frame=grey' },
   { id: 'lite-row-filled', q: 'scenario=lite-row&frame=filled' },
   { id: 'lite-row-ghost', q: 'scenario=lite-row&frame=ghost' },
   { id: 'lite-row-inset', q: 'scenario=lite-row&frame=inset' },
@@ -74,6 +75,7 @@ for (const s of scenarios) {
 }
 // Extra states for the lightweight row: open list, multiselect, validation error, single-cell mode.
 const extras = [
+  ['lite-row-grey-40-select', 'scenario=lite-row&frame=grey&h=40&edit=2&focus=category&open=category'],
   ['lite-row-filled-40-select', 'scenario=lite-row&frame=filled&h=40&edit=2&focus=category&open=category'],
   ['lite-row-ghost-40-select', 'scenario=lite-row&frame=ghost&h=40&edit=2&focus=category&open=category'],
   ['lite-row-inset-40-select', 'scenario=lite-row&frame=inset&h=40&edit=2&focus=category&open=category'],
