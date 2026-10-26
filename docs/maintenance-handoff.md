@@ -10,8 +10,9 @@ Written 2026-10-09 for whoever maintains this repository next, including a new C
 
 ## Current state
 
-- Latest published version: `0.2.0` (`docs/releases/0.2.0.md`), released 2026-10-13 from `c44ca47` through the release workflow (run 7). It is a minor release: new components and props, no removed export, unchanged Fluent and React versions.
-- Previous version: `0.1.2` (`docs/releases/0.1.2.md`), released 2026-10-09 from `895672d` through the release workflow. It is a visual refinement of `0.1.0`: a grey hover background on application navigation items and no divider lines before the Editable Grid frozen Actions column. `0.1.1` was abandoned and never published (tag `v0.1.1` stays unused at `f56bbb0`, see `docs/releases/0.1.1.md`).
+- Latest published version: `0.3.0` (`docs/releases/0.3.0.md`), released 2026-10-26 from `899cd90` through the release workflow (run 9). It is a minor release with two breaking changes: LiteEditableGrid `rowHeight` defaults to `auto`, and only the primary, attention and secondary button types remain (`ToggleButton`, `MenuButton`, `SplitButton` removed). Fluent and React versions unchanged.
+- Previous version: `0.2.0` (`docs/releases/0.2.0.md`), released 2026-10-13 from `c44ca47` (run 7): new components and props, no removed export.
+- Earlier: `0.1.2` (`docs/releases/0.1.2.md`), released 2026-10-09 from `895672d` through the release workflow. It is a visual refinement of `0.1.0`: a grey hover background on application navigation items and no divider lines before the Editable Grid frozen Actions column. `0.1.1` was abandoned and never published (tag `v0.1.1` stays unused at `f56bbb0`, see `docs/releases/0.1.1.md`).
 - Table-header colour direction (`docs/table-header-visual-direction.md`) is selected but not implemented.
 - A Claude Design System artifact is built from this repository by `design-system/` (see its README). It reproduces the published artifact files exactly. Rebuild and republish it after any change to components, styles or palette.
 
