@@ -826,6 +826,7 @@
 
   :where([data-nidec-ui]) .nidec-ui-lite-grid__editor-tags .nidec-ui-lite-grid__tag {
     max-width: 100%;
+    user-select: none;
   }
 
   :where([data-nidec-ui]) .nidec-ui-lite-grid__editor-tags::after {
@@ -968,10 +969,14 @@
   }
 
   :where([data-nidec-ui]) .nidec-ui-lite-grid[data-edit-mode="cell"][data-row-height="auto"] .nidec-ui-lite-grid__cell[data-editing="true"] {
+    /* Stretch, so the white field fills the whole row height, also for single-line values in a tall row. */
+    align-content: stretch;
+    align-items: stretch;
     background: transparent;
     box-shadow: none;
     color: var(--colorNeutralForeground1);
     display: flex;
+    flex-wrap: nowrap;
     overflow: visible;
     padding: 0;
   }
