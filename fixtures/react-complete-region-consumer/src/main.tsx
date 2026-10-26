@@ -30,7 +30,7 @@ function Demo() {
       </Dialog>
     </main>
     <OverlayDrawer open={open} onOpenChange={(_, data) => setOpen(data.open)} position="end" size="medium" modalType="modal" aria-labelledby="editor-title">
-      <DrawerHeader><DrawerHeaderTitle id="editor-title" action={<Button appearance="subtle" onClick={() => setOpen(false)}>Close</Button>}>Edit example</DrawerHeaderTitle></DrawerHeader>
+      <DrawerHeader><DrawerHeaderTitle id="editor-title" action={<Button onClick={() => setOpen(false)}>Close</Button>}>Edit example</DrawerHeaderTitle></DrawerHeader>
       <DrawerBody>
         <form id="region-form" className="region-form" onSubmit={event => { event.preventDefault(); setSubmitted(value => value + 1); }}>
           <MessageBar intent="info"><MessageBarBody><MessageBarTitle>Local demonstration</MessageBarTitle>Input values remain in this page only.</MessageBarBody></MessageBar>

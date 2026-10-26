@@ -224,7 +224,6 @@ export function MultiSelectDropdown({
         value: option.value,
       }, option.text))),
       props.disabled ? null : createElement(FluentButton, {
-        appearance: 'transparent',
         className: 'nidec-ui-multi-select-dropdown__clear',
         onClick: (event: MouseEvent<HTMLButtonElement>) => change(event, []),
         size: 'small',

@@ -6,7 +6,7 @@ Use it for a command whose meaning is clear from the icon, such as refresh or ad
 | --- | --- | --- |
 | `icon` | required; a Fluent icon element | none |
 | `aria-label` | required; non-empty text | none |
-| `appearance` | `secondary`, `primary`, `outline`, `subtle`, `transparent` | `secondary` |
+| `appearance` | `secondary`, `primary` | `secondary` |
 | `size` | `small`, `medium`, `large` | `medium` |
 | `shape` | `rounded`, `circular`, `square` | `rounded` |
 | `disabled` | boolean | `false` |
@@ -14,6 +14,8 @@ Use it for a command whose meaning is clear from the icon, such as refresh or ad
 | `onClick`, `type`, native button props | as on a native button | `type="button"` |
 
 - It throws if `aria-label` is empty, and it takes no children.
+- An icon-only command is never an attention action; give that command a text Button.
+- The borderless icon buttons are fixed inside components and cannot be chosen: table row actions (`TableActionIconButton`), the FormDrawer close, the Pagination steps, the application frame's navigation toggle and icon-only ToolbarButtons. They count as the icon form of a secondary button.
 - The consumer supplies the icon, the label and the handler, and decides what the command does and who may run it.
 - Do not rely on hover to reveal it.
 

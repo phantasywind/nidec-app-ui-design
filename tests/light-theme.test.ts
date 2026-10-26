@@ -53,6 +53,16 @@ describe('central light theme mapping',()=>{
     for(const [foreground,background] of pairs)expect(contrast(foreground!,background!),`${foreground} on ${background}`).toBeGreaterThanOrEqual(4.5);
     for(const foreground of [t.colorCompoundBrandBackground,t.colorNeutralStrokeAccessible,t.colorStrokeFocus2])expect(contrast(foreground,t.colorNeutralBackground1)).toBeGreaterThanOrEqual(3);
   });
+  it('maps the attention amber onto Marigold with darker hover and pressed fills',()=>{
+    const t=nidecLightTheme;
+    expect(lightPalette.attention).toBe('#e08a00');
+    expect(t.colorPaletteMarigoldBackground3).toBe(lightPalette.attention);
+    // White on the attention fill is below 4.5:1; Locke approved it for the button on 2026-10-26.
+    const rest=contrast(t.colorNeutralForegroundOnBrand,t.colorPaletteMarigoldBackground3);
+    expect(rest).toBeGreaterThan(2.6);
+    expect(contrast(t.colorNeutralForegroundOnBrand,t.colorPaletteMarigoldForeground1)).toBeGreaterThan(rest);
+    expect(contrast(t.colorNeutralForegroundOnBrand,t.colorPaletteMarigoldForeground2)).toBeGreaterThan(contrast(t.colorNeutralForegroundOnBrand,t.colorPaletteMarigoldForeground1));
+  });
   it('uses one neutral grey for hover backgrounds and keeps brand text readable on it',()=>{
     const t=nidecLightTheme;
     expect(t.colorSubtleBackgroundHover).toBe(t.colorNeutralBackground1Hover);

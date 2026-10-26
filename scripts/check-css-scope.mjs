@@ -29,7 +29,7 @@ for (const root of ['styles', 'dist']) {
 
   assert(tokenCss.includes('[data-nidec-ui] {'), `${root}/tokens.css is missing the approved host scope.`);
   const declaredVariables = [...tokenCss.matchAll(/(--[a-z0-9-]+)\s*:/g)].map((match) => match[1]);
-  assert(declaredVariables.length === 16, `${root}/tokens.css must contain the 16 governed light-theme roles.`);
+  assert(declaredVariables.length === 17, `${root}/tokens.css must contain the 17 governed light-theme roles.`);
   assert(
     declaredVariables.every((variable) => variable.startsWith('--nidec-ui-color-')),
     `${root}/tokens.css contains an unapproved release variable namespace.`,

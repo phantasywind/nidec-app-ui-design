@@ -4,7 +4,7 @@ export { nidecLightTheme } from './internal/components/theme';
 export { NidecProvider } from './internal/components/provider';
 export type { NidecProviderProps } from './internal/components/provider';
 export { Button, IconButton, TableActionIconButton } from './internal/components/button';
-export type { ButtonProps, IconButtonProps, TableActionIconButtonProps } from './internal/components/button';
+export type { ButtonAppearance, ButtonProps, IconButtonProps, TableActionIconButtonProps } from './internal/components/button';
 export { Option } from './internal/components/option';
 export { MultiSelectDropdown } from './internal/components/multi-select-dropdown';
 export type { MultiSelectDropdownOption, MultiSelectDropdownProps } from './internal/components/multi-select-dropdown';
@@ -98,7 +98,6 @@ export {
   Tree, TreeItem, TreeItemLayout,
   Accordion, AccordionItem, AccordionHeader, AccordionPanel,
   SearchBox, SpinButton, Slider,
-  ToggleButton, MenuButton, SplitButton,
   Label, InfoLabel, Divider,
   Avatar, AvatarGroup, AvatarGroupItem, AvatarGroupPopover, Persona,
   Tag, TagGroup,
@@ -127,7 +126,6 @@ export type {
   TreeProps, TreeItemProps, TreeItemLayoutProps,
   AccordionProps, AccordionItemProps, AccordionHeaderProps, AccordionPanelProps,
   SearchBoxProps, SpinButtonProps, SliderProps,
-  ToggleButtonProps, MenuButtonProps, SplitButtonProps,
   LabelProps, InfoLabelProps, DividerProps,
   AvatarProps, AvatarGroupProps, AvatarGroupItemProps, AvatarGroupPopoverProps, PersonaProps,
   TagProps, TagGroupProps,

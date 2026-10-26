@@ -2,7 +2,7 @@ import { createElement, useId } from 'react';
 import type { ComponentPropsWithoutRef, MouseEvent } from 'react';
 import { Dropdown as FluentDropdown, Tooltip as FluentTooltip, makeStyles, mergeClasses } from '@fluentui/react-components';
 import type { SelectionEvents } from '@fluentui/react-components';
-import { IconButton } from './button';
+import { QuietIconButton } from './button';
 import { chevronLeftIcon, chevronRightIcon } from './icons';
 import { Option } from './option';
 import { withClass } from './with-class';
@@ -67,7 +67,7 @@ export function Pagination({
 
   const step = (label: string, icon: () => ReturnType<typeof chevronLeftIcon>, target: number, enabled: boolean) =>
     createElement(FluentTooltip, { content: label, relationship: 'label', key: label },
-      createElement(IconButton, {
+      createElement(QuietIconButton, {
         'aria-label': label,
         appearance: 'subtle',
         disabled: disabled || !enabled,

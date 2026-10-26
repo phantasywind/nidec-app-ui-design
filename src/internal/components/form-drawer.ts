@@ -5,7 +5,7 @@ import {
   DrawerHeaderTitle as FluentDrawerHeaderTitle, OverlayDrawer as FluentOverlayDrawer, makeStyles, mergeClasses,
 } from '@fluentui/react-components';
 import type { OverlayDrawerProps as FluentOverlayDrawerProps } from '@fluentui/react-components';
-import { IconButton } from './button';
+import { QuietIconButton } from './button';
 import { dismissIcon } from './icons';
 import { withClass } from './with-class';
 
@@ -61,7 +61,7 @@ export function FormDrawer({
   },
   createElement(FluentDrawerHeader, { className: 'nidec-ui-form-drawer__header' },
     createElement(FluentDrawerHeaderTitle, {
-      action: createElement(IconButton, { 'aria-label': closeLabel, appearance: 'subtle', icon: dismissIcon(), onClick: onDismiss }),
+      action: createElement(QuietIconButton, { 'aria-label': closeLabel, appearance: 'subtle', icon: dismissIcon(), onClick: onDismiss }),
     }, title)),
   createElement(FluentDrawerBody, { className: 'nidec-ui-form-drawer__body' }, children),
   actions === undefined ? null : createElement(FluentDrawerFooter, { className: mergeClasses('nidec-ui-form-drawer__footer', styles.footer) }, actions));

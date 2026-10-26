@@ -4,6 +4,7 @@ The Nidec Engineering Design System is a shared, versioned UI foundation for Nid
 
 - Write interface copy in English. Use sentence case: "Change type", "Commercial change", "Edit details".
 - Label buttons with a short verb, text only: "Save", "Example action". Buttons carry no icon and no link behaviour; use a Link for navigation.
+- There are three button types: primary to move the process forward, edit properties or open a form; attention (amber, never red) to start a change or send something back; secondary for everything else.
 - Put hints, required marks and errors inside the Field next to the input. Never put an important error only in a Tooltip.
 - Name empty and failed states in words ("No matches"), next to where they happen.
 - Every icon-only control needs a non-empty accessible label and a Tooltip.

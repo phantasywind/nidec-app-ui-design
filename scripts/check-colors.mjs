@@ -39,7 +39,7 @@ export async function checkColors(root){
     const source=await readFile(path,'utf8');
     if(name==='src/internal/light-palette.mjs'){
       assert(source.includes('GENERATED from tokens/nidec-light.tokens.json')&&source.includes('ADR-0006'),'Generated palette requires recorded source and authority');
-      assert.equal([...source.matchAll(/#[\da-f]{6}\b/gi)].length,16,'Review raw role changes explicitly');
+      assert.equal([...source.matchAll(/#[\da-f]{6}\b/gi)].length,17,'Review raw role changes explicitly');
       continue;
     }
     if(name==='fixtures/react-form-batch-consumer/src/palette.css'){

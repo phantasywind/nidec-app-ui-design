@@ -78,7 +78,7 @@ assert(releaseExtension?.authority === 'ADR-0006', 'Token authority must remain 
 assert(releaseExtension?.darkMode === 'out-of-scope', 'Dark Mode must remain outside this release scope.');
 
 const tokens = flattenTokens(source).sort((left, right) => left.path.localeCompare(right.path, 'en'));
-assert(tokens.length === 16, 'The approved light palette must contain exactly 16 roles.');
+assert(tokens.length === 17, 'The approved light palette must contain exactly 17 roles.');
 assert(tokens.every((token) => token.path.startsWith('color.')), 'Every release token path must start with color.');
 
 const metadata = {

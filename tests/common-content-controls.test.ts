@@ -3,8 +3,8 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 import {
   Avatar, AvatarGroup, AvatarGroupItem, Divider, InfoLabel, Label,
-  MenuButton, Persona, Popover, PopoverSurface, PopoverTrigger,
-  SearchBox, Slider, SpinButton, SplitButton, Tag, TagGroup, ToggleButton,
+  Persona, Popover, PopoverSurface, PopoverTrigger,
+  SearchBox, Slider, SpinButton, Tag, TagGroup,
 } from '../src/index';
 
 describe('Common content and control foundations', () => {
@@ -35,16 +35,8 @@ describe('Common content and control foundations', () => {
     expect(html).toContain('Sample');
   });
 
-  it('renders distinct action forms without changing consumer-owned callbacks', () => {
-    const html = renderToStaticMarkup(createElement('div', {},
-      createElement(ToggleButton, { defaultChecked: true }, 'Pinned'),
-      createElement(MenuButton, {}, 'Actions'),
-      createElement(SplitButton, { menuButton: { 'aria-label': 'More save actions' } }, 'Save'),
-      createElement(Divider, {}, 'More')));
-    expect(html).toContain('Pinned');
-    expect(html).toContain('Actions');
-    expect(html).toContain('More save actions');
-    expect(html).toContain('Save');
+  it('renders a labelled divider', () => {
+    expect(renderToStaticMarkup(createElement(Divider, {}, 'More'))).toContain('More');
   });
 
   it('keeps contextual disclosure compositional', () => {

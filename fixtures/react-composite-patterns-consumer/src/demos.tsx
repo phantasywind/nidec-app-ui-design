@@ -18,9 +18,9 @@ import {
   PopoverSurface, PopoverTrigger, ProgressBar, Radio, RadioGroup, RecordIdentityCellLayout,
   RecordManagementWorkspace, RecordSelectionDataGrid, RecordSelectionDataGridRow,
   RecordSelectionRegion, RecordTableHeader, SearchBox, SegmentedControl, Dropdown, Skeleton,
-  SkeletonItem, Slider, SpinButton, Spinner, SplitButton, StageNavigator, Switch, Tab, Table,
+  SkeletonItem, Slider, SpinButton, Spinner, StageNavigator, Switch, Tab, Table,
   TableActionIconButton, TableBody, TableCell, TableCellActions, TableHeaderCell, TableRow, TabList,
-   Tag, Textarea, ToggleButton, Toolbar, ToolbarButton as SharedToolbarButton, Tooltip, ViewModeToggle, WorkspaceSection,
+   Tag, Textarea, Toolbar, ToolbarButton as SharedToolbarButton, Tooltip, ViewModeToggle, WorkspaceSection,
   DataGridBody, DataGridCell, DataGridHeaderCell, DataGridRow, nidecLightTheme,
 } from '@phantasywind/nidec-app-ui-design';
 import {
@@ -152,8 +152,8 @@ function ElementsPage() {
          <div className="form-stack"><SegmentedControl aria-label="Workspace mode" options={[{ value: 'standard', label: 'Standard' }, { value: 'extended', label: 'Extended' }]} value={choice} onValueChange={(_, value) => setChoice(value)} /><InlineModeTabs aria-label="Value source" options={[{ value: 'reference', label: 'Reference', tabId: 'material-reference-tab', panelId: 'material-reference-panel' }, { value: 'manual', label: 'Manual', tabId: 'material-manual-tab', panelId: 'material-manual-panel' }]} value={mode} onValueChange={(_, value) => setMode(value)} /><div role="tabpanel" id={`material-${mode}-panel`} aria-labelledby={`material-${mode}-tab`}><Input aria-label="Example mode value" value={mode === 'reference' ? 'Shared parameter' : '42'} readOnly /></div></div>
       </Specimen>
 
-      <Specimen title="Actions and disclosure" description="Primary, secondary, icon and overflow actions.">
-        <div className="button-cluster"><Button appearance="primary">Save changes</Button><Button>Cancel</Button><ToggleButton>Pin</ToggleButton><SplitButton menuButton={{ 'aria-label': 'More save actions' }}>Save</SplitButton><Menu><MenuTrigger disableButtonEnhancement><Button>More actions</Button></MenuTrigger><MenuPopover><MenuList><MenuItem>Edit</MenuItem><MenuItem>Archive</MenuItem></MenuList></MenuPopover></Menu></div><div className="link-row"><Link href="#example">Record identity link</Link><Popover><PopoverTrigger><Button>Show details</Button></PopoverTrigger><PopoverSurface>Contextual information remains consumer-owned.</PopoverSurface></Popover></div>
+      <Specimen title="Actions and disclosure" description="Primary, attention and secondary actions, then overflow and disclosure.">
+        <div className="button-cluster"><Button appearance="primary">Save changes</Button><Button appearance="attention">Return</Button><Button>Cancel</Button><Menu><MenuTrigger disableButtonEnhancement><Button>More actions</Button></MenuTrigger><MenuPopover><MenuList><MenuItem>Edit</MenuItem><MenuItem>Archive</MenuItem></MenuList></MenuPopover></Menu></div><div className="link-row"><Link href="#example">Record identity link</Link><Popover><PopoverTrigger><Button>Show details</Button></PopoverTrigger><PopoverSurface>Contextual information remains consumer-owned.</PopoverSurface></Popover></div>
       </Specimen>
       <Specimen title="Feedback and status" description="Use restrained semantic feedback close to its cause.">
         <div className="status-row"><Badge appearance="tint" color="success">Ready</Badge><Badge appearance="tint" color="warning">Review</Badge><Badge appearance="tint" color="danger">Blocked</Badge><Tag appearance="outline">Metadata</Tag></div><MessageBar intent="info"><MessageBarBody><MessageBarTitle>Information</MessageBarTitle>This example does not introduce a business rule.</MessageBarBody></MessageBar><ProgressBar value={0.65} aria-label="Example progress" /><div className="loading-row"><Spinner size="tiny" label="Loading" /><Skeleton aria-label="Loading placeholder"><SkeletonItem /></Skeleton></div>

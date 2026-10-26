@@ -1,12 +1,21 @@
 import { createElement, useId } from 'react';
 import type { ComponentPropsWithRef, ReactElement } from 'react';
-import { Button as FluentButton, Tooltip as FluentTooltip } from '@fluentui/react-components';
+import { Button as FluentButton, Tooltip as FluentTooltip, makeStyles, mergeClasses, shorthands, tokens } from '@fluentui/react-components';
 import type { ButtonProps as FluentButtonProps } from '@fluentui/react-components';
 import { withClass } from './with-class';
+
+/**
+ * The three button types (Locke, 2026-10-26). `primary` advances the business
+ * process, edits a record's properties or opens a form; `attention` (amber, never
+ * red) starts a change or sends something back; `secondary` is every other command.
+ */
+export type ButtonAppearance = 'primary' | 'attention' | 'secondary';
 
 /** Text-labelled native action with Fluent appearance; theme belongs to Provider. */
 export type ButtonProps = Omit<ComponentPropsWithRef<'button'>, 'children' | 'dangerouslySetInnerHTML'> & {
   children: string;
+  /** Defaults to `secondary`. */
+  appearance?: ButtonAppearance;
   /**
    * Why the command is unavailable. With `disabled`, the button stays greyed
    * out but can still take keyboard focus, so everyone can read the reason.
@@ -18,7 +27,36 @@ export type ButtonProps = Omit<ComponentPropsWithRef<'button'>, 'children' | 'da
    * the button for a key command such as Approve or Submit.
    */
   disabledReasonDisplay?: 'tooltip' | 'inline';
-} & Pick<FluentButtonProps, 'appearance' | 'size' | 'shape' | 'icon' | 'iconPosition'>;
+} & Pick<FluentButtonProps, 'size' | 'shape' | 'icon' | 'iconPosition'>;
+
+/** Fluent's own looks, kept for the borderless icon buttons that components fix internally. */
+type InternalButtonProps = Omit<ButtonProps, 'appearance'> & { appearance?: ButtonAppearance | 'subtle' | 'transparent' };
+
+// The attention amber with white text; the theme maps it onto Fluent's Marigold
+// roles. The Fluent secondary shape, focus and disabled states stay underneath.
+const useAttentionStyles = makeStyles({
+  root: {
+    backgroundColor: tokens.colorPaletteMarigoldBackground3,
+    ...shorthands.borderColor(tokens.colorPaletteMarigoldBackground3),
+    color: tokens.colorNeutralForegroundOnBrand,
+    ':hover': {
+      backgroundColor: tokens.colorPaletteMarigoldForeground1,
+      ...shorthands.borderColor(tokens.colorPaletteMarigoldForeground1),
+      color: tokens.colorNeutralForegroundOnBrand,
+    },
+    ':hover:active': {
+      backgroundColor: tokens.colorPaletteMarigoldForeground2,
+      ...shorthands.borderColor(tokens.colorPaletteMarigoldForeground2),
+      color: tokens.colorNeutralForegroundOnBrand,
+    },
+  },
+});
+
+/** The Fluent secondary button with the amber attention surface; it takes the same props. */
+const AttentionButton = ((props: FluentButtonProps) => {
+  const styles = useAttentionStyles();
+  return createElement(FluentButton, { ...props, className: mergeClasses(props.className, styles.root) });
+}) as typeof FluentButton;
 
 /** A disabled command with its reason written under it; the reason also describes the button. */
 function ButtonWithInlineReason({ reason, button }: { reason: string; button: (reasonId: string) => ReactElement }) {
@@ -28,24 +66,31 @@ function ButtonWithInlineReason({ reason, button }: { reason: string; button: (r
     createElement('span', { className: 'nidec-ui-button-with-reason__text', id: reasonId }, reason));
 }
 
-export function Button({
-  children, type = 'button', disabled = false, disabledReason, disabledReasonDisplay = 'tooltip', className, ref, ...props
-}: ButtonProps) {
+export function Button(props: ButtonProps) {
+  return renderButton(props);
+}
+
+function renderButton({
+  children, type = 'button', disabled = false, disabledReason, disabledReasonDisplay = 'tooltip', className, ref, appearance, ...props
+}: InternalButtonProps) {
   // Bridge object refs through a callback: Fluent's event-derived ref type can
   // infer never with exact optional properties. No public ref type is narrowed.
   const forwardedRef = typeof ref === 'function' ? ref : ref ? (node: HTMLButtonElement | null) => {
     ref.current = node;
   } : null;
   const reason = disabled ? disabledReason?.trim() || undefined : undefined;
-  const render = (reasonId?: string) => createElement(FluentButton, {
+  // A disabled attention button is the same neutral grey as any disabled button.
+  const attention = appearance === 'attention' && !disabled;
+  const render = (reasonId?: string) => createElement(attention ? AttentionButton : FluentButton, {
     ...props,
+    ...(appearance === undefined ? {} : { appearance: appearance === 'attention' ? 'secondary' as const : appearance }),
     ...(reasonId ? { 'aria-describedby': [props['aria-describedby'], reasonId].filter(Boolean).join(' ') } : {}),
     as: 'button',
     // A disabled button takes no pointer or focus events, so a reason could never be shown.
     ...(reason ? { disabledFocusable: true } : { disabled }),
     ref: forwardedRef,
     type,
-    className: ['nidec-ui-button', className].filter(Boolean).join(' '),
+    className: ['nidec-ui-button', attention ? 'nidec-ui-button--attention' : null, className].filter(Boolean).join(' '),
   }, children);
   if (reason === undefined) return render();
   // With a reason the button is wrapped; the public element type stays the plain button's.
@@ -56,22 +101,37 @@ export function Button({
 }
 
 /** Icon actions have an explicit accessible name; business meaning stays with the caller. */
-export type IconButtonProps = Omit<ButtonProps, 'children' | 'icon' | 'aria-label' | 'aria-labelledby'> & {
+export type IconButtonProps = Omit<ButtonProps, 'children' | 'icon' | 'aria-label' | 'aria-labelledby' | 'appearance'> & {
   icon: ReactElement;
   'aria-label': string;
+  /** Defaults to `secondary`; an icon-only command is never an attention action. */
+  appearance?: 'primary' | 'secondary';
   children?: never;
 };
 
-export function IconButton({ icon, 'aria-label': label, ...props }: IconButtonProps) {
+export function IconButton(props: IconButtonProps) {
+  return renderIconButton(props);
+}
+
+/**
+ * Borderless icon button for the fixed places a component owns: table row
+ * actions, the drawer close, paging steps and the navigation toggle. Not
+ * exported from the package; applications use IconButton.
+ */
+export function QuietIconButton(props: Omit<IconButtonProps, 'appearance'> & { appearance: 'subtle' | 'transparent' }) {
+  return renderIconButton(props);
+}
+
+function renderIconButton({ icon, 'aria-label': label, ...props }: Omit<IconButtonProps, 'appearance'> & Pick<InternalButtonProps, 'appearance'>) {
   if (!label.trim()) throw new Error('IconButton requires a non-empty aria-label.');
-  return Button({ ...props, icon, 'aria-label': label, children: '' });
+  return renderButton({ ...props, icon, 'aria-label': label, children: '' });
 }
 
 export type TableActionIconButtonProps = Omit<IconButtonProps, 'appearance' | 'size' | 'shape'>;
 
 /** Compact secondary action for a Table/DataGrid row; icon meaning stays consumer-owned. */
 export function TableActionIconButton({ icon, 'aria-label': label, className, ...props }: TableActionIconButtonProps) {
-  return IconButton({
+  return QuietIconButton({
     ...props,
     icon,
     'aria-label': label,

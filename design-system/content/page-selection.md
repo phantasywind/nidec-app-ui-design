@@ -104,7 +104,7 @@ Do not repeat the same action in the header and the form footer. A disabled acti
 | The current stage comes from the server or a state machine, and users only look back at reached stages. | BusinessProcessFlow |
 | It is unclear whether a click changes business state. | Do not integrate yet; record `Business Rule Pending` with the owning application. |
 
-Put commands that advance or return a process in separate, clearly labelled Buttons or Menu items.
+Put commands that advance or return a process in separate, clearly labelled Buttons or Menu items. Advancing is a primary Button; returning, sending back or starting a change is an attention Button.
 
 Independent steps that are each done or not, with no current stage (a checklist or production steps), use StepStatusIcon beside each step's name, not BusinessProcessFlow.
 

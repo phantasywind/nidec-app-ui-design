@@ -3,8 +3,8 @@ import { createRoot } from 'react-dom/client';
 import { createDOMRenderer, RendererProvider } from '@fluentui/react-components';
 import {
   Avatar, AvatarGroup, AvatarGroupItem, Divider, InfoLabel, Label,
-  MenuButton, NidecProvider, Persona, Popover, PopoverSurface, PopoverTrigger,
-  SearchBox, Slider, SpinButton, SplitButton, Tag, TagGroup, ToggleButton,
+  Button, NidecProvider, Persona, Popover, PopoverSurface, PopoverTrigger,
+  SearchBox, Slider, SpinButton, Tag, TagGroup,
   nidecLightTheme,
 } from '@phantasywind/nidec-app-ui-design';
 import '@phantasywind/nidec-app-ui-design/styles.css';
@@ -12,7 +12,6 @@ import './region.css';
 
 function App() {
   const [query, setQuery] = useState('');
-  const [pinned, setPinned] = useState(false);
   return <NidecProvider theme={nidecLightTheme} className="common-fixture">
     <header>
       <div><h1>Common content and controls</h1><p>Neutral Fluent foundations; application meaning remains outside the package.</p></div>
@@ -37,9 +36,9 @@ function App() {
       <section aria-labelledby="actions-heading">
         <h2 id="actions-heading">Actions and disclosure</h2>
         <div className="action-row">
-          <ToggleButton checked={pinned} onClick={() => setPinned(value => !value)}>Pinned</ToggleButton>
-          <MenuButton>Actions</MenuButton>
-          <SplitButton menuButton={{ 'aria-label': 'More save actions' }}>Save</SplitButton>
+          <Button appearance="primary">Submit</Button>
+          <Button appearance="attention">Return</Button>
+          <Button>Export</Button>
           <Popover positioning="below-start">
             <PopoverTrigger><button type="button">Details</button></PopoverTrigger>
             <PopoverSurface>Consumer-owned contextual content.</PopoverSurface>

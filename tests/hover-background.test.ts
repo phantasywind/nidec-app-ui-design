@@ -12,9 +12,11 @@ describe('shared hover background', () => {
     const css = await readFile(join(root, 'styles', 'components.css'), 'utf8');
     // Selected, checked or pressed items keep their own selected-state hover
     // fill (for example the ViewModeToggle `selected` slot on a grey surface).
+    // A filled button darkens its own fill on hover, as the primary button does.
     const sourceHovers = [...source.matchAll(/'([^'\n]*:hover)': \{\s*backgroundColor: (tokens\.\w+)/g)]
       .filter(match => !/aria-(selected|checked)="true"/.test(match[1]!)
-        && !/selected: \{[^}]*$/.test(source.slice(Math.max(0, match.index - 200), match.index)));
+        && !/selected: \{[^}]*$/.test(source.slice(Math.max(0, match.index - 200), match.index))
+        && !/useAttentionStyles = makeStyles\(\{[^]*$/.test(source.slice(Math.max(0, match.index - 400), match.index)));
     const cssHovers = [...css.matchAll(/([^{}\n]*:hover[^{}\n]*)\{([^}]*)\}/g)]
       .filter(([, selector, body]) => /background:/.test(body!) && !/aria-(selected|checked)="true"/.test(selector!));
     expect(sourceHovers.length).toBeGreaterThan(0);

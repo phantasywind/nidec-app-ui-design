@@ -8,7 +8,7 @@ Compose actions by task and do not insert a field's business state. Changing the
 | `vertical` | vertical layout | `false` |
 | `checkedValues`, `defaultCheckedValues`, `onCheckedValueChange` | state of toggle items | none |
 
-ToolbarButton takes the same `appearance` values as a button (`primary`, `subtle`, `transparent`) and an `icon`. An icon-only ToolbarButton needs an `aria-label` and a Tooltip.
+Use ToolbarButton only icon-only, with its default borderless look; do not set `appearance`. It needs an `aria-label` and a Tooltip. A text command beside the toolbar is a Button of one of the three types.
 
 - Give the Toolbar an `aria-label`.
 - The consumer provides every control and its behaviour.
