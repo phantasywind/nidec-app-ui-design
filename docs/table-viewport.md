@@ -28,6 +28,13 @@
 
 固定列和固定表头的单元格背景为实色：悬停为中性灰，选中行为浅绿，与其他表格一致。不要再覆盖 `.nidec-ui-grouped-table__section-button` 或给 `thead th` 自写 `position: sticky`。
 
+## 矩阵表不属于可编辑表
+
+只有需要输入（填文字、数字，选选项，选日期）的表才算可编辑表，用 `EditableGrid` + `LiteEditableGrid`。只点按钮或开关的表维持普通 `Table` + 标准控件（Locke，2026-10-26）：
+
+- **字段矩阵**：每格一个开关，用 `Table` + 每格 `Switch` 或 `Checkbox`。
+- **选择矩阵**：每格一个按钮或链接，点开 `FormDrawer`，用 `Table` + `MatrixCellButton`（或 `RecordLink`）。
+
 ## 矩阵表：MatrixCellButton
 
 矩阵表的行是记录（可按分组），列是另一组对象（如 Series），每个格子是一个按钮，点开后在 `FormDrawer` 里编辑该格。

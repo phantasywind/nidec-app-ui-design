@@ -2,6 +2,8 @@ EditableGrid is the high-density pattern for line collections that are large and
 
 Leave `title` out when the page already names the grid and `toolbar` out when there is none: nothing empty is drawn. `density="compact"` tightens the frame inside a form or drawer. `maxHeight` (px or a CSS length such as `calc(100vh - 320px)`) caps a Table viewport under a sticky header; give LiteEditableGrid its own `maxHeight` instead.
 
+Only tables whose cells take typed or chosen input (text, numbers, list choices, dates) are editable grids. A field matrix of toggles and a selection matrix of buttons or links that open a drawer stay a plain Table with standard controls.
+
 Use it when users scan and change many peer rows in one session and benefit from keyboard movement and batch commands. Do not use it for a short form, occasional single-record edits, record navigation or lifecycle decisions.
 
 Model: compact rows with one active edit row. An explicit affordance activates the row; confirm and cancel use EditableGridRowActionGroup (transparent 24 by 24 icon actions with labels and Tooltips). Confirming updates the consumer's draft batch only; one page-level save persists the batch after validation.

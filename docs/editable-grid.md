@@ -11,6 +11,13 @@
 - Several changes should be reviewed and validated before one controlled save.
 - Opening a separate Form or Sheet for every row would make the task materially slower.
 
+### What counts as an editable grid (Locke, 2026-10-26)
+
+A table is an editable grid only when its cells take **typed or chosen input**: text, numbers, a choice from a list, a date. Tables whose cells are only clicked stay a plain `Table` / `DataGrid` with standard controls and are not covered by this page or by LiteEditableGrid:
+
+- **Field matrix** (each cell a toggle): `Table` with a `Switch` or `Checkbox` per cell, inside `TableScrollRegion`.
+- **Selection matrix** (each cell a button or link that opens a drawer): `Table` with `MatrixCellButton` or `RecordLink` per cell, editing in `FormDrawer`. See [table viewport](table-viewport.md).
+
 Do not use it for a short Form, occasional single-record changes, record navigation, lifecycle decisions or a directory whose main task is opening records.
 
 ## Selected interaction model
