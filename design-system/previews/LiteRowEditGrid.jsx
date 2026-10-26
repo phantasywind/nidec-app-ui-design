@@ -23,7 +23,7 @@ function makeRows(count) {
     rows[i] = {
       id: String(i + 1), code: 'CMP-' + String(i + 1).padStart(6, '0'), name: names[i % names.length] + ' ' + (100 + (i % 900)),
       family: families[i % families.length].value, unit: units[i % units.length].value, cost: ((i % 211) * 7.25 + 15).toFixed(2),
-      currency: currencies[i % 7 === 0 ? 1 : 0].value, leadTime: String(5 + (i % 40)), status: statuses[i % 13 === 0 ? 1 : 0].value,
+      currency: currencies[i % 7 === 0 ? 1 : i % 11 === 2 ? 3 : 0].value, leadTime: String(5 + (i % 40)), status: statuses[i % 13 === 0 ? 1 : 0].value,
       updated: '2026-10-' + String(1 + (i % 25)).padStart(2, '0'),
     };
   }

@@ -61,5 +61,5 @@
 
 ## 金额与货币（Locke，2026-10-26）
 
-表格和只读字段里的金额：货币符号在数字前，中间一个空格，带千分位，小数位按币种固定，例如 `$ 100.00`、`¥ 1,250.50`、`-$ 86.50`，右对齐。用包里的 `formatCurrency(amount, currency)`；在 LiteEditableGrid、LiteRowEditGrid 里作为列的 `format` 传入，编辑时仍是纯数字。同一列可能同时出现人民币和日元（都是 `¥`）时，改用币种代码：`formatCurrency(amount, currency, { display: 'code' })`，显示为 `CNY 100.00`。
+表格和只读字段里的金额：货币符号在数字前，中间一个空格，带千分位，小数位按币种固定，例如 `$ 100.00`、`¥ 1,250.50`、`-$ 86.50`，右对齐。用包里的 `formatCurrency(amount, currency)`；在 LiteEditableGrid、LiteRowEditGrid 里作为列的 `format` 传入，编辑时仍是纯数字。常用的美元、人民币用符号；日元以及其他与美元、人民币符号相同的货币一律用币种代码，例如 `JPY 1,200`、`HKD 50.00`。`formatCurrency` 默认就这样处理。
 
