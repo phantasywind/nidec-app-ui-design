@@ -1,6 +1,7 @@
 // GENERATED from tokens/nidec-light.tokens.json. Authority: ADR-0006.
 // State derivatives live in the central theme mapping, never in components.
 export const lightPalette = /* @__PURE__ */ Object.freeze({
+  "attention": "#e08a00",
   "border": "#d7ddd9",
   "borderStrong": "#b9c2bd",
   "brand": "#009b4a",

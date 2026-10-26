@@ -1,6 +1,7 @@
 /* NIDEC LIGHT THEME RELEASE CANDIDATE. Source: ADR-0006. */
 @layer nidec-ui {
   [data-nidec-ui] {
+    --nidec-ui-color-attention: color(srgb 0.8784313725490196 0.5411764705882353 0 / 1);
     --nidec-ui-color-border: color(srgb 0.8431372549019608 0.8666666666666667 0.8509803921568627 / 1);
     --nidec-ui-color-border-strong: color(srgb 0.7254901960784313 0.7607843137254902 0.7411764705882353 / 1);
     --nidec-ui-color-brand: color(srgb 0 0.607843137254902 0.2901960784313726 / 1);

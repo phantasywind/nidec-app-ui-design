@@ -8,7 +8,7 @@ There are three button types and no others (Locke, 2026-10-26):
 | Attention | `attention` | Commands the user should notice before running: starting a change or sending something back | Start change, Return, Send back for rework |
 | Secondary | `secondary` (default) | Every other command | Cancel, Export, Refresh, Set not required |
 
-- Attention is amber (Fluent Marigold) with dark text. It is never red; there is no danger button.
+- Attention is the `attention` amber `#e08a00` with white text, darker on hover and press. It is never red; there is no danger button. White on it is 2.7:1, below the 4.5:1 text target; Locke approved this for the button on 2026-10-26.
 - A disabled button is the same neutral grey in all three types.
 - `outline`, `subtle` and `transparent` are not accepted. ToggleButton, MenuButton and SplitButton are not part of the package; a low-frequency menu uses `MoreActionsMenu`.
 

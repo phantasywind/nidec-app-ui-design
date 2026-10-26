@@ -37,7 +37,7 @@ Locke decided on 2026-10-26 that there are three button types: primary, attentio
 
 | Change | What applications do |
 | --- | --- |
-| `Button` `appearance` takes `primary`, `attention` (new, amber) or `secondary` (default). `outline`, `subtle` and `transparent` no longer compile. | Replace them with `secondary`, or `attention` for starting a change or sending back. |
+| `Button` `appearance` takes `primary`, `attention` (new: amber `#e08a00` with white text, a new 17th palette role `attention` in `tokens.css` / `tokens.json`) or `secondary` (default). `outline`, `subtle` and `transparent` no longer compile. | Replace them with `secondary`, or `attention` for starting a change or sending back. |
 | `IconButton` `appearance` takes `primary` or `secondary`. | Replace `subtle` / `transparent` with the default. Row actions keep `TableActionIconButton`. |
 | `ToggleButton`, `MenuButton`, `SplitButton` (and their props types) are no longer exported. | Use `MoreActionsMenu` for a menu, a Button for a command, `SegmentedControl` for a choice. |
 | `MultiSelectDropdown` "Clear all" is a small secondary button instead of a transparent text button. | Nothing. |

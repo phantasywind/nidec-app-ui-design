@@ -4,7 +4,7 @@
 
 ## 唯一颜色入口
 
-原始值只在 `src/internal/light-palette.mjs` 的16个命名角色中登记，来自上一轮保存的DS色表。组件代码不直接写色值；主题映射位于公共入口的独立主题区，组件实现仍委托Fluent。只导出完整 `nidecLightTheme`，Provider仍必须显式传入theme。消费者不依赖内部palette路径。
+原始值只在 `src/internal/light-palette.mjs` 的17个命名角色中登记，来自上一轮保存的DS色表。组件代码不直接写色值；主题映射位于公共入口的独立主题区，组件实现仍委托Fluent。只导出完整 `nidecLightTheme`，Provider仍必须显式传入theme。消费者不依赖内部palette路径。
 
 演示的 `themes.ts` 选择共享浅色主题；`palette.css` 由 `build-theme-demo.mjs` 从同一源生成，不能手改。生成结果一致性及原始色值位置均由css:check检查。历史版本的tokens/style子路径仍为scaffold；2026-09-08经发布收口批准后，当前`0.1.0-rc.1`改由`tokens/nidec-light.tokens.json`生成正式候选token输出，旧证据保持历史原状。
 
@@ -20,6 +20,7 @@
 | 表面/画布/弱背景 | surface/canvas/surfaceSubtle来自DS同名角色 |
 | 边框 | border/borderStrong用于表面装饰；可操作边界使用textMuted，避免弱边框被当成唯一识别线索 |
 | 焦点 | focus `#1769aa`，内白外蓝；不因品牌绿而擅改焦点语义 |
+| 提醒按钮 | attention `#e08a00`（2026-10-26 Locke 批准新增）；映射到 Fluent Marigold 系列：实色底为原值，hover/pressed 向文字色混合12%/24%，弱底混合96%/70%。白字对比度2.7:1，低于4.5:1，Locke 批准仅用于提醒按钮底色 |
 | 成功/警告/错误 | success/warning/danger来自DS表；前景和实色底用原值，弱底向surface混合96%/90%，弱边框65%；反色前景50% |
 | 信息 | info `#1769aa`，映射Fluent实际存在的Blue Foreground2/Background2/BorderActive；Fluent该版本没有独立StatusInfo族 |
 

@@ -105,6 +105,11 @@
         "usage": "Success text and icons on surface and canvas (5.19:1 or better). Pair with a word or icon; it is close to the brand green. Which business states count as success belongs to the consuming application."
       },
       {
+        "name": "attention",
+        "palette": "attention",
+        "usage": "Fill of the attention button (start a change, send back) with white text. White on it is 2.7:1, below 4.5:1; Locke approved this for the button fill on 2026-10-26. Do not use it for text or for anything else."
+      },
+      {
         "name": "warning",
         "palette": "warning",
         "usage": "Warning text and icons on surface and canvas (5.27:1 or better). Pair with a word or icon. State meaning belongs to the consuming application."

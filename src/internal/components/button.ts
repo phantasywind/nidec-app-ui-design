@@ -32,22 +32,22 @@ export type ButtonProps = Omit<ComponentPropsWithRef<'button'>, 'children' | 'da
 /** Fluent's own looks, kept for the borderless icon buttons that components fix internally. */
 type InternalButtonProps = Omit<ButtonProps, 'appearance'> & { appearance?: ButtonAppearance | 'subtle' | 'transparent' };
 
-// Amber from Fluent's Marigold palette with dark text; the Fluent secondary
-// shape, focus and disabled states stay unchanged underneath.
+// The attention amber with white text; the theme maps it onto Fluent's Marigold
+// roles. The Fluent secondary shape, focus and disabled states stay underneath.
 const useAttentionStyles = makeStyles({
   root: {
     backgroundColor: tokens.colorPaletteMarigoldBackground3,
     ...shorthands.borderColor(tokens.colorPaletteMarigoldBackground3),
-    color: tokens.colorNeutralForeground1,
+    color: tokens.colorNeutralForegroundOnBrand,
     ':hover': {
       backgroundColor: tokens.colorPaletteMarigoldForeground1,
       ...shorthands.borderColor(tokens.colorPaletteMarigoldForeground1),
-      color: tokens.colorNeutralForeground1,
+      color: tokens.colorNeutralForegroundOnBrand,
     },
     ':hover:active': {
-      backgroundColor: tokens.colorPaletteMarigoldForeground1,
+      backgroundColor: tokens.colorPaletteMarigoldForeground2,
       ...shorthands.borderColor(tokens.colorPaletteMarigoldForeground2),
-      color: tokens.colorNeutralForeground1,
+      color: tokens.colorNeutralForegroundOnBrand,
     },
   },
 });

@@ -103,6 +103,17 @@ export const nidecLightTheme: Theme = /* @__PURE__ */ (() => ({
   colorStatusDangerBorderActive: palette.danger,
   colorStatusDangerBorder1: mixColor(palette.danger, palette.surface, 0.65),
   colorStatusDangerBorder2: palette.danger,
+  // The Marigold family carries the attention-button amber (Locke, 2026-10-26):
+  // rest fill, then darker hover and pressed fills for its white text.
+  colorPaletteMarigoldBackground1: mixColor(palette.attention, palette.surface, 0.96),
+  colorPaletteMarigoldBackground2: mixColor(palette.attention, palette.surface, 0.7),
+  colorPaletteMarigoldBackground3: palette.attention,
+  colorPaletteMarigoldForeground1: mixColor(palette.attention, palette.text, 0.12),
+  colorPaletteMarigoldForeground2: mixColor(palette.attention, palette.text, 0.24),
+  colorPaletteMarigoldForeground3: palette.attention,
+  colorPaletteMarigoldBorderActive: palette.attention,
+  colorPaletteMarigoldBorder1: mixColor(palette.attention, palette.surface, 0.7),
+  colorPaletteMarigoldBorder2: palette.attention,
   // Fluent has no colorStatusInfo family; information uses its Blue palette roles.
   colorPaletteBlueForeground2: palette.info,
   colorPaletteBlueBackground2: mixColor(palette.info, palette.surface, 0.9),

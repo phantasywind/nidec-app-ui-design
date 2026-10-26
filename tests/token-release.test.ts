@@ -17,7 +17,7 @@ describe('governed release token metadata', () => {
       darkMode: 'out-of-scope',
       source: 'tokens/nidec-light.tokens.json',
     });
-    expect(metadata.tokens).toHaveLength(16);
+    expect(metadata.tokens).toHaveLength(17);
     expect(metadata.tokens.every((token: { path: string }) => token.path.startsWith('color.'))).toBe(true);
     expect(metadata.tokens.every((token: { cssVariable: string }) => token.cssVariable.startsWith('--nidec-ui-color-'))).toBe(true);
     expect(JSON.stringify(metadata)).not.toContain('SCAFFOLD FIXTURE ONLY');
