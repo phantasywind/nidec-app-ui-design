@@ -143,3 +143,23 @@ body { margin: 0; background: var(--colorNeutralBackground2, #f5f5f5); }
 .rs-current[data-height="auto"] .rs-text { white-space: normal; }
 .rs-lite[data-height="auto"] .rs-header.rs-actions { padding-block: 0; }
 .rs-lite[data-height="auto"] .rs-cell[data-dirty="true"]::after { inset-block-start: calc(var(--rs-row-height) / 2); }
+
+/* Borderless styles: the field is part of the table.
+   filled = Fluent's "filled-lighter" idea: white fill on the tinted edit row, no outline, brand bar on focus.
+   ghost  = Power Apps / spreadsheet style: nothing drawn at rest, a hint on hover, white fill + brand bar on focus. */
+.rs-field[data-frame="filled"] { --rs-inset: 3px; inset: 3px 2px; border-radius: var(--borderRadiusSmall); }
+.rs-field[data-frame="filled"] .rs-input, .rs-field[data-frame="filled"] .rs-field-value { padding-inline: calc(var(--rs-pad) - 2px) calc(var(--rs-pad) - 2px); }
+.rs-field[data-frame="filled"] .rs-field-value { padding-inline-end: 28px; }
+.rs-field[data-frame="filled"][data-focused] { box-shadow: inset 0 -2px 0 var(--colorCompoundBrandStroke, var(--colorBrandStroke1)); }
+.rs-field[data-frame="ghost"] { background: transparent; }
+.rs-field[data-frame="ghost"]:hover { box-shadow: inset 0 -1px 0 var(--colorNeutralStrokeAccessible); }
+.rs-field[data-frame="ghost"][data-focused] { background: var(--colorNeutralBackground1); box-shadow: inset 0 -2px 0 var(--colorCompoundBrandStroke, var(--colorBrandStroke1)); }
+.rs-field[data-frame="ghost"] .rs-input, .rs-field[data-frame="ghost"] .rs-field-value { padding-inline-start: var(--rs-pad); }
+.rs-field[data-frame="ghost"] .rs-input { padding-inline-end: var(--rs-pad); }
+.rs-lite[data-height="auto"] .rs-field[data-frame="filled"] .rs-input--area,
+.rs-lite[data-height="auto"] .rs-field[data-frame="filled"] .rs-field-value { padding-block-start: calc((var(--rs-row-height) - var(--rs-line)) / 2 - 3px); }
+.rs-lite[data-height="auto"] .rs-field[data-frame="filled"] .rs-input:not(.rs-input--area) { height: calc(var(--rs-row-height) - 6px); }
+.rs-lite[data-height="auto"] .rs-field[data-frame="ghost"] .rs-input--area,
+.rs-lite[data-height="auto"] .rs-field[data-frame="ghost"] .rs-field-value { padding-block-start: calc((var(--rs-row-height) - var(--rs-line)) / 2); }
+.rs-lite[data-height="auto"] .rs-field[data-frame="ghost"] .rs-input:not(.rs-input--area) { height: calc(var(--rs-row-height) - 1px); }
+.rs-field[data-frame="filled"] .rs-listbox, .rs-field[data-frame="ghost"] .rs-listbox { top: calc(100% + 4px); }
