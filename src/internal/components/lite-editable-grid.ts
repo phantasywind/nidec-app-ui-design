@@ -4,7 +4,7 @@ import type {
 } from 'react';
 import { lockIcon } from './icons';
 import {
-  buildLiteGridLayout, displayText, filterLiteGridOptions, isTypedEditor, prepareLiteGridColumns, readValue, renderTags,
+  buildLiteGridLayout, displayText, filterLiteGridOptions, isTypedEditor, prepareLiteGridColumns, readValue, renderTags, restingText,
   splitLiteGridValues,
 } from './lite-grid-shared';
 import type {
@@ -101,7 +101,7 @@ function RowViewImpl<Row>({
     const error = column.validate?.(value, row);
     const multi = column.kind === 'multiselect';
     const values = multi ? splitLiteGridValues(value, column.options) : undefined;
-    const text = values ? values.map(item => displayText(column, item)).join(', ') : displayText(column, value);
+    const text = values ? values.map(item => displayText(column, item)).join(', ') : restingText(column, value, row);
     const inline = editor !== null && col === editingCol;
     return h('div', {
       'aria-colindex': col + 1,

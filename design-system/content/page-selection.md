@@ -118,6 +118,7 @@ Independent steps that are each done or not, with no current stage (a checklist 
 
 ## Always
 
+- Currency amounts in tables and read-only fields show the currency symbol before the number with one space, thousands separators and the currency's fixed decimals: `$ 100.00`, `¥ 1,250.50`, `-$ 86.50` (Locke, 2026-10-26). Use `formatCurrency(amount, currency)`; in LiteEditableGrid and LiteRowEditGrid pass it as the column's `format`, so the editor still shows the plain number. Amounts are end-aligned. Where one column can hold both CNY and JPY (both `¥`), use the ISO code instead (`{ display: 'code' }`: `CNY 100.00`).
 - In every table-type component (Table, DataGrid, RecordSelectionDataGrid, EditableGrid, LiteEditableGrid, grouped tables), one column shows one field. Do not stack two fields in one column, such as a code above a name or a value with a second value under it; give each field its own column. An exception needs Locke's separate approval, recorded with the page it applies to (shared rule, 2026-10-13).
 
 - Keep the application shell white and flat, and build pages from white modules with one light border. No grey canvas, no nested borders or shadows.

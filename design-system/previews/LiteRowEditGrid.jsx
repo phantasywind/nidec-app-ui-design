@@ -9,7 +9,7 @@ const columns = [
   { key: 'name', header: 'Name', editor: 'text', width: 200 },
   { key: 'family', header: 'Family', editor: 'select', width: 130, options: families },
   { key: 'unit', header: 'Unit', editor: 'select', width: 80, options: units },
-  { key: 'cost', header: 'Standard cost', editor: 'number', width: 130,
+  { key: 'cost', header: 'Standard cost', editor: 'number', width: 140, format: (v, r) => formatCurrency(v, r.currency),
     validate: v => (/^\d+(\.\d{1,2})?$/.test(v) ? undefined : 'Enter an amount with up to two decimals') },
   { key: 'currency', header: 'Currency', editor: 'select', width: 100, options: currencies },
   { key: 'leadTime', header: 'Lead time (days)', editor: 'number', width: 140,

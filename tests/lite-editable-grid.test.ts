@@ -147,6 +147,18 @@ describe('LiteEditableGrid', () => {
     expect(html).toMatch(/data-align="end"[^>]*data-editor="number"/);
   });
 
+  it('shows a column format at rest and keeps the raw value for editing', () => {
+    const html = renderToStaticMarkup(createElement(LiteEditableGrid<Line>, {
+      ...props, rows: rows.slice(0, 2), columns: [...columns.slice(0, 4), { key: 'qty', header: 'Qty', editor: 'number', format: value => `$ ${value}.00` }],
+    }));
+    expect(html).toContain('>$ 1.00<');
+    const rowHtml = renderToStaticMarkup(createElement(LiteRowEditGrid<Line>, {
+      'aria-label': 'Lines', rows: rows.slice(0, 2), getRowId: row => row.id, onRowChange: () => undefined,
+      columns: [{ key: 'qty', header: 'Qty', editor: 'number', format: value => `$ ${value}.00` }],
+    }));
+    expect(rowHtml).toContain('>$ 1.00<');
+  });
+
   it('grows rows with their text by default', () => {
     const { rowHeight: _fixed, ...rest } = props;
     const html = renderToStaticMarkup(createElement(LiteEditableGrid<Line>, { ...rest, rows: rows.slice(0, 20) }));

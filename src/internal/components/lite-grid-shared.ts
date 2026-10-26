@@ -34,6 +34,12 @@ export type LiteEditableGridColumn<Row> = Readonly<{
    * an array value is joined with commas, so option values must not contain one.
    */
   getValue?: (row: Row) => string;
+  /**
+   * Display text of a cell that is not being edited, such as an amount with its
+   * currency (see `formatCurrency`); editors, copy and `onCellChange` keep the raw value.
+   * Not used by list editors, which show their option text.
+   */
+  format?: (value: string, row: Row) => string;
   /** Returns a message when the value is invalid; the cell is then marked and the message is its tooltip. */
   validate?: (value: string, row: Row) => string | undefined;
 }>;
@@ -205,6 +211,11 @@ export function renderTags<Row>(column: PreparedColumn<Row>, values: readonly st
 
 export function displayText<Row>(column: PreparedColumn<Row>, value: string) {
   return column.textByValue?.get(value) ?? value;
+}
+
+/** Text of a cell at rest: option text for list editors, otherwise the column's `format` when it has one. */
+export function restingText<Row>(column: PreparedColumn<Row>, value: string, row: Row) {
+  return column.format && !column.options ? column.format(value, row) : displayText(column, value);
 }
 
 /** Column metrics and option lookups, checked once per `columns` array. */

@@ -179,7 +179,7 @@ if (distFiles.length > 0) {
     'PageHeader', 'RecordManagementWorkspace', 'WorkspaceSection', 'WorkspaceStack',
     'SingleSelectDropdown', 'Pagination', 'FactList', 'FormDrawer', 'SectionNavigation', 'StepStatusIcon', 'TableScrollRegion',
     'numericColumnClassName', 'TruncatedText', 'MatrixCellButton', 'RecordLink', 'CountBadge', 'ActiveBadge', 'RowEndStatus', 'EmptyState',
-    'MoreActionsMenu', 'BusinessNumberInput', 'FormGrid', 'FormGridItem', 'ChangeHistoryTable',
+    'MoreActionsMenu', 'BusinessNumberInput', 'formatCurrency', 'FormGrid', 'FormGridItem', 'ChangeHistoryTable',
     'UnsavedChangesProvider', 'useUnsavedChanges', 'useConfirmDiscard', 'StickySaveBar',
     'SearchBox', 'SpinButton', 'Slider',
     'ToggleButton', 'MenuButton', 'SplitButton',

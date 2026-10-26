@@ -3,7 +3,7 @@ import type { CSSProperties, FocusEvent, KeyboardEvent, MouseEvent, ReactElement
 import { lockIcon } from './icons';
 import { computeRenderRange } from './lite-editable-grid';
 import {
-  displayText, filterLiteGridOptions, prepareLiteGridColumns, readValue, renderTags, splitLiteGridValues,
+  displayText, filterLiteGridOptions, prepareLiteGridColumns, readValue, renderTags, restingText, splitLiteGridValues,
 } from './lite-grid-shared';
 import type { LiteEditableGridOption, LiteGridCommonProps, PreparedColumn } from './lite-grid-shared';
 import { withClass } from './with-class';
@@ -58,9 +58,9 @@ function rowWithDraft<Row>(row: Row, columns: readonly PreparedColumn<Row>[], dr
   return copy as Row;
 }
 
-function cellText<Row>(column: PreparedColumn<Row>, value: string): ReactNode {
+function cellText<Row>(column: PreparedColumn<Row>, value: string, row: Row, resting: boolean): ReactNode {
   if (column.kind === 'multiselect') return renderTags(column, splitLiteGridValues(value, column.options), column.maxVisibleTags ?? 2);
-  return displayText(column, value);
+  return resting ? restingText(column, value, row) : displayText(column, value);
 }
 
 function lockMark<Row>(column: PreparedColumn<Row>) {
@@ -104,7 +104,7 @@ function ViewRowImpl<Row>({ row, rowId, position, current, locked, columns, grid
       key: column.key,
       role: 'gridcell',
       title: error ?? (column.kind === 'longText' && value ? value : undefined),
-    }, h('span', { className: 'nidec-ui-lite-grid__text' }, cellText(column, value)), lockMark(column));
+    }, h('span', { className: 'nidec-ui-lite-grid__text' }, cellText(column, value, row, true)), lockMark(column));
   }));
 }
 
@@ -417,7 +417,7 @@ function EditRow<Row>({
       role: 'gridcell',
     },
     // Keeps the cell's layout; the field is drawn over it.
-    h('span', { 'aria-hidden': readOnly ? undefined : true, className: 'nidec-ui-lite-grid__text' }, cellText(column, value)),
+    h('span', { 'aria-hidden': readOnly ? undefined : true, className: 'nidec-ui-lite-grid__text' }, cellText(column, value, shownRow, readOnly)),
     field,
     lockMark(column));
   }));

@@ -49,6 +49,8 @@ export type {
   RecordLinkProps, CountBadgeProps, ActiveBadgeProps, RowEndStatusProps, EmptyStateProps, MoreActionsItem, MoreActionsMenuProps,
 } from './internal/components/record-patterns';
 export { BusinessNumberInput } from './internal/components/number-input';
+export { formatCurrency } from './internal/components/currency';
+export type { FormatCurrencyOptions } from './internal/components/currency';
 export type { BusinessNumberInputProps, BusinessNumberInvalidInput } from './internal/components/number-input';
 export { FormGrid, FormGridItem } from './internal/components/form-grid';
 export type { FormGridProps, FormGridItemProps } from './internal/components/form-grid';

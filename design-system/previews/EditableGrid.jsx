@@ -14,10 +14,11 @@ const columns = [
   { key: 'category', header: 'Category', editor: 'select', width: 140, options: categories },
   { key: 'quantity', header: 'Quantity', editor: 'number', width: 100,
     validate: v => (/^\d+$/.test(v) ? undefined : 'Enter a whole number') },
-  { key: 'price', header: 'Unit price', editor: 'number', width: 120,
+  { key: 'price', header: 'Unit price', editor: 'number', width: 120, format: v => formatCurrency(v, 'USD'),
     validate: v => (/^\d+(\.\d{1,2})?$/.test(v) ? undefined : 'Enter an amount with up to two decimals') },
-  { key: 'amount', header: 'Amount', editor: 'none', width: 120, align: 'end',
-    getValue: r => { const n = Number(r.quantity) * Number(r.price); return Number.isFinite(n) ? n.toFixed(2) : ''; } },
+  { key: 'amount', header: 'Amount', editor: 'none', width: 130, align: 'end',
+    getValue: r => { const n = Number(r.quantity) * Number(r.price); return Number.isFinite(n) ? n.toFixed(2) : ''; },
+    format: v => formatCurrency(v, 'USD') },
 ];
 function Demo() {
   const [lines, setLines] = useState(initial);

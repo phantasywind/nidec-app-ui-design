@@ -18,10 +18,11 @@ const columns = [
     validate: v => (/^\d+$/.test(v) ? undefined : 'Enter a whole number') },
   { key: 'unit', header: 'Unit', editor: 'select', width: 80, options: units },
   { key: 'regions', header: 'Regions', editor: 'multiselect', width: 230, options: regions },
-  { key: 'price', header: 'Unit price', editor: 'number', width: 110,
+  { key: 'price', header: 'Unit price', editor: 'number', width: 120, format: v => formatCurrency(v, 'USD'),
     validate: v => (/^\d+(\.\d{1,2})?$/.test(v) ? undefined : 'Enter an amount with up to two decimals') },
-  { key: 'amount', header: 'Amount', editor: 'none', width: 110, align: 'end',
-    getValue: r => { const n = Number(r.quantity) * Number(r.price); return Number.isFinite(n) ? n.toFixed(2) : ''; } },
+  { key: 'amount', header: 'Amount', editor: 'none', width: 130, align: 'end',
+    getValue: r => { const n = Number(r.quantity) * Number(r.price); return Number.isFinite(n) ? n.toFixed(2) : ''; },
+    format: v => formatCurrency(v, 'USD') },
 ];
 function makeRows(count) {
   const rows = new Array(count);
