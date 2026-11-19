@@ -6,3 +6,5 @@ coverage/
 .tmp/
 *.tgz
 SHA256SUMS.txt
+site/dist/
+site/node_modules/
