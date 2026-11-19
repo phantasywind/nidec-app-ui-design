@@ -31,6 +31,10 @@ export { SingleSelectDropdown } from './internal/components/single-select-dropdo
 export type {
   SingleSelectDropdownOption, SingleSelectDropdownProps, SingleSelectDropdownSelectData,
 } from './internal/components/single-select-dropdown';
+export { Lookup, LookupSearchWindow, createLookupAnchor } from './internal/components/lookup';
+export type {
+  LookupAnchor, LookupColumn, LookupManualModeConfig, LookupProps, LookupSearchWindowProps, LookupSortState,
+} from './internal/components/lookup';
 export { Pagination } from './internal/components/pagination';
 export type { PaginationProps } from './internal/components/pagination';
 export { FactList } from './internal/components/fact-list';

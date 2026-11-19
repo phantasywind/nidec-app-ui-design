@@ -17,3 +17,5 @@ export const chevronDownIcon = () => glyph('M4.5 7.5 10 13l5.5-5.5');
 export const checkIcon = () => glyph('M4.5 10.5 8 14l7.5-8');
 // Pencil: body and tip, for an edit action.
 export const editIcon = () => glyph('M13.5 3.5l3 3L7 16H4v-3zM11.5 5.5l3 3');
+// Magnifying glass: lens and handle, for lookup triggers.
+export const searchIcon = (size = 20) => glyph('M8.5 3.5a5 5 0 1 0 0 10 5 5 0 0 0 0-10zM12.2 12.2L16.5 16.5', size);

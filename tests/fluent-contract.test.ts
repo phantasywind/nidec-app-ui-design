@@ -39,7 +39,7 @@ const compositePatterns = [
   'EditableGrid', 'EditableGridRowActionGroup', 'LiteEditableGrid', 'LiteRowEditGrid', 'GroupedTableSectionRow',
   'RecordSelectionRegion', 'RecordSelectionDataGrid', 'RecordSelectionDataGridRow', 'SegmentedControl', 'InlineModeTabs', 'ViewModeToggle',
   'PageHeader', 'RecordManagementWorkspace', 'WorkspaceSection', 'WorkspaceStack',
-  'SingleSelectDropdown', 'Pagination', 'FactList', 'FormDrawer', 'SectionNavigation', 'StepStatusIcon', 'TableScrollRegion',
+  'SingleSelectDropdown', 'Lookup', 'LookupSearchWindow', 'createLookupAnchor', 'Pagination', 'FactList', 'FormDrawer', 'SectionNavigation', 'StepStatusIcon', 'TableScrollRegion',
   'numericColumnClassName', 'TruncatedText', 'MatrixCellButton', 'RecordLink', 'CountBadge', 'ActiveBadge', 'RowEndStatus', 'EmptyState',
   'MoreActionsMenu', 'BusinessNumberInput', 'formatCurrency', 'FormGrid', 'FormGridItem', 'ChangeHistoryTable',
   'UnsavedChangesProvider', 'useUnsavedChanges', 'useConfirmDiscard', 'StickySaveBar',
