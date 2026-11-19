@@ -1,0 +1,28 @@
+{
+  "name": "@nidec-internal/design-system-site",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Interactive specification dictionary and live component preview site for @phantasywind/nidec-app-ui-design.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "typecheck": "tsc --noEmit",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --host 127.0.0.1 --port 4173"
+  },
+  "dependencies": {
+    "@fluentui/react-components": "9.74.7",
+    "@fluentui/react-datepicker-compat": "0.6.39",
+    "@fluentui/react-icons": "2.0.339",
+    "react": "19.2.7",
+    "react-dom": "19.2.7"
+  },
+  "devDependencies": {
+    "@types/node": "24.13.3",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.7",
+    "@vitejs/plugin-react": "6.1.1",
+    "typescript": "7.0.2",
+    "vite": "8.2.2"
+  }
+}

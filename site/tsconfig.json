@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "jsx": "react-jsx",
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "paths": {
+      "@phantasywind/nidec-app-ui-design": ["../dist/index.d.ts"],
+      "@phantasywind/nidec-app-ui-design/layouts": ["../dist/layouts.d.ts"],
+      "@phantasywind/nidec-app-ui-design/date-picker": ["../dist/date-picker.d.ts"]
+    }
+  },
+  "include": ["src"]
+}
