@@ -26,6 +26,12 @@ Live preview URL (after push & Actions run): `https://phantasywind.github.io/nid
   - [x] `site/` typecheck + production build verified for both default relative base (`./`) and GitHub Pages base (`VITE_BASE_PATH=/nidec-app-ui-design/`).
   - [x] Headless Chromium verification against `vite preview` at `/nidec-app-ui-design/` passed across wide (`1440x900`, all 33 routes), tablet (`900x900`, 10 routes), and mobile (`390x844`, 10 routes): 0 console errors, 0 page exceptions, 0 failed HTTP requests, 0 horizontal overflows, interactive checks verified (Button states, Design Tokens category filter, FormDrawer overlay, LiteEditableGrid 1,000-row virtualized mode, mobile navigation drawer), and visual screenshots inspected.
 
+- [x] **Step 6: Shared `Lookup`, `LookupSearchWindow`, and `createLookupAnchor`**
+  - [x] Abstracted CPQ/EPM `ComponentLookup` interaction pattern into business-neutral root exports (`src/internal/components/lookup.ts`, `src/internal/components/icons.ts`, `src/index.ts`, `scripts/check-boundaries.mjs`).
+  - [x] Added unit tests (`tests/lookup.test.ts`, updated `tests/fluent-contract.test.ts`) and specification doc (`docs/lookup.md`).
+  - [x] Added dedicated interactive **Lookup & Search Window** page (`#/components/lookup`) to the preview site (`site/src/demos/FormControlsDemos.tsx`, `site/src/data/catalog.ts`).
+  - [x] Re-verified full root `npm run verify` (29 test files / 222 tests, 61 source files color-checked, 11 build files boundary-checked), `site/` production build, and headless Chromium across all 34 routes (`1440x900`, `900x900`, `390x844`) including interactive Lookup open, manual mode toggle, double-click select, and `Delete` clear with 0 errors and 0 overflows.
+
 ## Backlog / Follow-up Notes (Out of Current Scope)
-- Update `"This private repository"` wording in `README.md` in the next scheduled package version release (kept untouched now so `0.3.0` tarball contents remain unchanged).
-- Push local commits to `origin/main` only after explicit owner authorization to trigger the first live GitHub Pages deployment.
+- Update `"This private repository"` wording in `README.md` and bump package version (e.g. `0.4.0`) in the next scheduled package release (keeping `0.3.0` immutable).
+- Push local `Lookup` commits to `origin/main` only after explicit owner authorization (which will automatically redeploy GitHub Pages with `#/components/lookup`).

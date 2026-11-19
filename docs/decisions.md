@@ -39,3 +39,11 @@
   - Avoids maintaining a separate mirror repository for static artifacts while keeping the Pages pipeline completely independent from `.github/workflows/release.yml`.
   - Automatically refreshes the live preview on `main` pushes affecting components/docs/site, on published GitHub Releases, or via manual `workflow_dispatch`.
   - Note: GitHub Packages (`npm.pkg.github.com`) still requires authenticated npm credentials (`read:packages`) for consumer installation even on public repositories; this is documented explicitly in the site's Install & Usage Guide.
+
+## D-006: Shared Business-Neutral `Lookup`, `LookupSearchWindow`, and `createLookupAnchor`
+- **Date**: 2026-11-19
+- **Decision**: Promote the anchored multi-column lookup interaction pattern into the shared root entry (`src/index.ts`) as `Lookup<TItem>`, `LookupSearchWindow<TItem>`, and `createLookupAnchor(rect)`, stripping all application-specific API calls, React Query hooks, icon-pack dependencies, and domain copy.
+- **Rationale**:
+  - Preserves 100% of the approved keyboard/mouse ergonomics (click / `Enter` / `F4` / `ArrowDown` / printable-char open, `Delete` / `Backspace` clear, debounced search, sortable multi-column table, sticky headers, double-click confirm, and equal-height `300px` optional `manualMode` tab so footer buttons never jump).
+  - Keeps zero new runtime dependencies (uses built-in SVG glyphs in `src/internal/components/icons.ts` and Fluent semantic tokens) and passes `scripts/check-boundaries.mjs` business-term and export-surface checks.
+  - Staged cleanly on `main` for the next scheduled package release without mutating the published `0.3.0` release.

@@ -4,6 +4,7 @@ import { ButtonDemo, IconActionsDemo, ModesDemo } from '../demos/ActionsAndModes
 import {
   ChoicesDemo,
   DatePickerDemo,
+  LookupDemo,
   NumbersDemo,
   SelectsDemo,
   TextFieldsDemo,
@@ -280,6 +281,52 @@ export const COMPONENT_PAGES: readonly ComponentSpecPage[] = [
       { name: 'tagPlacement (MultiSelectDropdown)', type: "'trigger' | 'below'", defaultValue: "'trigger'", description: 'Renders selected tags inside the trigger or wrapped below with Clear all.' },
       { name: 'searchable (MultiSelectDropdown)', type: 'boolean', defaultValue: 'false', description: 'Enables filter typing when tagPlacement="below".' },
       { name: 'maxVisibleTags (MultiSelectDropdown)', type: 'number', description: 'Collapses excess trigger tags into a count chip.' },
+    ],
+  },
+  {
+    route: 'components/lookup',
+    group: 'Form Controls',
+    title: 'Lookup & Search Window',
+    subtitle: 'Read-only lookup box with magnifying glass that opens an anchored, sortable multi-column search window (plus optional manual entry mode).',
+    keywords: 'Lookup LookupSearchWindow createLookupAnchor search picker dialog catalog table',
+    subpath: '',
+    symbols: ['Lookup', 'LookupSearchWindow', 'createLookupAnchor'],
+    Demo: LookupDemo,
+    code: `<Lookup
+  aria-label="Catalog item"
+  title="Choose catalog item"
+  value={selectedCode}
+  displayValue={selected ? \`\${selected.code}  \${selected.name}\` : ''}
+  columns={columns}
+  items={matches}
+  totalCount={total}
+  getItemKey={(item) => item.code}
+  onQueryChange={setQuery}
+  onSelect={(item) => setSelectedCode(item.code)}
+  onClear={() => setSelectedCode(null)}
+/>`,
+    dos: [
+      'Use Lookup when users pick from large or multi-attribute catalogs (hundreds/thousands of records) where a single-column Dropdown or Combobox lacks context.',
+      'Let users click, press Enter / F4 / ArrowDown, or start typing immediately — Lookup passes the typed character straight into the anchored SearchBox.',
+      'Use LookupSearchWindow with createLookupAnchor(rect) to open the exact same lookup window beside a table cell or custom trigger.',
+      'Pass manualMode when an item may not exist in the catalog; both tabs keep an equal 300px body height so footer actions never jump.',
+    ],
+    donts: [
+      'Do not use Lookup for short fixed option lists (<12 items) — use SingleSelectDropdown instead.',
+      'Do not hardcode API calls or domain rules inside shared wrappers; pass fetched rows, totalCount, and filterSlot from the application.',
+      'Do not disable Delete / Backspace clearing without a clear business requirement.',
+    ],
+    ownership: 'The application owns data fetching, caching, remote paging/limits, secondary filters (filterSlot), displayValue formatting, and manualMode validation.',
+    propsList: [
+      { name: 'value / displayValue', type: 'string | null / string', description: 'Current record key and formatted text rendered inside the trigger input.' },
+      { name: 'title', type: 'string', description: 'Header title and accessible dialog name for the anchored PopoverSurface.' },
+      { name: 'columns', type: 'readonly LookupColumn<TItem>[]', description: 'Sortable multi-column definitions (key, header, width, getValue, renderCell).' },
+      { name: 'items / totalCount', type: 'readonly TItem[] / number', description: 'Currently loaded matching rows and total dataset match count for footer summary.' },
+      { name: 'getItemKey', type: '(item: TItem) => string', description: 'Unique key extractor for highlighting, sorting stability, and exact-match Enter selection.' },
+      { name: 'onQueryChange / debounceMs', type: '(query: string) => void / number', defaultValue: '250', description: 'Debounced search callback triggered as the user types in the window SearchBox.' },
+      { name: 'filterSlot', type: 'ReactNode', description: 'Optional secondary filter control (e.g. SingleSelectDropdown) or fixed scope caption.' },
+      { name: 'manualMode', type: 'LookupManualModeConfig', description: 'Optional equal-height manual entry tab toggled via SegmentedControl in the header.' },
+      { name: 'onSelect / onClear', type: '(item: TItem) => void / () => void', description: 'Selection callback (double-click, Enter, Select) and Delete/Backspace clear handler.' },
     ],
   },
   {

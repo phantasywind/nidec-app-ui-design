@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import {
   Badge,
   BusinessNumberInput,
@@ -10,6 +10,8 @@ import {
   FormGrid,
   FormGridItem,
   Input,
+  Lookup,
+  LookupSearchWindow,
   MessageBar,
   MessageBarBody,
   MultiSelectDropdown,
@@ -22,12 +24,16 @@ import {
   SpinButton,
   StickySaveBar,
   Switch,
+  Text,
   Textarea,
   UnsavedChangesProvider,
+  createLookupAnchor,
   useConfirmDiscard,
   useUnsavedChanges,
   formatCurrency,
   type BusinessNumberInvalidInput,
+  type LookupAnchor,
+  type LookupColumn,
 } from '@phantasywind/nidec-app-ui-design';
 import {
   BusinessDatePicker,
@@ -459,5 +465,300 @@ export function UnsavedChangesDemo() {
     >
       <UnsavedChangesInner />
     </UnsavedChangesProvider>
+  );
+}
+
+type CatalogPart = {
+  code: string;
+  name: string;
+  specification: string;
+  unit: string;
+  categoryCode: string;
+  categoryName: string;
+};
+
+const LOOKUP_CATEGORIES = [
+  { code: '011', name: 'Traction Drives' },
+  { code: '024', name: 'Control Modules' },
+  { code: '038', name: 'Safety Hardware' },
+  { code: '052', name: 'Mechanical Assemblies' },
+] as const;
+
+const LOOKUP_NAMES: Record<string, readonly string[]> = {
+  '011': ['Permanent magnet drive', 'Geared traction unit', 'High-torque motor'],
+  '024': ['Vector inverter unit', 'Main relay controller', 'Encoder interface board'],
+  '038': ['Dual-coil brake assembly', 'Overspeed governor', 'Buffer switch module'],
+  '052': ['Isolation mounting frame', 'Guide shoe assembly', 'Counterweight bracket'],
+};
+
+const LOOKUP_SPECS = [
+  'WT 1000kg 1.0m/s',
+  'WT 1000kg 1.75m/s',
+  'WT 1600kg 2.5m/s',
+  '400V 3-phase IP54',
+  'Dual channel EN81-20',
+  'Heavy-duty thermal class F',
+] as const;
+
+const LOOKUP_CATALOG: readonly CatalogPart[] = Array.from({ length: 240 }, (_, index) => {
+  const cat = LOOKUP_CATEGORIES[index % LOOKUP_CATEGORIES.length]!;
+  const names = LOOKUP_NAMES[cat.code]!;
+  return {
+    code: `M${cat.code}${String(1001 + index).padStart(4, '0')}`,
+    name: names[Math.floor(index / LOOKUP_CATEGORIES.length) % names.length]!,
+    specification: LOOKUP_SPECS[index % LOOKUP_SPECS.length]!,
+    unit: index % 5 === 0 ? 'SET' : 'EA',
+    categoryCode: cat.code,
+    categoryName: cat.name,
+  };
+});
+
+export function LookupDemo() {
+  const [size, setSize] = useState<'medium' | 'small'>('medium');
+  const [lockedCategory, setLockedCategory] = useState(false);
+  const [allowManual, setAllowManual] = useState(true);
+  const [selectedCode, setSelectedCode] = useState<string | null>('M0111001');
+  const [customDisplay, setCustomDisplay] = useState<string | null>(null);
+  const [query, setQuery] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('all');
+  const [manualName, setManualName] = useState('');
+  const [manualCode, setManualCode] = useState('');
+  const [manualSpec, setManualSpec] = useState('');
+  const [eventLog, setEventLog] = useState('Click the field, press Enter/F4, or start typing to search. Press Delete to clear.');
+
+  // Standalone virtual-anchor window demo (for table cells / custom triggers)
+  const triggerBtnRef = useRef<HTMLDivElement>(null);
+  const [anchorTarget, setAnchorTarget] = useState<LookupAnchor | null>(null);
+  const [anchorQuery, setAnchorQuery] = useState('');
+
+  const effectiveCategory = lockedCategory ? '011' : categoryFilter;
+
+  const filterCatalog = (searchText: string, catCode: string) => {
+    const words = searchText.trim().toLowerCase().split(/\s+/).filter(Boolean);
+    return LOOKUP_CATALOG.filter((item) => {
+      if (catCode !== 'all' && item.categoryCode !== catCode) return false;
+      if (words.length === 0) return true;
+      const haystack = `${item.code} ${item.name} ${item.specification} ${item.categoryCode} ${item.categoryName}`.toLowerCase();
+      return words.every((word) => haystack.includes(word));
+    });
+  };
+
+  const matchedItems = useMemo(
+    () => filterCatalog(query, effectiveCategory),
+    [query, effectiveCategory],
+  );
+
+  const anchorItems = useMemo(
+    () => filterCatalog(anchorQuery, 'all'),
+    [anchorQuery],
+  );
+
+  const columns = useMemo<readonly LookupColumn<CatalogPart>[]>(() => {
+    const base: LookupColumn<CatalogPart>[] = [
+      { key: 'code', header: 'Part Number', width: '8.5rem', getValue: (item) => item.code },
+      { key: 'name', header: 'Name', width: '11.5rem', getValue: (item) => item.name },
+      { key: 'specification', header: 'Specification', getValue: (item) => item.specification },
+      { key: 'unit', header: 'Unit', width: '4rem', getValue: (item) => item.unit },
+    ];
+    if (!lockedCategory) {
+      base.push({
+        key: 'categoryCode',
+        header: 'Category',
+        width: '5.5rem',
+        getValue: (item) => item.categoryCode,
+        getTitle: (item) => `${item.categoryCode} ${item.categoryName}`,
+      });
+    }
+    return base;
+  }, [lockedCategory]);
+
+  const selectedRecord = LOOKUP_CATALOG.find((item) => item.code === selectedCode) ?? null;
+  const displayValue = customDisplay
+    ?? (selectedRecord ? `${selectedRecord.code}  ${selectedRecord.name}` : '');
+
+  const manualProblem = manualName.trim() === '' ? 'Enter an item name before confirming.' : undefined;
+
+  return (
+    <div className="demo-stack">
+      <div className="site-playground__controls">
+        <div className="site-playground__control-group">
+          <span>Size:</span>
+          <SegmentedControl
+            aria-label="Lookup input size"
+            size="small"
+            value={size}
+            onValueChange={(_, v) => setSize(v as 'medium' | 'small')}
+            options={[
+              { value: 'medium', label: 'Medium (32px)' },
+              { value: 'small', label: 'Small (24px)' },
+            ]}
+          />
+        </div>
+        <Checkbox
+          label="Lock to category 011"
+          checked={lockedCategory}
+          onChange={(_, d) => setLockedCategory(Boolean(d.checked))}
+        />
+        <Checkbox
+          label="Allow manual entry mode"
+          checked={allowManual}
+          onChange={(_, d) => setAllowManual(Boolean(d.checked))}
+        />
+      </div>
+
+      <FormGrid columns={2}>
+        <Field
+          label="Catalog item lookup"
+          hint="Click, press Enter / F4 / ↓, or type any letter while focused. Press Delete to clear."
+        >
+          <Lookup<CatalogPart>
+            aria-label="Catalog item lookup"
+            size={size}
+            value={selectedCode ?? (customDisplay ? '__manual__' : null)}
+            displayValue={displayValue}
+            placeholder="Click or type to search catalog..."
+            title="Choose catalog item"
+            searchLabel="Search catalog items"
+            searchPlaceholder="Code, name or specification: every word must match"
+            columns={columns}
+            items={matchedItems.slice(0, 120)}
+            totalCount={matchedItems.length}
+            getItemKey={(item) => item.code}
+            debounceMs={120}
+            onQueryChange={setQuery}
+            onOpenChange={(open) => {
+              if (!open) setQuery('');
+            }}
+            filterSlot={
+              lockedCategory ? (
+                <Text size={200} style={{ color: 'var(--colorNeutralForeground3)' }}>
+                  Category 011 Traction Drives
+                </Text>
+              ) : (
+                <SingleSelectDropdown
+                  aria-label="Category filter"
+                  style={{ width: '100%' }}
+                  selectedOption={categoryFilter}
+                  onOptionSelect={(_, data) => setCategoryFilter(data.optionValue)}
+                  options={[
+                    { value: 'all', text: 'All categories' },
+                    ...LOOKUP_CATEGORIES.map((c) => ({ value: c.code, text: `${c.code} ${c.name}` })),
+                  ]}
+                />
+              )
+            }
+            manualMode={
+              allowManual
+                ? {
+                  switcherLabel: 'Item source',
+                  searchLabel: 'From the catalog',
+                  manualLabel: 'Not in catalog',
+                  footerNote: 'Manual entries are flagged for engineering review.',
+                  confirmLabel: 'Use',
+                  confirmDisabled: Boolean(manualProblem),
+                  confirmDisabledReason: manualProblem,
+                  onConfirm: () => {
+                    const summary = `${manualCode.trim() ? `${manualCode.trim()}  ` : ''}${manualName.trim()}`;
+                    setSelectedCode(null);
+                    setCustomDisplay(summary);
+                    setEventLog(`Manual entry confirmed: ${summary}${manualSpec.trim() ? ` (${manualSpec.trim()})` : ''}`);
+                  },
+                  content: (
+                    <div
+                      style={{
+                        display: 'grid',
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+                        gap: 'var(--spacingVerticalM) var(--spacingHorizontalM)',
+                        alignItems: 'start',
+                      }}
+                    >
+                      <Field label="Name" required>
+                        <Input
+                          value={manualName}
+                          placeholder="e.g. Custom traction assembly"
+                          onChange={(_, d) => setManualName(d.value)}
+                        />
+                      </Field>
+                      <Field label="Part Number" hint="Optional: can be assigned later.">
+                        <Input
+                          value={manualCode}
+                          placeholder="Optional code"
+                          onChange={(_, d) => setManualCode(d.value)}
+                        />
+                      </Field>
+                      <div style={{ gridColumn: '1 / -1' }}>
+                        <Field label="Specification">
+                          <Input
+                            value={manualSpec}
+                            placeholder="Rating, dimensions, or standard"
+                            onChange={(_, d) => setManualSpec(d.value)}
+                          />
+                        </Field>
+                      </div>
+                    </div>
+                  ),
+                }
+                : undefined
+            }
+            onSelect={(item) => {
+              setSelectedCode(item.code);
+              setCustomDisplay(null);
+              setEventLog(`Selected ${item.code} — ${item.name} (${item.specification})`);
+            }}
+            onClear={() => {
+              setSelectedCode(null);
+              setCustomDisplay(null);
+              setEventLog('Cleared selection via Delete / Backspace.');
+            }}
+          />
+        </Field>
+
+        <Field
+          label="Virtual anchor (for grid cells)"
+          hint="Use LookupSearchWindow + createLookupAnchor(rect) to open next to any cell."
+        >
+          <div ref={triggerBtnRef} className="demo-row">
+            <Button
+              size={size}
+              onClick={() => {
+                const rect = triggerBtnRef.current?.getBoundingClientRect();
+                if (rect) {
+                  setAnchorQuery('');
+                  setAnchorTarget(createLookupAnchor(rect));
+                }
+              }}
+            >
+              Open anchored window
+            </Button>
+          </div>
+          {anchorTarget && (
+            <LookupSearchWindow<CatalogPart>
+              target={anchorTarget}
+              title="Pick replacement item"
+              searchPlaceholder="Filter 240 catalog records..."
+              columns={columns}
+              items={anchorItems.slice(0, 120)}
+              totalCount={anchorItems.length}
+              selectedKey={selectedCode}
+              getItemKey={(item) => item.code}
+              debounceMs={100}
+              onQueryChange={setAnchorQuery}
+              onSelect={(item) => {
+                setSelectedCode(item.code);
+                setCustomDisplay(null);
+                setAnchorTarget(null);
+                setEventLog(`Picked via virtual anchor: ${item.code} — ${item.name}`);
+              }}
+              onClose={() => setAnchorTarget(null)}
+            />
+          )}
+        </Field>
+      </FormGrid>
+
+      <div className="demo-row">
+        <Badge appearance="outline" color="subtle">Event log</Badge>
+        <span className="demo-status-caption">{eventLog}</span>
+      </div>
+    </div>
   );
 }
